@@ -610,7 +610,9 @@ figcaption {
   position: absolute;
   top: 0;
   overflow: visible;
-  transform: translateY(0);
+  transform: translate3d(var(--artifact-x, 0px), var(--artifact-y, 0px), 0)
+    scale(var(--artifact-scale, 1));
+  transform-origin: top left;
   transition: transform 540ms ease;
   filter: drop-shadow(0 24px 48px rgba(21, 23, 25, 0.16));
 }
