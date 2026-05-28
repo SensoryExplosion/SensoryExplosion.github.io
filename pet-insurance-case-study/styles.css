@@ -28,6 +28,7 @@
   --space-8: 64px;
   --space-10: 80px;
   --space-12: 96px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 *,
@@ -632,7 +633,7 @@ figcaption {
 }
 
 .product-artifact {
-  width: min(52vw, 720px);
+  width: min(67vw, 964px);
   aspect-ratio: 2800 / 5206;
 }
 

@@ -12,22 +12,29 @@
     <script src="script.js" defer></script>
   </head>
   <body>
-    <header class="site-header" id="top">
-      <nav class="topbar" aria-label="Portfolio navigation">
-        <a class="brand" href="#top" aria-label="Back to top">
-          <span class="brand-mark" aria-hidden="true"></span>
-          <span>Your Name</span>
-        </a>
-        <div class="nav-links">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a class="contact-link" href="#connect">Contact</a>
-        </div>
-      </nav>
+    <nav class="topbar" aria-label="Portfolio navigation">
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="primary-navigation"
+        aria-label="Open navigation menu"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+      <div class="nav-links" id="primary-navigation">
+        <button class="nav-close" type="button" aria-label="Close navigation menu"></button>
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#connect">Contact</a>
+        <a class="contact-link" href="mailto:hello@example.com">Email</a>
+      </div>
+    </nav>
 
+    <header class="site-header" id="top">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="section-label">Product / UX portfolio</p>
           <h1 id="hero-title">Hi! I'm a designer who also read the business case.</h1>
           <p>
           I design in the uncomfortable middle where the user need, the business constraint, and the technical reality are all staring at each other awkwardly. I find that part interesting, not exhausting. (Most days.)
@@ -38,22 +45,21 @@
 
     <main>
       <section class="work-section" id="work" aria-labelledby="work-title">
-        <div class="section-heading">
-          <div>
-            <p class="section-label">Selected work</p>
-            <h2 id="work-title">Two case studies, built for a fast first read.</h2>
-          </div>
-          <p>
-            Each slot is ready for a thumbnail, a direct role statement, and a short result-focused
-            summary.
-          </p>
+        <div class="section-heading compact">
+          <h2 id="work-title">Work</h2>
         </div>
 
         <div class="project-grid">
-          <a class="project-card" href="case-study-01.html" aria-label="Open case study 01">
-            <div class="thumbnail thumbnail-one" aria-hidden="true">
-              <span class="thumbnail-line short"></span>
-              <span class="thumbnail-line"></span>
+          <a
+            class="project-card"
+            href="pet-insurance-case-study/index.html"
+            aria-label="Open case study 01"
+          >
+            <div class="thumbnail thumbnail-plain">
+              <img
+                src="assets/eu_digital_identity_wallet.png"
+                alt="EU Digital Identity Wallet case study preview"
+              >
             </div>
             <div class="project-content">
               <p class="project-meta">Case study 01 / Year</p>
@@ -91,10 +97,7 @@
 
       <section class="about-section" id="about" aria-labelledby="about-title">
         <div class="section-heading compact">
-          <div>
-            <p class="section-label">About</p>
-            <h2 id="about-title">Everything the job description didn't ask about</h2>
-          </div>
+          <h2 id="about-title">Everything the job description didn't ask about</h2>
         </div>
 
         <div class="bento-grid">
@@ -183,7 +186,6 @@
 
       <section class="connect-section" id="connect" aria-labelledby="connect-title">
         <div>
-          <p class="section-label">Connect</p>
           <h2 id="connect-title">Easy to scan, easy to reach.</h2>
           <p>
             Replace these with your real email, LinkedIn, CV, and case-study links when the
