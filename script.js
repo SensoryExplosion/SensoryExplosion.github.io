@@ -111,6 +111,125 @@
   requestUpdate();
 })();
 
+// ── Duolingo stats ──
+(function () {
+  const streakElement = document.querySelector("[data-duolingo-streak]");
+  const xpElement = document.querySelector("[data-duolingo-xp]");
+  const heatmapElement = document.querySelector("[data-duolingo-heatmap]");
+
+  if (!streakElement && !xpElement && !heatmapElement) {
+    return;
+  }
+
+  const formatter = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 0
+  });
+  const heatmapDayCount = 15;
+  const dateFormatter = new Intl.DateTimeFormat(undefined, {
+    day: "numeric",
+    month: "short"
+  });
+
+  function normalizeHeatmapEntry(entry) {
+    const xp = Number(entry && entry.xp);
+
+    if (!entry || typeof entry.date !== "string" || !Number.isFinite(xp)) {
+      return null;
+    }
+
+    const dateParts = entry.date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (!dateParts) {
+      return null;
+    }
+
+    const [, year, month, day] = dateParts;
+    const date = new Date(Number(year), Number(month) - 1, Number(day), 12);
+
+    return {
+      date,
+      xp: Math.max(0, xp)
+    };
+  }
+
+  function getHeatmapEntries(heatmap) {
+    if (Array.isArray(heatmap)) {
+      return heatmap;
+    }
+
+    if (heatmap && typeof heatmap === "object") {
+      return Object.entries(heatmap).map(([date, xp]) => ({ date, xp }));
+    }
+
+    return [];
+  }
+
+  function renderHeatmap(heatmap) {
+    if (!heatmapElement) {
+      return;
+    }
+
+    const days = getHeatmapEntries(heatmap)
+      .map(normalizeHeatmapEntry)
+      .filter(Boolean)
+      .sort((a, b) => a.date - b.date)
+      .slice(-heatmapDayCount);
+
+    if (!days.length) {
+      return;
+    }
+
+    const paddedDays = Array.from({ length: heatmapDayCount - days.length }, () => null).concat(days);
+    const maxXp = Math.max(...days.map((day) => day.xp), 0);
+    const fragment = document.createDocumentFragment();
+
+    paddedDays.forEach((day) => {
+      const cell = document.createElement("span");
+      let level = 0;
+      let label = "No XP data";
+
+      if (day) {
+        if (maxXp > 0 && day.xp > 0) {
+          level = Math.max(1, Math.ceil((day.xp / maxXp) * 4));
+        }
+
+        label = `${dateFormatter.format(day.date)}: ${formatter.format(day.xp)} XP`;
+      }
+
+      cell.className = `duolingo-heatmap-cell is-level-${level}`;
+      cell.setAttribute("role", "img");
+      cell.setAttribute("aria-label", label);
+      cell.title = label;
+      fragment.append(cell);
+    });
+
+    heatmapElement.replaceChildren(fragment);
+  }
+
+  fetch(`duolingo-stats.json?cache=${Date.now()}`, { cache: "no-store" })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Duolingo stats unavailable");
+      }
+
+      return response.json();
+    })
+    .then((stats) => {
+      if (streakElement && Number.isFinite(stats.streak)) {
+        streakElement.textContent = formatter.format(stats.streak);
+      }
+
+      if (xpElement && Number.isFinite(stats.totalXp)) {
+        xpElement.textContent = formatter.format(stats.totalXp);
+      }
+
+      renderHeatmap(stats.heatmap);
+    })
+    .catch(() => {
+      // Keep the fallback values already rendered in the HTML.
+    });
+})();
+
 // ── Letterboxd component ──
 (function () {
   const card   = document.getElementById('lbCard');
