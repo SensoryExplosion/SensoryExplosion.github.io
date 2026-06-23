@@ -1,15 +1,16 @@
 :root {
   color-scheme: light;
-  --bg: oklch(98.7% 0.006 255);
+  --bg: #fbfcfd;
+  --about-bg: #ADD9F4;
   --ink: oklch(17.5% 0.013 257);
   --hero-ink: oklch(31% 0.055 272);
   --muted: oklch(45% 0.014 257);
   --quiet: oklch(38% 0.015 257);
   --line: oklch(88% 0.01 257);
-  --about-card: oklch(95.2% 0.01 250);
-  --about-card-hover: oklch(93.8% 0.012 250);
+  --about-card: #FFFFFF;
   --focus: oklch(35% 0.07 272);
   --radius: 8px;
+  --card-radius: 16px;
   --page-gutter: clamp(18px, 5vw, 72px);
   --section-gap: clamp(84px, 10vw, 148px);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -103,8 +104,14 @@ main,
   transition:
     background 220ms var(--ease-out),
     -webkit-backdrop-filter 220ms var(--ease-out),
-    backdrop-filter 220ms var(--ease-out);
-  z-index: 100;
+    backdrop-filter 220ms var(--ease-out),
+    transform 600ms var(--ease-out);
+  z-index: 1001;
+}
+
+body.sm-modal-expanded .topbar {
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 32px));
 }
 
 .topbar.topbar--scrolled {
@@ -121,7 +128,7 @@ main,
 
 .nav-links a,
 .connect-card a,
-.connect-card span {
+.connect-card > span {
   align-items: center;
   border-radius: var(--radius);
   color: var(--ink);
@@ -170,9 +177,60 @@ main,
 }
 
 .connect-card a,
-.connect-card span,
+.connect-card > span,
 .nav-links .contact-link {
   font-weight: 600;
+}
+
+.rolling-email {
+  overflow: hidden;
+  position: relative;
+}
+
+.rolling-email__label {
+  display: block;
+  line-height: 1.2;
+}
+
+.rolling-email__label::before {
+  content: attr(data-label);
+  visibility: hidden;
+}
+
+.rolling-email__label > span {
+  align-items: center;
+  display: flex;
+  filter: blur(0);
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  transform: translateY(0);
+  transition:
+    transform 600ms cubic-bezier(0.77, 0, 0.18, 1),
+    filter 500ms cubic-bezier(0.77, 0, 0.18, 1);
+  will-change: transform, filter;
+}
+
+.rolling-email__label > span:last-child {
+  filter: blur(5px);
+  transform: translateY(-120%);
+}
+
+.rolling-email:hover .rolling-email__label > span:first-child,
+.rolling-email:focus-visible .rolling-email__label > span:first-child {
+  filter: blur(5px);
+  transform: translateY(120%);
+}
+
+.rolling-email:hover .rolling-email__label > span:last-child,
+.rolling-email:focus-visible .rolling-email__label > span:last-child {
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+.connect-card .rolling-email__label > span {
+  inset: -1px;
+  padding-right: 18px;
 }
 
 .nav-links .contact-link:hover,
@@ -295,9 +353,45 @@ main,
   scroll-margin-top: 96px;
 }
 
+#about-title {
+  scroll-margin-top: 96px;
+}
+
 .work-section,
 .about-section {
   padding: 0 0 var(--section-gap);
+}
+
+.work-section {
+  position: relative;
+}
+
+.about-section {
+  --work-about-overlap: clamp(92px, 10vw, 132px);
+  background: var(--about-bg);
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: calc(-1 * var(--work-about-overlap));
+  padding-top: calc(clamp(220px, 24vw, 320px) + clamp(34px, 5vw, 68px));
+  position: relative;
+}
+
+.about-section > :not(.work-about-transition) {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  width: min(1064px, calc(100% - (var(--page-gutter) * 2)));
+  z-index: 1;
+}
+
+.work-about-transition {
+  height: clamp(220px, 24vw, 320px);
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 0;
 }
 
 .section-heading.compact {
@@ -342,7 +436,7 @@ main,
 .thumbnail {
   aspect-ratio: 488 / 284.03;
   background: transparent;
-  border-radius: var(--radius);
+  border-radius: var(--card-radius);
   display: block;
   overflow: hidden;
   padding: 0;
@@ -452,6 +546,117 @@ main,
   transform: scaleX(1);
 }
 
+body.sm-modal-open {
+  overflow: hidden;
+}
+
+.sm-wrapper {
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  position: fixed;
+  visibility: hidden;
+  z-index: 1000;
+  transition: visibility 0s linear 600ms;
+}
+
+.sm-wrapper.active {
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+.sm-wrapper::before {
+  background: rgb(10 20 30 / 0.5);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 600ms var(--ease-out);
+  z-index: -1;
+}
+
+.sm-wrapper.active::before {
+  opacity: 1;
+}
+
+.sm-content {
+  --shrink-x: 2;
+  --radius: 30px;
+  background: transparent;
+  border-radius: var(--radius);
+  box-shadow: none;
+  margin: 22vh auto 0;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(100vh);
+  transform-origin: top center;
+  transition: transform 600ms var(--ease-out);
+  width: calc(100% - (var(--shrink-x) * 2%));
+  will-change: border-radius, transform, width;
+}
+
+.sm-wrapper.active .sm-content {
+  transform: translateY(0);
+}
+
+.sm-header {
+  align-items: flex-start;
+  display: flex;
+  height: 1px;
+  justify-content: flex-end;
+  pointer-events: none;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.sm-close-btn {
+  align-items: center;
+  background: rgb(10 20 30 / 0.82);
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-size: 1.5rem;
+  height: 42px;
+  justify-content: center;
+  line-height: 1;
+  margin: 18px 18px 0 auto;
+  padding: 0 0 3px;
+  pointer-events: auto;
+  transition: background-color 180ms var(--ease-out), transform 180ms var(--ease-out);
+  width: 42px;
+}
+
+.sm-close-btn:hover {
+  background: var(--ink);
+  transform: scale(1.06);
+}
+
+.sm-body {
+  margin: -1px 50% 0;
+  padding-bottom: 0;
+  position: relative;
+  transform: translateX(-50%);
+  width: 100vw;
+}
+
+.sm-deck-host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  width: 100%;
+}
+
+.sm-wrapper.is-expanded .sm-deck-host {
+  pointer-events: auto;
+}
+
 .bento-grid {
   align-items: start;
   display: grid;
@@ -463,19 +668,15 @@ main,
 .bento-card {
   background: var(--about-card);
   border: 0;
-  border-radius: var(--radius);
+  border-radius: var(--card-radius);
   display: grid;
   gap: 18px;
+  justify-self: start;
+  max-width: 100%;
   min-height: 154px;
-  padding: clamp(24px, 3.2vw, 34px);
+  padding: 24px;
   transform: rotate(var(--card-rotation, 0deg));
-  transition:
-    background-color 180ms var(--ease-out);
-}
-
-.bento-card:hover,
-.bento-card:focus-within {
-  background: var(--about-card-hover);
+  width: fit-content;
 }
 
 .bento-card p {
@@ -573,7 +774,7 @@ main,
 }
 
 .connect-card a,
-.connect-card span {
+.connect-card > span {
   align-items: center;
   color: var(--ink);
   display: inline-flex;
@@ -610,17 +811,17 @@ main,
   transform: translateX(3px);
 }
 
-.connect-card span {
+.connect-card > span {
   border-top: 1px solid var(--line);
   color: var(--muted);
   min-height: 44px;
 }
 
-.connect-card span:last-child {
+.connect-card > span:last-child {
   border-bottom: 1px solid var(--line);
 }
 
-.connect-card span::after {
+.connect-card > span::after {
   color: var(--quiet);
   content: "Soon";
   font-size: 0.72rem;
@@ -631,7 +832,7 @@ main,
 .lb-card {
   display: block;
   overflow: hidden;
-  padding: 16px;
+  padding: 24px;
   position: relative;
 }
 
@@ -639,17 +840,14 @@ main,
   align-self: start;
   background: var(--about-card);
   border: 0;
-  box-shadow: 0 18px 54px oklch(17.5% 0.013 257 / 0.08);
   display: grid;
   gap: 24px;
   grid-column: span 5;
   grid-template-columns: max-content max-content;
-  justify-self: start;
   min-height: 0;
   overflow: hidden;
-  padding: 20px;
+  padding: 24px;
   position: relative;
-  width: fit-content;
 }
 
 .duolingo-stats {
@@ -827,14 +1025,15 @@ main,
 }
 
 .lb-card .lb-posters {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .poster-wrap {
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: 8px;
   cursor: pointer;
-  flex: 1;
+  min-width: 0;
   overflow: hidden;
   transition:
     opacity 0.35s ease,
@@ -843,7 +1042,7 @@ main,
 
 .poster-wrap img {
   aspect-ratio: 2 / 3;
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: 8px;
   display: block;
   height: 100%;
   object-fit: cover;
@@ -959,6 +1158,10 @@ main,
     width: 56px;
   }
 
+  body.sm-modal-expanded .topbar {
+    transform: translateY(calc(-100% - 24px));
+  }
+
   .topbar.nav-open {
     align-items: stretch;
     border-radius: var(--radius);
@@ -1067,20 +1270,13 @@ main,
 
   .bento-card {
     min-height: 0;
-    padding: 22px;
-  }
-
-  .lb-card,
-  .duolingo-card {
-    padding: 14px;
   }
 
   .duolingo-card {
-    gap: 18px;
+    gap: 12px;
     grid-column: auto;
-    grid-template-columns: 1fr;
+    grid-template-columns: max-content minmax(139px, 1fr);
     min-height: 0;
-    width: 100%;
   }
 
   .duolingo-stats {
@@ -1101,10 +1297,7 @@ main,
   }
 
   .duolingo-activity {
-    border-left: 0;
-    border-top: 2px solid var(--line);
-    padding-left: 0;
-    padding-top: 18px;
+    padding-left: 12px;
   }
 
   .connect-section {
@@ -1113,5 +1306,19 @@ main,
 
   .connect-card {
     width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .duolingo-card {
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .duolingo-activity {
+    border-left: 0;
+    border-top: 2px solid var(--line);
+    padding-left: 0;
+    padding-top: 18px;
   }
 }
