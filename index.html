@@ -14,12 +14,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="minimalist-polished.css">
     <script
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js"
       type="module"
     ></script>
-    <script src="wave-shader-transition.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
@@ -37,7 +38,7 @@
       <div class="nav-links" id="primary-navigation">
         <button class="nav-close" type="button" aria-label="Close navigation menu"></button>
         <a href="#work">Work</a>
-        <a href="#about-title">About</a>
+        <a href="#about">About</a>
         <a href="#connect">Contact</a>
         <a
           class="contact-link rolling-email"
@@ -122,17 +123,6 @@
       </section>
 
       <section class="about-section" id="about" aria-labelledby="about-title">
-        <wave-shader-transition
-          class="work-about-transition"
-          color="#ADD9F4"
-          background-color="#fbfcfd"
-          dither="4"
-          pixel-size="6"
-          speed="0.58"
-          height="clamp(220px, 24vw, 320px)"
-          aria-hidden="true"
-        ></wave-shader-transition>
-
         <div class="section-heading compact">
           <h2 id="about-title">Everything the job description didn't ask about</h2>
         </div>

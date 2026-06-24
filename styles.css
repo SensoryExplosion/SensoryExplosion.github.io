@@ -12,16 +12,12 @@
   --radius: 8px;
   --card-radius: 16px;
   --page-gutter: clamp(18px, 5vw, 72px);
-  --section-gap: clamp(84px, 10vw, 148px);
+  --section-gap: 90px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
   box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 body {
@@ -69,8 +65,6 @@ main,
   background: var(--bg);
   min-height: 360px;
   position: relative;
-  --hero-y: 0px;
-  --sky-y: 0px;
 }
 
 .site-header::before,
@@ -83,7 +77,6 @@ main,
 .site-footer {
   height: clamp(48px, 8vw, 96px);
   margin: 0;
-  --footer-y: 0px;
 }
 
 .topbar {
@@ -309,15 +302,13 @@ body.sm-modal-expanded .topbar {
   align-items: flex-start;
   display: flex;
   min-height: 392px;
-  padding: 146px 0 90px;
+  padding: 146px 0 var(--section-gap);
 }
 
 .hero-copy {
   display: grid;
   gap: 18px;
   max-width: 900px;
-  transform: translate3d(0, var(--hero-y), 0);
-  will-change: transform;
 }
 
 .hero h1,
@@ -353,45 +344,26 @@ body.sm-modal-expanded .topbar {
   scroll-margin-top: 96px;
 }
 
-#about-title {
-  scroll-margin-top: 96px;
-}
-
-.work-section,
-.about-section {
-  padding: 0 0 var(--section-gap);
-}
-
 .work-section {
+  padding-bottom: var(--section-gap);
   position: relative;
 }
 
 .about-section {
-  --work-about-overlap: clamp(92px, 10vw, 132px);
   background: var(--about-bg);
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  margin-top: calc(-1 * var(--work-about-overlap));
-  padding-top: calc(clamp(220px, 24vw, 320px) + clamp(34px, 5vw, 68px));
+  padding-bottom: var(--section-gap);
+  padding-top: var(--section-gap);
   position: relative;
 }
 
-.about-section > :not(.work-about-transition) {
+.about-section > * {
   margin-left: auto;
   margin-right: auto;
   position: relative;
   width: min(1064px, calc(100% - (var(--page-gutter) * 2)));
   z-index: 1;
-}
-
-.work-about-transition {
-  height: clamp(220px, 24vw, 320px);
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 0;
 }
 
 .section-heading.compact {
@@ -559,7 +531,7 @@ body.sm-modal-open {
   position: fixed;
   visibility: hidden;
   z-index: 1000;
-  transition: visibility 0s linear 600ms;
+  transition: visibility 0s linear;
 }
 
 .sm-wrapper.active {
@@ -582,6 +554,10 @@ body.sm-modal-open {
   opacity: 1;
 }
 
+.sm-wrapper.is-closing::before {
+  opacity: 0;
+}
+
 .sm-content {
   --shrink-x: 2;
   --radius: 30px;
@@ -601,6 +577,20 @@ body.sm-modal-open {
 
 .sm-wrapper.active .sm-content {
   transform: translateY(0);
+}
+
+.sm-wrapper.is-closing .sm-content {
+  opacity: 0;
+  transform: translateY(8vh) scale(0.985);
+  transition:
+    border-radius 420ms var(--ease-out),
+    opacity 420ms var(--ease-out),
+    transform 600ms var(--ease-out),
+    width 420ms var(--ease-out);
+}
+
+.sm-wrapper.is-closing .sm-deck-host {
+  pointer-events: none;
 }
 
 .sm-header {
@@ -637,6 +627,14 @@ body.sm-modal-open {
   transform: scale(1.06);
 }
 
+.sm-wrapper.is-closing .sm-close-btn {
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity 240ms var(--ease-out),
+    transform 240ms var(--ease-out);
+}
+
 .sm-body {
   margin: -1px 50% 0;
   padding-bottom: 0;
@@ -663,6 +661,8 @@ body.sm-modal-open {
   gap: clamp(16px, 2.4vw, 26px);
   grid-auto-flow: dense;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  perspective: 900px;
+  transform-style: preserve-3d;
 }
 
 .bento-card {
@@ -676,7 +676,32 @@ body.sm-modal-open {
   min-height: 154px;
   padding: 24px;
   transform: rotate(var(--card-rotation, 0deg));
+  transform-origin: center center;
   width: fit-content;
+}
+
+.about-section.cards-pending .bento-card {
+  opacity: 0;
+  transform: translate3d(0, -14px, 320px) rotate(var(--card-rotation, 0deg));
+}
+
+.about-section.is-revealed .bento-card {
+  animation: card-fall-onto-canvas 1200ms var(--ease-out) both;
+  animation-delay: var(--card-fall-delay, 0ms);
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+}
+
+@keyframes card-fall-onto-canvas {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -14px, 320px) rotate(var(--card-rotation, 0deg));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(var(--card-rotation, 0deg));
+  }
 }
 
 .bento-card p {
@@ -688,12 +713,14 @@ body.sm-modal-open {
 }
 
 .intro-card {
+  --card-fall-delay: 0ms;
   --card-rotation: -1.1deg;
   grid-column: span 5;
   grid-row: span 2;
 }
 
 .film-card {
+  --card-fall-delay: 150ms;
   --card-rotation: 0.7deg;
   align-self: start;
   grid-column: span 7;
@@ -701,21 +728,25 @@ body.sm-modal-open {
 }
 
 .language-card {
+  --card-fall-delay: 340ms;
   --card-rotation: 1.2deg;
   grid-column: span 3;
 }
 
 .playlist-card {
+  --card-fall-delay: 490ms;
   --card-rotation: -0.8deg;
   grid-column: span 3;
 }
 
 .reading-card {
+  --card-fall-delay: 660ms;
   --card-rotation: 0.5deg;
   grid-column: span 6;
 }
 
 .detail-card {
+  --card-fall-delay: 840ms;
   --card-rotation: -0.45deg;
   grid-column: span 6;
 }
@@ -744,11 +775,10 @@ body.sm-modal-open {
 
 .connect-section {
   align-items: start;
-  border-top: 1px solid var(--line);
   display: grid;
   gap: clamp(32px, 6vw, 80px);
   grid-template-columns: minmax(0, 0.9fr) minmax(240px, 0.38fr);
-  padding: clamp(44px, 6vw, 76px) 0 0;
+  padding: var(--section-gap) 0 0;
 }
 
 .connect-section > div:first-child {
@@ -1058,17 +1088,12 @@ body.sm-modal-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-header,
-  .site-footer {
-    --footer-y: 0px !important;
-    --hero-y: 0px !important;
-    --sky-y: 0px !important;
-  }
-
   .hero-copy,
   .bento-card,
   .bento-card:hover,
   .bento-card:focus-within {
+    animation: none !important;
+    opacity: 1 !important;
     transform: none;
     will-change: auto;
   }
@@ -1088,7 +1113,7 @@ body.sm-modal-open {
   }
 
   .hero {
-    padding: 112px 0 74px;
+    padding: 112px 0 var(--section-gap);
   }
 
   .hero h1 {
@@ -1218,7 +1243,7 @@ body.sm-modal-open {
   }
 
   .hero {
-    padding: 98px 0 62px;
+    padding: 98px 0 var(--section-gap);
   }
 
   .hero h1 {
@@ -1298,10 +1323,6 @@ body.sm-modal-open {
 
   .duolingo-activity {
     padding-left: 12px;
-  }
-
-  .connect-section {
-    padding-top: 36px;
   }
 
   .connect-card {

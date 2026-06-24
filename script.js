@@ -1,70 +1,22 @@
 (function () {
-  const header = document.querySelector(".site-header");
-  const footer = document.querySelector(".site-footer");
   const topbar = document.querySelector(".topbar");
   const navToggle = document.querySelector(".nav-toggle");
   const navClose = document.querySelector(".nav-close");
   const navLinks = document.querySelectorAll(".nav-links a");
+  const navScrollTargets = new Map([
+    ["#work", document.getElementById("work")],
+    ["#about", document.getElementById("about")],
+    ["#connect", document.getElementById("connect")]
+  ]);
 
-  if (!header && !footer && !topbar) {
+  if (!topbar) {
     return;
   }
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let ticking = false;
 
-  function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-  }
-
-  function resetParallax() {
-    if (header) {
-      header.style.setProperty("--sky-y", "0px");
-      header.style.setProperty("--hero-y", "0px");
-    }
-
-    if (footer) {
-      footer.style.setProperty("--footer-y", "0px");
-    }
-  }
-
-  function updateParallax() {
-    ticking = false;
-
-    if (topbar) {
-      topbar.classList.toggle("topbar--scrolled", window.scrollY > 60);
-    }
-
-    if (reducedMotion.matches) {
-      resetParallax();
-      return;
-    }
-
-    if (header) {
-      const rect = header.getBoundingClientRect();
-      const progress = clamp(-rect.top / rect.height, 0, 1);
-      const skyOffset = progress * 132;
-      const heroOffset = progress * -72;
-
-      header.style.setProperty("--sky-y", `${skyOffset.toFixed(2)}px`);
-      header.style.setProperty("--hero-y", `${heroOffset.toFixed(2)}px`);
-    }
-
-    if (footer) {
-      const rect = footer.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      const progress = clamp((viewportHeight - rect.top) / rect.height, 0, 1);
-      const footerOffset = (1 - progress) * 48;
-
-      footer.style.setProperty("--footer-y", `${footerOffset.toFixed(2)}px`);
-    }
-  }
-
-  function requestUpdate() {
-    if (!ticking) {
-      ticking = true;
-      window.requestAnimationFrame(updateParallax);
-    }
+  function updateTopbarState() {
+    topbar.classList.toggle("topbar--scrolled", window.scrollY > 60);
   }
 
   function setNavOpen(isOpen) {
@@ -94,8 +46,38 @@
   }
 
   navLinks.forEach((link) => {
-    link.addEventListener("click", () => {
+    link.addEventListener("click", (event) => {
+      const target = navScrollTargets.get(link.getAttribute("href"));
+
       setNavOpen(false);
+
+      if (
+        !target ||
+        !window.gsap ||
+        !window.ScrollToPlugin ||
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      window.gsap.to(window, {
+        duration: reducedMotion.matches ? 0 : 0.8,
+        ease: "sine.inOut",
+        overwrite: "auto",
+        scrollTo: {
+          y: target,
+          offsetY:
+            target.id === "about"
+              ? 0
+              : Math.round(topbar.getBoundingClientRect().bottom + 24),
+          autoKill: true
+        }
+      });
     });
   });
 
@@ -105,10 +87,43 @@
     }
   });
 
-  reducedMotion.addEventListener("change", requestUpdate);
-  window.addEventListener("scroll", requestUpdate, { passive: true });
-  window.addEventListener("resize", requestUpdate);
-  requestUpdate();
+  window.addEventListener("scroll", updateTopbarState, { passive: true });
+  updateTopbarState();
+})();
+
+// ── About card reveal ──
+(function () {
+  const aboutSection = document.getElementById("about");
+  const aboutHeading = document.getElementById("about-title");
+
+  if (
+    !aboutSection ||
+    !aboutHeading ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    return;
+  }
+
+  aboutSection.classList.add("cards-pending");
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) {
+        return;
+      }
+
+      aboutSection.classList.remove("cards-pending");
+      aboutSection.classList.add("is-revealed");
+      observer.unobserve(aboutHeading);
+    },
+    { rootMargin: "0px 0px -45%", threshold: 0 }
+  );
+
+  observer.observe(aboutHeading);
 })();
 
 // ── Expanding project modal ──
@@ -432,30 +447,32 @@
     document.body.classList.add("sm-modal-open");
   }
 
-  function closeScrollModal() {
-    if (!modal.classList.contains("active")) {
+  function closeScrollModal({ restoreFocus = true } = {}) {
+    if (!modal.classList.contains("active") || modal.classList.contains("is-closing")) {
       return;
     }
 
-    modal.classList.remove("active", "is-expanded");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("sm-modal-open");
-    document.body.classList.remove("sm-modal-expanded");
-    expansionUnlocked = false;
-    deckInputUnlockAt = 0;
-    modalCollapseUnlockAt = 0;
+    modal.classList.add("is-closing");
+    content.style.setProperty("--shrink-x", "2");
+    content.style.setProperty("--radius", "30px");
     deckApi?.goTo(0);
 
     window.setTimeout(() => {
-      if (!modal.classList.contains("active")) {
-        modal.scrollTop = 0;
-        updateScrollModalStyles();
+      modal.classList.remove("active", "is-closing", "is-expanded");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("sm-modal-open", "sm-modal-expanded");
+      expansionUnlocked = false;
+      deckInputUnlockAt = 0;
+      modalCollapseUnlockAt = 0;
+      modal.scrollTop = 0;
+      updateScrollModalStyles();
+
+      if (restoreFocus && lastTrigger) {
+        lastTrigger.focus({ preventScroll: true });
+      } else if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
       }
     }, modalTransitionDuration);
-
-    if (lastTrigger) {
-      lastTrigger.focus({ preventScroll: true });
-    }
   }
 
   triggers.forEach((trigger) => {
@@ -469,11 +486,13 @@
     });
   });
 
-  closeButton.addEventListener("click", closeScrollModal);
+  closeButton.addEventListener("click", (event) => {
+    closeScrollModal({ restoreFocus: event.detail === 0 });
+  });
 
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-      closeScrollModal();
+      closeScrollModal({ restoreFocus: false });
     }
   });
 
