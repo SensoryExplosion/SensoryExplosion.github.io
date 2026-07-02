@@ -91,24 +91,31 @@
   updateTopbarState();
 })();
 
-// ── About card reveal ──
+// ── About curve-swipe reveal ──
 (function () {
   const aboutSection = document.getElementById("about");
   const aboutHeading = document.getElementById("about-title");
+  const aboutCurve = document.getElementById("about-curve-path");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   if (
     !aboutSection ||
     !aboutHeading ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    !aboutCurve ||
+    reducedMotion.matches ||
+    !window.gsap ||
+    !window.MorphSVGPlugin ||
+    !("IntersectionObserver" in window)
   ) {
     return;
   }
 
-  if (!("IntersectionObserver" in window)) {
-    return;
-  }
+  window.gsap.registerPlugin(window.MorphSVGPlugin);
 
-  aboutSection.classList.add("cards-pending");
+  const curveRise = "M 0 100 V 50 Q 50 0 100 50 V 100 z";
+  const curveFill = "M 0 100 V 0 Q 50 0 100 0 V 100 z";
+
+  aboutSection.classList.add("curve-pending", "cards-pending");
 
   const observer = new IntersectionObserver(
     ([entry]) => {
@@ -116,14 +123,37 @@
         return;
       }
 
-      aboutSection.classList.remove("cards-pending");
-      aboutSection.classList.add("is-revealed");
-      observer.unobserve(aboutHeading);
+      observer.unobserve(aboutSection);
+
+      window.gsap
+        .timeline({
+          onComplete: () => aboutSection.classList.remove("curve-pending")
+        })
+        .to(aboutCurve, {
+          duration: 0.5,
+          ease: "power2.in",
+          morphSVG: curveRise
+        })
+        .to(aboutCurve, {
+          duration: 0.45,
+          ease: "power2.out",
+          morphSVG: curveFill
+        })
+        .to(aboutHeading, {
+          duration: 0.5,
+          ease: "power2.out",
+          opacity: 1,
+          y: 0
+        })
+        .call(() => {
+          aboutSection.classList.remove("cards-pending");
+          aboutSection.classList.add("is-revealed");
+        });
     },
-    { rootMargin: "0px 0px -45%", threshold: 0 }
+    { rootMargin: "0px 0px -35%", threshold: 0 }
   );
 
-  observer.observe(aboutHeading);
+  observer.observe(aboutSection);
 })();
 
 // ── Expanding project modal ──
@@ -141,8 +171,8 @@
   const deckTemplate = document.getElementById("pet-insurance-case-study-template");
   const caseStudyUrl = new URL("pet-insurance-case-study/index.html", document.baseURI);
   const caseStudyStylesUrl = new URL("pet-insurance-case-study/styles.css", document.baseURI);
+  const mobileCaseStudy = window.matchMedia("(max-width: 680px)");
   const modalGapRatio = 0.22;
-  const modalTransitionDuration = 600;
   const deckWheelThreshold = 90;
   const deckSlideCooldown = 800;
   const deckExpansionSettleDuration = 600;
@@ -207,10 +237,35 @@
     let wheelLocked = false;
     let wheelRemainder = 0;
     let touchStartY = 0;
+    let touchStartScrollTop = 0;
+    const artifactExitTimers = new WeakMap();
+
+    function setLayerOffset(layer, offset) {
+      layer.style.setProperty("--artifact-slide-y", `${offset}px`);
+    }
+
+    function suppressTransition(element, callback) {
+      const previousTransition = element.style.transition;
+      element.style.transition = "none";
+      callback();
+      element.offsetHeight;
+      element.style.transition = previousTransition;
+    }
+
+    function clearArtifactExit(layer) {
+      const exitTimer = artifactExitTimers.get(layer);
+
+      if (exitTimer) {
+        window.clearTimeout(exitTimer);
+        artifactExitTimers.delete(layer);
+      }
+    }
 
     function resetArtifact(layer, artifact) {
+      clearArtifactExit(layer);
       layer.classList.remove("is-visible");
       layer.removeAttribute("data-step");
+      setLayerOffset(layer, 0);
       artifact.style.width = "";
       artifact.style.setProperty("--artifact-x", "0px");
       artifact.style.setProperty("--artifact-y", "0px");
@@ -219,15 +274,33 @@
 
     function positionArtifact(layer, artifact, stepIndex, stepCount, options = {}) {
       const artifactHeight = artifact.offsetHeight;
-      const visibleHeight = deckRoot.clientHeight;
-      const scale = options.zoomFirstStep && stepIndex === 0 ? 1 : 1 / 1.34;
-      const maxOffset = Math.max(0, artifactHeight * scale - visibleHeight);
-      const progress = stepCount <= 1 ? 0 : stepIndex / (stepCount - 1);
-      const offset = -maxOffset * progress;
-      const xOffset =
-        options.zoomFirstStep && stepIndex === 0
-          ? Math.max(0, deckRoot.clientWidth * 0.25 - artifact.offsetWidth * scale * 0.224)
-          : 0;
+      const isMobile = window.matchMedia("(max-width: 680px)").matches;
+      let scale;
+      let offset;
+      let xOffset;
+
+      if (isMobile) {
+        const visibleWidth = layer.clientWidth;
+        const visibleHeight = layer.clientHeight;
+        const focus = options.mobileFocus?.[stepIndex] || { x: 0.5, y: 0.5 };
+        const artifactWidth = artifact.offsetWidth;
+        const minX = Math.min(0, visibleWidth - artifactWidth);
+        const minY = Math.min(0, visibleHeight - artifactHeight);
+
+        scale = 1;
+        xOffset = Math.min(0, Math.max(minX, visibleWidth / 2 - artifactWidth * focus.x));
+        offset = Math.min(0, Math.max(minY, visibleHeight / 2 - artifactHeight * focus.y));
+      } else {
+        const visibleHeight = deckRoot.clientHeight;
+        scale = options.zoomFirstStep && stepIndex === 0 ? 1 : 1 / 1.34;
+        const maxOffset = Math.max(0, artifactHeight * scale - visibleHeight);
+        const progress = stepCount <= 1 ? 0 : stepIndex / (stepCount - 1);
+        offset = -maxOffset * progress;
+        xOffset =
+          options.zoomFirstStep && stepIndex === 0
+            ? Math.max(0, deckRoot.clientWidth * 0.25 - artifact.offsetWidth * scale * 0.224)
+            : 0;
+      }
 
       layer.classList.add("is-visible");
       layer.dataset.step = String(stepIndex);
@@ -236,23 +309,96 @@
       artifact.style.setProperty("--artifact-scale", String(scale));
     }
 
-    function updateArtifacts(section) {
-      const heartStep = section.className.match(/\bheart-frame-(\d)\b/);
-      const consentStep = section.className.match(/\bconsent-frame-(\d)\b/);
+    function getArtifactStep(section, classPrefix) {
+      return section?.className.match(new RegExp(`\\b${classPrefix}-(\\d)\\b`));
+    }
 
-      if (heartStep) {
-        positionArtifact(heartLayer, heartArtifact, Number(heartStep[1]) - 1, 3, {
+    function updateArtifactGroup(config) {
+      const { layer, artifact, step, previousStep, stepCount, direction, options } = config;
+      const isEntering = step && !previousStep;
+      const isLeaving = !step && previousStep;
+
+      if (step) {
+        const stepIndex = Number(step[1]) - 1;
+
+        clearArtifactExit(layer);
+
+        if (isEntering && direction !== 0) {
+          const entryOffset = direction > 0 ? deckRoot.clientHeight : -deckRoot.clientHeight;
+
+          suppressTransition(layer, () => {
+            setLayerOffset(layer, entryOffset);
+          });
+          suppressTransition(artifact, () => {
+            positionArtifact(layer, artifact, stepIndex, stepCount, options);
+          });
+          setLayerOffset(layer, 0);
+          return;
+        }
+
+        setLayerOffset(layer, 0);
+        positionArtifact(layer, artifact, stepIndex, stepCount, options);
+        return;
+      }
+
+      if (isLeaving && direction !== 0) {
+        const exitOffset = direction > 0 ? -deckRoot.clientHeight : deckRoot.clientHeight;
+        const exitTimer = artifactExitTimers.get(layer);
+
+        if (exitTimer) {
+          window.clearTimeout(exitTimer);
+        }
+
+        setLayerOffset(layer, exitOffset);
+        artifactExitTimers.set(
+          layer,
+          window.setTimeout(() => {
+            resetArtifact(layer, artifact);
+          }, 620)
+        );
+        return;
+      }
+
+      resetArtifact(layer, artifact);
+    }
+
+    function updateArtifacts(section, previousSection, direction) {
+      const heartStep = getArtifactStep(section, "heart-frame");
+      const previousHeartStep = getArtifactStep(previousSection, "heart-frame");
+      const consentStep = getArtifactStep(section, "consent-frame");
+      const previousConsentStep = getArtifactStep(previousSection, "consent-frame");
+
+      updateArtifactGroup({
+        layer: heartLayer,
+        artifact: heartArtifact,
+        step: heartStep,
+        previousStep: previousHeartStep,
+        stepCount: 3,
+        direction,
+        options: {
           zoomFirstStep: true,
-        });
-      } else {
-        resetArtifact(heartLayer, heartArtifact);
-      }
+          mobileFocus: [
+            { x: 0.23, y: 0.18 },
+            { x: 0.5, y: 0.56 },
+            { x: 0.55, y: 0.76 },
+          ],
+        },
+      });
 
-      if (consentStep) {
-        positionArtifact(consentLayer, consentArtifact, Number(consentStep[1]) - 1, 2);
-      } else {
-        resetArtifact(consentLayer, consentArtifact);
-      }
+      updateArtifactGroup({
+        layer: consentLayer,
+        artifact: consentArtifact,
+        step: consentStep,
+        previousStep: previousConsentStep,
+        stepCount: 2,
+        direction,
+        options: {
+          mobileFocus: [
+            { x: 0.7, y: 0.31 },
+            { x: 0.72, y: 0.81 },
+          ],
+        },
+      });
     }
 
     function goTo(index) {
@@ -260,9 +406,11 @@
         return;
       }
 
+      const previous = current;
       current = index;
       deckRoot.dataset.slide = String(current + 1);
-      updateArtifacts(sections[current]);
+      updateArtifacts(sections[current], sections[previous], Math.sign(current - previous));
+      sections[current].scrollTop = 0;
       deckHost.scrollTop = 0;
       main.style.transform = `translateY(${-deckRoot.clientHeight * current}px)`;
       counter.textContent = `${current + 1} / ${sections.length}`;
@@ -309,6 +457,7 @@
       "touchstart",
       (event) => {
         touchStartY = event.touches[0]?.clientY || 0;
+        touchStartScrollTop = sections[current].scrollTop;
       },
       { passive: true }
     );
@@ -317,9 +466,17 @@
       "touchend",
       (event) => {
         const deltaY = touchStartY - (event.changedTouches[0]?.clientY || touchStartY);
-        if (Math.abs(deltaY) >= 40) {
-          moveBy(deltaY > 0 ? 1 : -1);
-        }
+
+        if (Math.abs(deltaY) < 40) return;
+
+        const activeSlide = sections[current];
+        const maxScroll = Math.max(0, activeSlide.scrollHeight - activeSlide.clientHeight);
+        const startedAtBoundary =
+          deltaY > 0 ? touchStartScrollTop >= maxScroll - 1 : touchStartScrollTop <= 1;
+
+        if (maxScroll > 1 && !startedAtBoundary) return;
+
+        moveBy(deltaY > 0 ? 1 : -1);
       },
       { passive: true }
     );
@@ -447,37 +604,64 @@
     document.body.classList.add("sm-modal-open");
   }
 
+  function finalizeScrollModalClose(restoreFocus) {
+    modal.classList.remove("active", "is-closing", "is-expanded");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("sm-modal-open", "sm-modal-expanded");
+    expansionUnlocked = false;
+    deckInputUnlockAt = 0;
+    modalCollapseUnlockAt = 0;
+    deckApi?.goTo(0);
+    modal.scrollTop = 0;
+    updateScrollModalStyles();
+
+    if (restoreFocus && lastTrigger) {
+      lastTrigger.focus({ preventScroll: true });
+    } else if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }
+
   function closeScrollModal({ restoreFocus = true } = {}) {
     if (!modal.classList.contains("active") || modal.classList.contains("is-closing")) {
       return;
     }
 
-    modal.classList.add("is-closing");
-    content.style.setProperty("--shrink-x", "2");
-    content.style.setProperty("--radius", "30px");
-    deckApi?.goTo(0);
-
-    window.setTimeout(() => {
-      modal.classList.remove("active", "is-closing", "is-expanded");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("sm-modal-open", "sm-modal-expanded");
-      expansionUnlocked = false;
-      deckInputUnlockAt = 0;
-      modalCollapseUnlockAt = 0;
-      modal.scrollTop = 0;
-      updateScrollModalStyles();
-
-      if (restoreFocus && lastTrigger) {
-        lastTrigger.focus({ preventScroll: true });
-      } else if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
+    let closeFinished = false;
+    const closeFallback = window.setTimeout(() => {
+      if (!closeFinished) {
+        closeFinished = true;
+        content.removeEventListener("transitionend", handleCloseTransition);
+        finalizeScrollModalClose(restoreFocus);
       }
-    }, modalTransitionDuration);
+    }, 700);
+
+    function handleCloseTransition(event) {
+      if (closeFinished) {
+        return;
+      }
+
+      if (event.target !== content || event.propertyName !== "transform") {
+        return;
+      }
+
+      content.removeEventListener("transitionend", handleCloseTransition);
+      window.clearTimeout(closeFallback);
+      closeFinished = true;
+      finalizeScrollModalClose(restoreFocus);
+    }
+
+    content.addEventListener("transitionend", handleCloseTransition);
+    modal.classList.add("is-closing");
   }
 
   triggers.forEach((trigger) => {
     trigger.addEventListener("click", (event) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      if (mobileCaseStudy.matches) {
         return;
       }
 
@@ -545,6 +729,10 @@
   modal.addEventListener(
     "scroll",
     () => {
+      if (modal.classList.contains("is-closing")) {
+        return;
+      }
+
       if (!expansionUnlocked) {
         modal.scrollTop = 0;
         updateScrollModalStyles();
@@ -589,7 +777,272 @@
     }
   });
 
-  ensureDeck();
+  if (!mobileCaseStudy.matches) {
+    ensureDeck();
+  }
+})();
+
+// ── Fishing philosophy modal ──
+(function () {
+  const triggers = document.querySelectorAll("[data-fishing-modal-trigger]");
+
+  if (!triggers.length) {
+    return;
+  }
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const modal = document.createElement("div");
+  let lastTrigger;
+  let closeTimer;
+
+  modal.className = "fishing-modal";
+  modal.id = "fishing-modal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-labelledby", "fishing-modal-title");
+  modal.setAttribute("aria-describedby", "fishing-modal-intro");
+  modal.setAttribute("aria-hidden", "true");
+  modal.hidden = true;
+  modal.innerHTML = `
+    <div class="fishing-modal__panel" role="document" tabindex="-1">
+      <div class="fishing-modal__controls">
+        <button class="fishing-modal__close" type="button" aria-label="Close Fishing With Lynch">×</button>
+      </div>
+      <div class="fishing-modal__content">
+        <header class="fishing-modal__header">
+          <p class="fishing-modal__eyebrow">Design philosophy</p>
+          <h2 class="fishing-modal__title" id="fishing-modal-title">Fishing With Lynch</h2>
+          <p class="fishing-modal__intro" id="fishing-modal-intro">
+            A small design philosophy borrowed from David Lynch’s idea of catching fish: go deeper,
+            follow what bites, and know when to let the thing go.
+          </p>
+        </header>
+        <div class="fishing-modal__essay">
+        <section class="fishing-modal__section">
+          <blockquote class="fishing-modal__quote">
+            “Ideas are like fish. If you want to catch little fish, you can stay in the shallow
+            water. But if you want to catch the big fish, you’ve got to go deeper. Down deep, the
+            fish are more powerful and more pure. They’re huge and abstract. And they’re
+            beautiful.”
+          </blockquote>
+          <p>
+            The best ideas rarely appear when I’m skimming the surface. I like to collect the whole
+            world around a problem: user needs, business goals, legal frameworks, technical
+            constraints, architecture, competitors, existing solutions, edge cases, and the tiny
+            details that seem unimportant until they suddenly become the key.
+          </p>
+        </section>
+        <section class="fishing-modal__section">
+          <blockquote class="fishing-modal__quote">
+            “If you can expand the container you’re fishing in—your consciousness—you can catch
+            bigger fish.”
+          </blockquote>
+          <p>
+            For design, the container is context. The more I understand, the more connections I can
+            make. Research is not just validation. It is fuel.
+          </p>
+        </section>
+        <section class="fishing-modal__section">
+          <blockquote class="fishing-modal__quote">
+            “The beautiful thing is that when you catch one fish that you love, even if it’s a
+            little fish—a fragment of an idea—that fish will draw in another fish, and they’ll hook
+            onto it. Then you’re on your way. Soon there are more and more and more fragments, and
+            the whole thing emerges.”
+          </blockquote>
+          <p>
+            A good idea does not always arrive as a finished concept. Sometimes it starts as a small
+            fragment: a user flow, a piece of copy, a layout rhythm, a visual direction, or one
+            weird little “wait, that’s interesting” moment. I try to notice the thing that feels
+            alive and follow it.
+          </p>
+        </section>
+        <section class="fishing-modal__section">
+          <blockquote class="fishing-modal__quote">
+            “The idea is the whole thing. If you stay true to the idea, it tells you everything you
+            need to know, really. You just keep working to make it look like that idea looked, feel
+            like it felt, sound like it sounded, and be the way it was.”
+          </blockquote>
+          <p>
+            A product is organized ideas. Sometimes the idea leads to high-fidelity screens,
+            sometimes to motion, sometimes to prototyping, sometimes to documentation or cleaning up
+            a design system. Not every design day looks shiny, but every part matters when it helps
+            the idea become clearer, stronger, and easier to use.
+          </p>
+        </section>
+        <section class="fishing-modal__section">
+          <blockquote class="fishing-modal__quote">
+            “Intuition is seeing the solution.....its emotion and intellect going together.”
+          </blockquote>
+          <p>
+            Good design is rarely pure logic or pure feeling. It is both. The rational part checks
+            whether the product works. The emotional part checks whether it feels clear, human,
+            useful, and memorable. You feel-think your way through until the thing starts to make
+            sense.
+          </p>
+        </section>
+        <section class="fishing-modal__section">
+          <blockquote class="fishing-modal__quote">
+            “At some point, it feels correct to you.”
+          </blockquote>
+          <p>
+            Design can be improved forever, which is exactly why finishing matters. At some point,
+            the work is clear enough, strong enough, and honest enough to leave your hands. You make
+            the thing, sharpen it, and then let it live.
+          </p>
+        </section>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.append(modal);
+
+  const panel = modal.querySelector(".fishing-modal__panel");
+  const closeButton = modal.querySelector(".fishing-modal__close");
+
+  function setExpandedState(isExpanded) {
+    triggers.forEach((trigger) => {
+      trigger.setAttribute("aria-expanded", String(isExpanded));
+    });
+  }
+
+  function updateTransformOrigin(trigger) {
+    panel.style.setProperty("--fishing-origin-x", "0px");
+    panel.style.setProperty("--fishing-origin-y", "0px");
+    panel.style.setProperty("--fishing-origin-scale-x", "1");
+    panel.style.setProperty("--fishing-origin-scale-y", "1");
+
+    if (reducedMotion.matches) {
+      return;
+    }
+
+    const triggerRect = trigger.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    const triggerCenterX = triggerRect.left + triggerRect.width / 2;
+    const triggerCenterY = triggerRect.top + triggerRect.height / 2;
+    const panelCenterX = panelRect.left + panelRect.width / 2;
+    const panelCenterY = panelRect.top + panelRect.height / 2;
+
+    panel.style.setProperty("--fishing-origin-x", `${triggerCenterX - panelCenterX}px`);
+    panel.style.setProperty("--fishing-origin-y", `${triggerCenterY - panelCenterY}px`);
+    panel.style.setProperty(
+      "--fishing-origin-scale-x",
+      String(Math.max(0.24, triggerRect.width / panelRect.width))
+    );
+    panel.style.setProperty(
+      "--fishing-origin-scale-y",
+      String(Math.max(0.18, triggerRect.height / panelRect.height))
+    );
+  }
+
+  function finishClose(restoreFocus) {
+    modal.classList.remove("is-closing");
+    modal.hidden = true;
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("fishing-modal-open");
+    setExpandedState(false);
+
+    if (restoreFocus && lastTrigger) {
+      lastTrigger.focus({ preventScroll: true });
+    }
+  }
+
+  function closeModal({ restoreFocus = true } = {}) {
+    if (!modal.classList.contains("is-open")) {
+      return;
+    }
+
+    window.clearTimeout(closeTimer);
+    modal.classList.remove("is-open");
+    modal.classList.add("is-closing");
+
+    if (reducedMotion.matches) {
+      finishClose(restoreFocus);
+      return;
+    }
+
+    closeTimer = window.setTimeout(() => {
+      finishClose(restoreFocus);
+    }, 580);
+  }
+
+  function openModal(trigger, showKeyboardFocus) {
+    lastTrigger = trigger;
+    window.clearTimeout(closeTimer);
+    modal.hidden = false;
+    modal.classList.remove("is-closing");
+    modal.scrollTop = 0;
+    panel.scrollTop = 0;
+    document.body.classList.add("fishing-modal-open");
+    updateTransformOrigin(trigger);
+    modal.setAttribute("aria-hidden", "false");
+    setExpandedState(true);
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        modal.classList.add("is-open");
+        (showKeyboardFocus ? closeButton : panel).focus({ preventScroll: true });
+      });
+    });
+  }
+
+  function handleFocusLoop(event) {
+    if (event.key !== "Tab" || !modal.classList.contains("is-open")) {
+      return;
+    }
+
+    const focusableElements = Array.from(
+      panel.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      )
+    );
+
+    if (!focusableElements.length) {
+      event.preventDefault();
+      panel.focus({ preventScroll: true });
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (
+      event.shiftKey &&
+      (document.activeElement === firstElement || document.activeElement === panel)
+    ) {
+      event.preventDefault();
+      lastElement.focus({ preventScroll: true });
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus({ preventScroll: true });
+    }
+  }
+
+  triggers.forEach((trigger) => {
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.addEventListener("click", (event) => openModal(trigger, event.detail === 0));
+  });
+
+  closeButton.addEventListener("click", () => closeModal());
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (!modal.classList.contains("is-open")) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeModal();
+      return;
+    }
+
+    handleFocusLoop(event);
+  });
 })();
 
 // ── Duolingo stats ──

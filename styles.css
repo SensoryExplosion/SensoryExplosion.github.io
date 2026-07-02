@@ -53,7 +53,7 @@ main,
 }
 
 .topbar {
-  width: min(1120px, calc(100% - (var(--page-gutter) * 2)));
+  width: min(1096px, calc(100% - (var(--page-gutter) * 2)));
 }
 
 main,
@@ -353,12 +353,32 @@ body.sm-modal-expanded .topbar {
   background: var(--about-bg);
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+  overflow: hidden;
   padding-bottom: var(--section-gap);
   padding-top: var(--section-gap);
   position: relative;
 }
 
-.about-section > * {
+.about-section.curve-pending {
+  background: transparent;
+}
+
+.about-curve {
+  fill: var(--about-bg);
+  height: 100%;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+}
+
+.about-section.curve-pending .about-curve {
+  opacity: 1;
+}
+
+.about-section > :not(.about-curve) {
   margin-left: auto;
   margin-right: auto;
   position: relative;
@@ -366,8 +386,17 @@ body.sm-modal-expanded .topbar {
   z-index: 1;
 }
 
+.about-section.curve-pending #about-title {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
 .section-heading.compact {
   margin-bottom: clamp(28px, 4vw, 46px);
+}
+
+.about-section .section-heading.compact {
+  margin-bottom: 64px;
 }
 
 .section-heading h2,
@@ -580,13 +609,7 @@ body.sm-modal-open {
 }
 
 .sm-wrapper.is-closing .sm-content {
-  opacity: 0;
-  transform: translateY(8vh) scale(0.985);
-  transition:
-    border-radius 420ms var(--ease-out),
-    opacity 420ms var(--ease-out),
-    transform 600ms var(--ease-out),
-    width 420ms var(--ease-out);
+  transform: translateY(100vh);
 }
 
 .sm-wrapper.is-closing .sm-deck-host {
@@ -733,10 +756,22 @@ body.sm-modal-open {
   grid-column: span 3;
 }
 
-.playlist-card {
+.fishing-card {
   --card-fall-delay: 490ms;
   --card-rotation: -0.8deg;
-  grid-column: span 3;
+  appearance: none;
+  cursor: pointer;
+  grid-column: span 5;
+  text-align: left;
+}
+
+.fishing-card:hover {
+  box-shadow: none;
+}
+
+.fishing-card:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
 }
 
 .reading-card {
@@ -751,26 +786,198 @@ body.sm-modal-open {
   grid-column: span 6;
 }
 
-.track-lines {
+body.fishing-modal-open {
+  overflow: hidden;
+}
+
+.fishing-modal {
+  align-items: center;
+  background: rgb(10 20 30 / 0.42);
   display: grid;
-  gap: 8px;
-  margin-top: 4px;
+  inset: 0;
+  justify-items: center;
+  opacity: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(16px, 4vw, 40px);
+  pointer-events: none;
+  position: fixed;
+  transition:
+    opacity 320ms var(--ease-out),
+    visibility 0s linear 320ms;
+  visibility: hidden;
+  z-index: 1100;
 }
 
-.track-lines span {
+.fishing-modal[hidden] {
+  display: none;
+}
+
+.fishing-modal.is-open,
+.fishing-modal.is-closing {
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+.fishing-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fishing-modal__panel {
+  background: var(--about-card);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  box-shadow: 0 24px 80px rgb(10 20 30 / 0.18);
+  max-height: min(760px, calc(100dvh - 32px));
+  outline: none;
+  overflow-y: auto;
+  padding: 0;
+  position: relative;
+  transform:
+    translate3d(var(--fishing-origin-x, 0), var(--fishing-origin-y, 0), 0)
+    scale(var(--fishing-origin-scale-x, 0.96), var(--fishing-origin-scale-y, 0.96));
+  transform-origin: center center;
+  transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  width: min(760px, calc(100vw - 32px));
+  will-change: transform;
+}
+
+.fishing-modal.is-open .fishing-modal__panel {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.fishing-modal__controls {
+  align-items: flex-start;
+  display: flex;
+  height: 1px;
+  justify-content: flex-end;
+  pointer-events: none;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.fishing-modal__close {
+  align-items: center;
+  background: rgb(10 20 30 / 0.82);
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.45rem;
+  height: 42px;
+  justify-content: center;
+  line-height: 1;
+  margin: 18px 18px 0 auto;
+  opacity: 0;
+  padding: 0 0 3px;
+  pointer-events: auto;
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    opacity 180ms var(--ease-out) 140ms,
+    transform 180ms var(--ease-out);
+  width: 42px;
+  z-index: 1;
+}
+
+.fishing-modal__close:hover,
+.fishing-modal__close:focus-visible {
   background: var(--ink);
-  border-radius: 999px;
-  display: block;
-  height: 9px;
-  opacity: 0.2;
+  color: #fff;
+  transform: scale(1.06);
 }
 
-.track-lines span:nth-child(2) {
-  width: 78%;
+.fishing-modal__content {
+  opacity: 0;
+  padding: clamp(28px, 5vw, 56px);
+  transform: translateY(8px);
+  transition:
+    opacity 220ms var(--ease-out) 120ms,
+    transform 320ms var(--ease-out) 100ms;
 }
 
-.track-lines span:nth-child(3) {
-  width: 58%;
+.fishing-modal.is-open .fishing-modal__close,
+.fishing-modal.is-open .fishing-modal__content {
+  opacity: 1;
+}
+
+.fishing-modal.is-open .fishing-modal__content {
+  transform: translateY(0);
+}
+
+.fishing-modal.is-closing .fishing-modal__close,
+.fishing-modal.is-closing .fishing-modal__content {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+.fishing-modal__header {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-right: 40px;
+}
+
+.fishing-modal__eyebrow {
+  color: var(--quiet);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.fishing-modal__title {
+  color: var(--hero-ink);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.12;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.fishing-modal__intro {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+.fishing-modal__essay {
+  clear: both;
+  display: grid;
+  gap: 32px;
+}
+
+.fishing-modal__section {
+  display: grid;
+  gap: 12px;
+}
+
+.fishing-modal__quote {
+  border-left: 2px solid var(--focus);
+  color: var(--focus);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.68;
+  margin: 0;
+  padding-left: 16px;
+  text-wrap: pretty;
+}
+
+.fishing-modal__section p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.68;
+  margin: 0;
+  text-wrap: pretty;
 }
 
 .connect-section {
@@ -1036,14 +1243,29 @@ body.sm-modal-open {
 .lb-card .lb-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 24px;
   position: relative;
   z-index: 2;
+}
+
+.lb-logo {
+  align-items: center;
+  display: flex;
 }
 
 .lb-logo svg {
   height: 15px;
   width: auto;
+}
+
+.lb-title-suffix {
+  border-left: 1px solid oklch(17.5% 0.013 257 / 0.2);
+  margin-left: 10px;
+  padding-left: 10px;
+  transform: translateY(1px);
+  transition:
+    border-color 0.4s ease,
+    color 0.4s ease;
 }
 
 .lb-logo svg .lb-wordmark {
@@ -1052,6 +1274,11 @@ body.sm-modal-open {
 
 .lb-card.playing .lb-logo svg .lb-wordmark {
   fill: oklch(98.7% 0.006 255);
+}
+
+.lb-card.playing .lb-title-suffix {
+  border-color: oklch(98.7% 0.006 255 / 0.28);
+  color: oklch(98.7% 0.006 255);
 }
 
 .lb-card .lb-posters {
@@ -1096,6 +1323,15 @@ body.sm-modal-open {
     opacity: 1 !important;
     transform: none;
     will-change: auto;
+  }
+
+  .fishing-modal,
+  .fishing-modal__panel {
+    transition: none !important;
+  }
+
+  .fishing-modal__panel {
+    transform: none !important;
   }
 
   *,
@@ -1153,9 +1389,13 @@ body.sm-modal-open {
     grid-row: auto;
   }
 
-  .language-card,
-  .playlist-card {
+  .language-card {
     grid-column: span 3;
+    grid-row: auto;
+  }
+
+  .fishing-card {
+    grid-column: span 6;
     grid-row: auto;
   }
 
@@ -1287,7 +1527,7 @@ body.sm-modal-open {
   .intro-card,
   .film-card,
   .language-card,
-  .playlist-card,
+  .fishing-card,
   .reading-card,
   .detail-card {
     grid-column: auto;
@@ -1295,6 +1535,30 @@ body.sm-modal-open {
 
   .bento-card {
     min-height: 0;
+  }
+
+  .fishing-modal {
+    padding: 12px;
+  }
+
+  .fishing-modal__panel {
+    max-height: calc(100dvh - 24px);
+    width: calc(100vw - 24px);
+  }
+
+  .fishing-modal__close {
+    height: 44px;
+    margin: 12px 12px 0 auto;
+    width: 44px;
+  }
+
+  .fishing-modal__content {
+    padding: 24px;
+  }
+
+  .fishing-modal__header {
+    margin-bottom: 24px;
+    padding-right: 48px;
   }
 
   .duolingo-card {

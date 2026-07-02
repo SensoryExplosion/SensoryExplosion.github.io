@@ -604,7 +604,9 @@ figcaption {
   position: fixed;
   inset: 0;
   opacity: 0;
-  transition: opacity 260ms ease;
+  transform: translate3d(0, var(--artifact-slide-y, 0px), 0);
+  transition: transform 600ms var(--ease-out);
+  will-change: transform;
 }
 
 .long-artifact {
@@ -640,6 +642,17 @@ figcaption {
 .consent-artifact {
   width: min(36vw, 440px);
   aspect-ratio: 1056 / 2740;
+}
+
+@media (min-width: 681px) {
+  .shared-consent[data-step="0"] .consent-artifact {
+    transform: translate3d(
+        var(--artifact-x, 0px),
+        calc(var(--artifact-y, 0px) + 64px),
+        0
+      )
+      scale(var(--artifact-scale, 1));
+  }
 }
 
 .shared-artifact.is-visible {
@@ -1018,16 +1031,31 @@ figcaption {
 }
 
 @media (max-width: 680px) {
+  :root,
+  .case-study-deck {
+    --mobile-artifact-height: clamp(230px, 36svh, 300px);
+    --mobile-safe-top: max(var(--space-3), env(safe-area-inset-top, 0px));
+    --mobile-safe-right: max(var(--space-2), env(safe-area-inset-right, 0px));
+    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-safe-left: max(var(--space-2), env(safe-area-inset-left, 0px));
+  }
+
   body {
     font-size: 16px;
   }
 
   .slide {
-    padding-top: var(--space-4);
+    padding:
+      var(--mobile-safe-top)
+      var(--mobile-safe-right)
+      calc(80px + var(--mobile-safe-bottom))
+      var(--mobile-safe-left);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .slide-shell {
-    width: min(calc(100% - var(--space-4)), var(--max-wide));
+    width: min(100%, var(--max-wide));
   }
 
   .section-label,
@@ -1036,22 +1064,44 @@ figcaption {
   }
 
   h1 {
-    font-size: clamp(3rem, 14vw, 4.25rem);
+    font-size: clamp(2.55rem, 12vw, 3.25rem);
   }
 
   h2,
   .annotation-card h2 {
-    font-size: clamp(2rem, 9vw, 2.85rem);
+    font-size: clamp(2rem, 8.5vw, 2.5rem);
   }
 
   p {
     font-size: 1rem;
-    line-height: 1.65;
+    line-height: 1.55;
   }
 
   .lead {
     font-size: 1.0625rem;
-    line-height: 1.56;
+    line-height: 1.5;
+  }
+
+  .hero-grid,
+  .strategy-grid {
+    gap: var(--space-3);
+  }
+
+  .hero-copy {
+    gap: var(--space-2);
+  }
+
+  .hero-copy .lead,
+  .strategy-grid .lead {
+    margin-bottom: 0;
+  }
+
+  .hero-visual {
+    min-height: 0;
+  }
+
+  .section-heading {
+    margin-bottom: var(--space-2);
   }
 
   .north-star {
@@ -1071,22 +1121,82 @@ figcaption {
 
   .meta-grid article {
     min-height: auto;
+    padding: var(--space-2);
+  }
+
+  .text-columns {
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  .principle-stack {
+    gap: var(--space-1);
   }
 
   .principle-stack article {
-    grid-template-columns: 1fr;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 2px var(--space-2);
+    padding: var(--space-2);
   }
 
   .principle-stack span {
-    grid-row: auto;
+    grid-row: 1 / span 2;
+    font-size: 1.25rem;
+  }
+
+  .principle-stack p {
+    line-height: 1.45;
   }
 
   .artifact-spacer {
-    min-height: 280px;
+    min-height: var(--mobile-artifact-height);
   }
 
   .annotation-card {
     padding: 0;
+  }
+
+  .annotation-layout,
+  .annotation-layout.reverse {
+    gap: var(--space-3);
+  }
+
+  .shared-artifact {
+    inset: var(--mobile-safe-top) 0 auto;
+    height: var(--mobile-artifact-height);
+    overflow: hidden;
+  }
+
+  .shared-heart .long-artifact,
+  .shared-consent .long-artifact {
+    right: auto;
+    left: 0;
+  }
+
+  .product-artifact {
+    width: min(145vw, 570px);
+  }
+
+  .consent-artifact {
+    width: min(100vw, 393px);
+  }
+
+  .flow-frame {
+    overflow: visible;
+    padding-bottom: 0;
+    scroll-snap-type: none;
+  }
+
+  .screen-row {
+    width: min(100%, 304px);
+    min-width: 0;
+    margin-inline: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-1) 12px;
+  }
+
+  .flow-frame .mini-phone {
+    scroll-snap-align: none;
   }
 
   .mini-phone {
@@ -1102,8 +1212,12 @@ figcaption {
   }
 
   .deck-controls {
-    right: var(--space-2);
-    bottom: var(--space-2);
+    right: var(--mobile-safe-right);
+    bottom: calc(12px + var(--mobile-safe-bottom));
+  }
+
+  .closing-slide {
+    align-items: center;
   }
 }
 
