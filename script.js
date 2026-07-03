@@ -170,7 +170,7 @@
   const closeButton = modal.querySelector(".sm-close-btn");
   const deckTemplate = document.getElementById("pet-insurance-case-study-template");
   const caseStudyUrl = new URL("pet-insurance-case-study/index.html", document.baseURI);
-  const caseStudyStylesUrl = new URL("pet-insurance-case-study/styles.css", document.baseURI);
+  const caseStudyStylesUrl = new URL("pet-insurance-case-study/styles.css?v=3", document.baseURI);
   const mobileCaseStudy = window.matchMedia("(max-width: 680px)");
   const modalGapRatio = 0.22;
   const deckWheelThreshold = 90;

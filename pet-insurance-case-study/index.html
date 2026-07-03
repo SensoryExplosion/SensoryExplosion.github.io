@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Pet Insurance Reimagined | Case Study Deck</title>
+    <title>Pet Insurance Reimagined | Case Study</title>
     <meta
       name="description"
-      content="A slide deck case study about redesigning a native pet insurance experience."
+      content="A case study about redesigning a native pet insurance experience."
     />
     <script
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js"
       type="module"
     ></script>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
-    <main id="deck" aria-label="Pet insurance reimagined case study slide deck">
+    <main id="deck" aria-label="Pet insurance reimagined case study">
       <section class="slide hero-slide" aria-labelledby="page-title">
         <div class="slide-shell hero-grid">
           <div class="hero-copy">
@@ -346,6 +346,7 @@
     </nav>
 
     <script>
+      if (window.matchMedia("(min-width: 681px)").matches) {
       const sections = Array.from(document.querySelectorAll("main > section"));
       const counter = document.getElementById("counter");
       const previousButton = document.getElementById("prev-slide");
@@ -618,6 +619,7 @@
       nextButton.addEventListener("click", () => goTo(current + 1));
       window.addEventListener("resize", () => updateArtifacts(sections[current]));
       goTo(0);
+      }
 
     </script>
   </body>

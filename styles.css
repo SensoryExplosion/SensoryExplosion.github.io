@@ -83,7 +83,7 @@ main,
   align-items: center;
   background: oklch(98.7% 0.006 255 / 0.46);
   border: 0;
-  border-radius: var(--radius);
+  border-radius: 999px;
   -webkit-backdrop-filter: blur(18px) saturate(140%);
   backdrop-filter: blur(18px) saturate(140%);
   display: flex;
@@ -120,8 +120,7 @@ body.sm-modal-expanded .topbar {
 }
 
 .nav-links a,
-.connect-card a,
-.connect-card > span {
+.connect-card a {
   align-items: center;
   border-radius: var(--radius);
   color: var(--ink);
@@ -139,38 +138,36 @@ body.sm-modal-expanded .topbar {
 }
 
 .nav-links a:not(.contact-link) {
+  isolation: isolate;
   position: relative;
 }
 
-.nav-links a:not(.contact-link)::after {
-  background: var(--ink);
-  bottom: 5px;
+.nav-links a:not(.contact-link)::before {
+  background: oklch(17.5% 0.013 257 / 0.06);
+  border-radius: 999px;
   content: "";
-  height: 1px;
-  left: 50%;
+  inset: 1px -16px;
+  opacity: 0;
   position: absolute;
-  right: auto;
-  transform: translateX(-50%) scaleX(0);
-  transform-origin: center;
-  transition: transform 200ms var(--ease-out);
-  width: 100%;
+  transition: opacity 180ms var(--ease-out);
+  z-index: -1;
 }
 
-.nav-links a:not(.contact-link):hover::after,
-.nav-links a:not(.contact-link):focus-visible::after {
-  transform: translateX(-50%) scaleX(1);
+.nav-links a:not(.contact-link):hover::before,
+.nav-links a:not(.contact-link):focus-visible::before {
+  opacity: 1;
 }
 
 .nav-links .contact-link {
   align-items: center;
   background: var(--ink);
+  border-radius: 999px;
   color: var(--bg);
   min-height: 34px;
   padding: 8px 16px;
 }
 
 .connect-card a,
-.connect-card > span,
 .nav-links .contact-link {
   font-weight: 600;
 }
@@ -416,6 +413,7 @@ body.sm-modal-expanded .topbar {
 }
 
 .project-card {
+  align-content: start;
   display: grid;
   gap: 0;
   min-width: 0;
@@ -480,8 +478,7 @@ body.sm-modal-expanded .topbar {
 .project-content {
   display: grid;
   gap: 10px;
-  min-height: 198px;
-  padding: 22px 4px 0;
+  padding: 40px 4px 0;
 }
 
 .project-meta,
@@ -495,8 +492,12 @@ body.sm-modal-expanded .topbar {
 }
 
 .project-content h3 {
+  align-items: baseline;
+  display: flex;
   font-size: 1.5rem;
   font-weight: 600;
+  gap: 24px;
+  justify-content: space-between;
   line-height: 1.18;
   margin: 0;
   text-wrap: balance;
@@ -507,8 +508,7 @@ body.sm-modal-expanded .topbar {
   display: none;
 }
 
-.project-summary,
-.project-view {
+.project-summary {
   font-size: 1.05rem;
   font-weight: 500;
   line-height: 1.5;
@@ -520,31 +520,15 @@ body.sm-modal-expanded .topbar {
   max-width: 100%;
 }
 
-.project-view {
-  align-self: end;
-  color: var(--ink);
-  display: inline-block;
-  margin-top: 24px;
-  position: relative;
-  width: fit-content;
-}
-
-.project-view::after {
-  background: currentColor;
-  bottom: -3px;
-  content: "";
-  height: 1px;
-  left: 0;
-  position: absolute;
-  transform: scaleX(0);
-  transform-origin: left;
+.project-arrow {
+  flex: 0 0 auto;
+  margin-right: 12px;
   transition: transform 220ms var(--ease-out);
-  width: 100%;
 }
 
-.project-card:hover .project-view::after,
-.project-card:focus-visible .project-view::after {
-  transform: scaleX(1);
+.project-card:hover .project-arrow,
+.project-card:focus-visible .project-arrow {
+  transform: translateX(12px);
 }
 
 body.sm-modal-open {
@@ -679,13 +663,31 @@ body.sm-modal-open {
 }
 
 .bento-grid {
+  --bento-gap: clamp(16px, 2.4vw, 26px);
   align-items: start;
   display: grid;
-  gap: clamp(16px, 2.4vw, 26px);
-  grid-auto-flow: dense;
+  gap: var(--bento-gap);
   grid-template-columns: repeat(12, minmax(0, 1fr));
   perspective: 900px;
   transform-style: preserve-3d;
+}
+
+.bento-stack {
+  align-content: start;
+  align-items: start;
+  display: grid;
+  gap: var(--bento-gap);
+  transform-style: preserve-3d;
+}
+
+.bento-stack--left {
+  grid-column: span 5;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.bento-stack--right {
+  grid-column: span 7;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .bento-card {
@@ -739,7 +741,6 @@ body.sm-modal-open {
   --card-fall-delay: 0ms;
   --card-rotation: -1.1deg;
   grid-column: span 5;
-  grid-row: span 2;
 }
 
 .film-card {
@@ -747,13 +748,11 @@ body.sm-modal-open {
   --card-rotation: 0.7deg;
   align-self: start;
   grid-column: span 7;
-  grid-row: span 2;
 }
 
 .language-card {
   --card-fall-delay: 340ms;
   --card-rotation: 1.2deg;
-  grid-column: span 3;
 }
 
 .fishing-card {
@@ -1010,8 +1009,7 @@ body.fishing-modal-open {
   width: min(100%, 300px);
 }
 
-.connect-card a,
-.connect-card > span {
+.connect-card a {
   align-items: center;
   color: var(--ink);
   display: inline-flex;
@@ -1025,10 +1023,9 @@ body.fishing-modal-open {
 .connect-card a:first-child {
   background: var(--ink);
   border: 1px solid var(--ink);
-  border-radius: var(--radius);
+  border-radius: 999px;
   color: var(--bg);
   justify-content: center;
-  margin-bottom: 14px;
   min-height: 46px;
   padding: 12px 18px;
   transition:
@@ -1046,24 +1043,6 @@ body.fishing-modal-open {
 .connect-card a:first-child:hover::after,
 .connect-card a:first-child:focus-visible::after {
   transform: translateX(3px);
-}
-
-.connect-card > span {
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  min-height: 44px;
-}
-
-.connect-card > span:last-child {
-  border-bottom: 1px solid var(--line);
-}
-
-.connect-card > span::after {
-  color: var(--quiet);
-  content: "Soon";
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
 }
 
 .lb-card {
@@ -1377,26 +1356,22 @@ body.fishing-modal-open {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
+  .bento-stack {
+    display: contents;
+  }
+
   .reading-card,
   .detail-card {
     grid-column: span 6;
-    grid-row: auto;
   }
 
   .intro-card,
   .film-card {
     grid-column: span 6;
-    grid-row: auto;
-  }
-
-  .language-card {
-    grid-column: span 3;
-    grid-row: auto;
   }
 
   .fishing-card {
     grid-column: span 6;
-    grid-row: auto;
   }
 
   .duolingo-card {
@@ -1412,7 +1387,7 @@ body.fishing-modal-open {
 
   .topbar {
     align-items: center;
-    border-radius: var(--radius);
+    border-radius: 999px;
     justify-content: center;
     left: auto;
     min-height: 56px;
@@ -1514,8 +1489,7 @@ body.fishing-modal-open {
     font-size: 1.32rem;
   }
 
-  .project-summary,
-  .project-view {
+  .project-summary {
     font-size: 1rem;
   }
 

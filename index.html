@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="minimalist-polished.css">
     <script
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js"
       type="module"
@@ -88,12 +88,11 @@
             </div>
             <div class="project-content">
               <p class="project-meta">Case study 01 / Year</p>
-              <h3>Project title goes here</h3>
+              <h3>Project title goes here <span class="project-arrow" aria-hidden="true">→</span></h3>
               <p class="project-role">Role: research, flows, prototype, UI direction</p>
               <p class="project-summary">
                 Two lines on the user problem, your contribution, and the measurable outcome.
               </p>
-              <span class="project-view" aria-hidden="true">View →</span>
             </div>
           </a>
 
@@ -111,13 +110,12 @@
             </div>
             <div class="project-content">
               <p class="project-meta">Case study 02 / Pet insurance</p>
-              <h3>Pet Insurance Reimagined</h3>
+              <h3>Pet Insurance Reimagined <span class="project-arrow" aria-hidden="true">→</span></h3>
               <p class="project-role">Role: product design, UX writing, native flow concepting</p>
               <p class="project-summary">
                 A clearer native insurance experience shaped by behavioural science, stronger
                 product storytelling, and simpler legal consent.
               </p>
-              <span class="project-view" aria-hidden="true">View →</span>
             </div>
           </a>
         </div>
@@ -141,137 +139,143 @@
         </div>
 
         <div class="bento-grid">
-          <article class="bento-card intro-card">
-            <span class="bento-kicker">Personal note</span>
-            <p>
-              I like design work that rewards attention: clearer flows, quieter interfaces,
-              and tiny moments that make products feel more considerate.
-            </p>
-          </article>
+          <div class="bento-stack bento-stack--left">
+            <article class="bento-card intro-card">
+              <span class="bento-kicker">Personal note</span>
+              <p>
+                I like design work that rewards attention: clearer flows, quieter interfaces,
+                and tiny moments that make products feel more considerate.
+              </p>
+            </article>
 
-          <article class="bento-card film-card lb-card" id="lbCard" aria-labelledby="film-title">
-
-            <!-- Background videos, one per film -->
-            <video class="bg-video" data-film="mulholland"   src="assets/videos/mulholland_drive.mp4"              aria-hidden="true" muted loop playsinline preload="auto"></video>
-            <video class="bg-video" data-film="worst-person" src="assets/videos/the_worst_person_in_the_world.mp4" aria-hidden="true" muted loop playsinline preload="auto"></video>
-            <video class="bg-video" data-film="aftersun"     src="assets/videos/aftersun.mp4"                      aria-hidden="true" muted loop playsinline preload="auto"></video>
-            <video class="bg-video" data-film="bttf"         src="assets/videos/btf.mp4"                           aria-hidden="true" muted loop playsinline preload="auto"></video>
-
-            <!-- Scrim keeps logo and posters readable over video -->
-            <div class="bg-scrim"></div>
-
-            <!-- Content layer -->
-            <div class="lb-content">
-
-              <!-- Letterboxd logo -->
-              <div class="lb-logo" id="film-title" aria-label="Letterboxd top 4">
-                <svg viewBox="0 0 499 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M22.8251 49.9978C35.431 49.9978 45.6502 39.7787 45.6502 27.1728C45.6502 14.5668 35.431 4.34766 22.8251 4.34766C10.2191 4.34766 0 14.5668 0 27.1728C0 39.7787 10.2191 49.9978 22.8251 49.9978Z" fill="#FF8000"/>
-                  <path d="M61.954 49.9978C74.56 49.9978 84.7791 39.7787 84.7791 27.1728C84.7791 14.5668 74.56 4.34766 61.954 4.34766C49.3481 4.34766 39.1289 14.5668 39.1289 27.1728C39.1289 39.7787 49.3481 49.9978 61.954 49.9978Z" fill="#00E054"/>
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M42.3897 15.4124C44.4591 18.847 45.6504 22.8686 45.6504 27.1727C45.6504 31.4769 44.4613 35.4984 42.3897 38.9331C40.2494 35.3842 39.1217 31.317 39.1289 27.1727C39.1289 23.0403 40.2267 19.1622 42.1505 15.8189L42.3897 15.4124Z" fill="#f8fafc"/>
-                  <path d="M101.083 49.9978C113.689 49.9978 123.908 39.7787 123.908 27.1728C123.908 14.5668 113.689 4.34766 101.083 4.34766C88.4767 4.34766 78.2576 14.5668 78.2576 27.1728C78.2576 39.7787 88.4767 49.9978 101.083 49.9978Z" fill="#40BCF4"/>
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M81.5183 15.4124C83.5878 18.847 84.7791 22.8686 84.7791 27.1727C84.7791 31.4769 83.59 35.4984 81.5183 38.9331C79.378 35.3842 78.2503 31.317 78.2576 27.1727C78.2576 23.0403 79.3554 19.1622 81.2792 15.8189L81.5183 15.4124Z" fill="#f8fafc"/>
-                  <path class="lb-wordmark" fill-rule="evenodd" clip-rule="evenodd" d="M201.189 11.3365C214.247 11.3365 219.788 19.8078 219.788 29.8074V33.9485H193.74C194.311 38.4049 196.859 40.8265 201.317 40.8265C204.565 40.8265 206.35 39.4244 207.241 37.3245H219.534C217.495 45.0937 211.763 49.9978 201 49.9978C188.196 49.9978 182.21 42.8655 182.21 31.4639V30.3813C182.21 18.534 189.661 11.3365 201.189 11.3365ZM295.489 11.3386C308.545 11.3386 314.084 19.81 314.084 29.8096V33.9507H288.036C288.609 38.407 291.157 40.8287 295.616 40.8287C298.863 40.8287 300.646 39.4265 301.539 37.3266H313.83C311.793 45.0959 306.061 50 295.296 50C282.494 50 276.508 42.8677 276.508 31.466V30.3835C276.508 18.5362 283.96 11.3408 295.487 11.3408M359.045 0V18.0253C361.019 13.8211 364.715 11.3365 369.871 11.3365C378.153 11.4017 384.268 17.0688 384.268 29.5531V30.6987C384.268 43.2459 378.725 49.9978 369.617 49.9978C364.013 49.9978 360.385 47.1936 358.6 42.8655L357.708 49.0435H347.581V0H359.045ZM406.491 11.3365C417.576 11.3365 425.09 17.9601 425.09 30.3161V31.4639C425.09 43.7568 417.702 49.9978 406.43 49.9978C394.455 49.9978 387.831 43.7568 387.831 31.4639V30.3161C387.831 17.7688 395.603 11.3365 406.491 11.3365ZM498.652 0V49.0413H488.781L487.699 42.609C485.851 46.9414 482.155 49.7435 476.488 49.7435C467.571 49.7435 461.967 43.309 461.967 30.6356V29.5531C461.967 17.1319 468.08 11.4017 476.551 11.4017C481.901 11.4017 485.405 13.6298 487.251 17.3884V0H498.652ZM437.575 12.1016L443.624 21.4643L449.674 12.1016H462.732L450.439 29.6813L463.56 49.0413H450.311L443.561 38.5983L436.809 49.0413H423.18L436.809 29.8074L424.453 12.1016H437.575ZM343.446 11.5908V23.7577H339.116C332.362 23.7577 330.708 26.1141 330.708 32.6747V49.0435H318.86V12.0995H328.16L329.751 19.6774C330.962 13.9472 334.72 11.5908 341.344 11.5908H343.446ZM238.577 2.86509V12.1016H247.72C248.94 12.1068 250.158 11.9786 251.35 11.7191C253.709 11.4017 254.6 10.3822 254.98 7.26273C255.172 5.73236 255.3 4.39329 255.363 2.86509H264.917V12.1016H273.708V22.3556H264.917V31.2095C264.917 37.5788 265.873 38.2788 271.351 38.2788H273.708V49.0413H267.847C256.7 49.0413 253.963 45.0307 253.963 33.5029V22.3556H238.577V31.2095C238.577 37.5788 239.531 38.2788 245.009 38.2788H247.365V49.0413H241.505C230.36 49.0413 227.621 45.0307 227.621 33.5029V22.3556H221.38V12.7386C222.78 12.7386 223.736 12.6103 225.01 12.356C227.366 12.0386 228.258 11.0191 228.64 7.89748C228.831 6.36929 228.958 4.39329 229.021 2.86509H238.577ZM159.793 3.37594V37.6418H178.966V49.0413H147.82V3.37594H159.793ZM406.559 21.1447C402.226 21.1447 399.363 24.1403 399.363 30.3182V31.3356C399.363 37.0049 402.226 39.9983 406.493 39.9983C410.763 39.9983 413.565 37.1332 413.565 31.3356V30.3161C413.565 24.2663 411.017 21.1447 406.559 21.1447ZM365.926 20.9556C361.724 20.9556 358.856 24.2033 358.856 29.6161V30.4443C358.856 36.8788 361.661 39.8722 365.865 39.8722C370.132 39.8722 372.743 37.1332 372.743 30.6356V29.7444C372.743 23.8837 369.938 20.9556 365.926 20.9556ZM480.501 20.9556C476.169 20.9556 473.623 23.9468 473.623 29.7444V30.5704C473.623 37.1962 476.362 39.8722 480.308 39.8722C484.577 39.8722 487.379 36.8136 487.379 30.5726V29.7444C487.379 24.1403 484.64 20.9556 480.501 20.9556ZM201.317 20.1252C196.987 20.1252 194.503 22.3556 193.74 26.6858H208.326C207.815 22.5468 205.65 20.1252 201.317 20.1252ZM295.616 20.1252C291.283 20.1252 288.801 22.3556 288.036 26.6858H302.622C302.111 22.5468 299.948 20.1252 295.616 20.1252Z" fill="#334455"/>
-                </svg>
-                <span class="bento-kicker lb-title-suffix">Top 4</span>
-              </div>
-
-              <!-- Posters -->
-              <div class="lb-posters">
-                <a class="poster-wrap" data-film="mulholland" href="https://letterboxd.com/film/mulholland-drive/" target="_blank" rel="noopener noreferrer">
-                  <img src="assets/posters/mulholland_drive.png" alt="Mulholland Drive" />
-                </a>
-                <a class="poster-wrap" data-film="worst-person" href="https://letterboxd.com/film/the-worst-person-in-the-world/" target="_blank" rel="noopener noreferrer">
-                  <img src="assets/posters/worst_person.png" alt="The Worst Person in the World" />
-                </a>
-                <a class="poster-wrap" data-film="aftersun" href="https://letterboxd.com/film/aftersun/" target="_blank" rel="noopener noreferrer">
-                  <img src="assets/posters/aftersun.png" alt="Aftersun" />
-                </a>
-                <a class="poster-wrap" data-film="bttf" href="https://letterboxd.com/film/back-to-the-future/" target="_blank" rel="noopener noreferrer">
-                  <img src="assets/posters/back_to_the_future.png" alt="Back to the Future" />
-                </a>
-              </div>
-
-            </div><!-- /lb-content -->
-
-          </article>
-
-          <article class="bento-card language-card duolingo-card" aria-labelledby="duolingo-title">
-            <div class="duolingo-stats" id="duolingo-title">
-              <div class="duolingo-stat">
-                <img class="duolingo-stat-icon" src="assets/duolingo/norsk.svg" alt="" aria-hidden="true">
-                <div>
-                  <strong>Norwegian</strong>
-                  <span>Learning</span>
+            <article class="bento-card language-card duolingo-card" aria-labelledby="duolingo-title">
+              <div class="duolingo-stats" id="duolingo-title">
+                <div class="duolingo-stat">
+                  <img class="duolingo-stat-icon" src="assets/duolingo/norsk.svg" alt="" aria-hidden="true">
+                  <div>
+                    <strong>Norwegian</strong>
+                    <span>Learning</span>
+                  </div>
+                </div>
+                <div class="duolingo-stat">
+                  <img class="duolingo-stat-icon" src="assets/duolingo/streak.svg" alt="" aria-hidden="true">
+                  <div>
+                    <strong data-duolingo-streak>331</strong>
+                    <span>Day streak</span>
+                  </div>
+                </div>
+                <div class="duolingo-stat">
+                  <img class="duolingo-stat-icon" src="assets/duolingo/XP.svg" alt="" aria-hidden="true">
+                  <div>
+                    <strong data-duolingo-xp>52,206</strong>
+                    <span>Total XP</span>
+                  </div>
                 </div>
               </div>
-              <div class="duolingo-stat">
-                <img class="duolingo-stat-icon" src="assets/duolingo/streak.svg" alt="" aria-hidden="true">
-                <div>
-                  <strong data-duolingo-streak>331</strong>
-                  <span>Day streak</span>
+
+              <div class="duolingo-activity">
+                <div class="duolingo-activity-head">
+                  <span>Last 15 days XP</span>
+                </div>
+                <div
+                  class="duolingo-heatmap"
+                  data-duolingo-heatmap
+                  role="list"
+                  aria-label="Daily Duolingo XP for the last 15 days"
+                >
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="17 May: 55 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-2" role="img" aria-label="18 May: 72 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="19 May: 45 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-2" role="img" aria-label="20 May: 110 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="21 May: 35 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-3" role="img" aria-label="22 May: 138 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-4" role="img" aria-label="23 May: 211 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="24 May: 20 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="25 May: 45 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="26 May: 12 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-2" role="img" aria-label="27 May: 102 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="28 May: 45 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="29 May: 30 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="30 May: 29 XP"></span>
+                  <span class="duolingo-heatmap-cell is-level-4" role="img" aria-label="31 May: 261 XP"></span>
+                </div>
+                <div class="duolingo-legend" aria-hidden="true">
+                  <span>Less</span>
+                  <i class="is-level-0"></i>
+                  <i class="is-level-1"></i>
+                  <i class="is-level-2"></i>
+                  <i class="is-level-3"></i>
+                  <i class="is-level-4"></i>
+                  <span>More</span>
                 </div>
               </div>
-              <div class="duolingo-stat">
-                <img class="duolingo-stat-icon" src="assets/duolingo/XP.svg" alt="" aria-hidden="true">
-                <div>
-                  <strong data-duolingo-xp>52,206</strong>
-                  <span>Total XP</span>
+            </article>
+
+          </div>
+
+          <div class="bento-stack bento-stack--right">
+            <article class="bento-card film-card lb-card" id="lbCard" aria-labelledby="film-title">
+
+              <!-- Background videos, one per film -->
+              <video class="bg-video" data-film="mulholland"   src="assets/videos/mulholland_drive.mp4"              aria-hidden="true" muted loop playsinline preload="auto"></video>
+              <video class="bg-video" data-film="worst-person" src="assets/videos/the_worst_person_in_the_world.mp4" aria-hidden="true" muted loop playsinline preload="auto"></video>
+              <video class="bg-video" data-film="aftersun"     src="assets/videos/aftersun.mp4"                      aria-hidden="true" muted loop playsinline preload="auto"></video>
+              <video class="bg-video" data-film="bttf"         src="assets/videos/btf.mp4"                           aria-hidden="true" muted loop playsinline preload="auto"></video>
+
+              <!-- Scrim keeps logo and posters readable over video -->
+              <div class="bg-scrim"></div>
+
+              <!-- Content layer -->
+              <div class="lb-content">
+
+                <!-- Letterboxd logo -->
+                <div class="lb-logo" id="film-title" aria-label="Letterboxd top 4">
+                  <svg viewBox="0 0 499 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M22.8251 49.9978C35.431 49.9978 45.6502 39.7787 45.6502 27.1728C45.6502 14.5668 35.431 4.34766 22.8251 4.34766C10.2191 4.34766 0 14.5668 0 27.1728C0 39.7787 10.2191 49.9978 22.8251 49.9978Z" fill="#FF8000"/>
+                    <path d="M61.954 49.9978C74.56 49.9978 84.7791 39.7787 84.7791 27.1728C84.7791 14.5668 74.56 4.34766 61.954 4.34766C49.3481 4.34766 39.1289 14.5668 39.1289 27.1728C39.1289 39.7787 49.3481 49.9978 61.954 49.9978Z" fill="#00E054"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M42.3897 15.4124C44.4591 18.847 45.6504 22.8686 45.6504 27.1727C45.6504 31.4769 44.4613 35.4984 42.3897 38.9331C40.2494 35.3842 39.1217 31.317 39.1289 27.1727C39.1289 23.0403 40.2267 19.1622 42.1505 15.8189L42.3897 15.4124Z" fill="#f8fafc"/>
+                    <path d="M101.083 49.9978C113.689 49.9978 123.908 39.7787 123.908 27.1728C123.908 14.5668 113.689 4.34766 101.083 4.34766C88.4767 4.34766 78.2576 14.5668 78.2576 27.1728C78.2576 39.7787 88.4767 49.9978 101.083 49.9978Z" fill="#40BCF4"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M81.5183 15.4124C83.5878 18.847 84.7791 22.8686 84.7791 27.1727C84.7791 31.4769 83.59 35.4984 81.5183 38.9331C79.378 35.3842 78.2503 31.317 78.2576 27.1727C78.2576 23.0403 79.3554 19.1622 81.2792 15.8189L81.5183 15.4124Z" fill="#f8fafc"/>
+                    <path class="lb-wordmark" fill-rule="evenodd" clip-rule="evenodd" d="M201.189 11.3365C214.247 11.3365 219.788 19.8078 219.788 29.8074V33.9485H193.74C194.311 38.4049 196.859 40.8265 201.317 40.8265C204.565 40.8265 206.35 39.4244 207.241 37.3245H219.534C217.495 45.0937 211.763 49.9978 201 49.9978C188.196 49.9978 182.21 42.8655 182.21 31.4639V30.3813C182.21 18.534 189.661 11.3365 201.189 11.3365ZM295.489 11.3386C308.545 11.3386 314.084 19.81 314.084 29.8096V33.9507H288.036C288.609 38.407 291.157 40.8287 295.616 40.8287C298.863 40.8287 300.646 39.4265 301.539 37.3266H313.83C311.793 45.0959 306.061 50 295.296 50C282.494 50 276.508 42.8677 276.508 31.466V30.3835C276.508 18.5362 283.96 11.3408 295.487 11.3408M359.045 0V18.0253C361.019 13.8211 364.715 11.3365 369.871 11.3365C378.153 11.4017 384.268 17.0688 384.268 29.5531V30.6987C384.268 43.2459 378.725 49.9978 369.617 49.9978C364.013 49.9978 360.385 47.1936 358.6 42.8655L357.708 49.0435H347.581V0H359.045ZM406.491 11.3365C417.576 11.3365 425.09 17.9601 425.09 30.3161V31.4639C425.09 43.7568 417.702 49.9978 406.43 49.9978C394.455 49.9978 387.831 43.7568 387.831 31.4639V30.3161C387.831 17.7688 395.603 11.3365 406.491 11.3365ZM498.652 0V49.0413H488.781L487.699 42.609C485.851 46.9414 482.155 49.7435 476.488 49.7435C467.571 49.7435 461.967 43.309 461.967 30.6356V29.5531C461.967 17.1319 468.08 11.4017 476.551 11.4017C481.901 11.4017 485.405 13.6298 487.251 17.3884V0H498.652ZM437.575 12.1016L443.624 21.4643L449.674 12.1016H462.732L450.439 29.6813L463.56 49.0413H450.311L443.561 38.5983L436.809 49.0413H423.18L436.809 29.8074L424.453 12.1016H437.575ZM343.446 11.5908V23.7577H339.116C332.362 23.7577 330.708 26.1141 330.708 32.6747V49.0435H318.86V12.0995H328.16L329.751 19.6774C330.962 13.9472 334.72 11.5908 341.344 11.5908H343.446ZM238.577 2.86509V12.1016H247.72C248.94 12.1068 250.158 11.9786 251.35 11.7191C253.709 11.4017 254.6 10.3822 254.98 7.26273C255.172 5.73236 255.3 4.39329 255.363 2.86509H264.917V12.1016H273.708V22.3556H264.917V31.2095C264.917 37.5788 265.873 38.2788 271.351 38.2788H273.708V49.0413H267.847C256.7 49.0413 253.963 45.0307 253.963 33.5029V22.3556H238.577V31.2095C238.577 37.5788 239.531 38.2788 245.009 38.2788H247.365V49.0413H241.505C230.36 49.0413 227.621 45.0307 227.621 33.5029V22.3556H221.38V12.7386C222.78 12.7386 223.736 12.6103 225.01 12.356C227.366 12.0386 228.258 11.0191 228.64 7.89748C228.831 6.36929 228.958 4.39329 229.021 2.86509H238.577ZM159.793 3.37594V37.6418H178.966V49.0413H147.82V3.37594H159.793ZM406.559 21.1447C402.226 21.1447 399.363 24.1403 399.363 30.3182V31.3356C399.363 37.0049 402.226 39.9983 406.493 39.9983C410.763 39.9983 413.565 37.1332 413.565 31.3356V30.3161C413.565 24.2663 411.017 21.1447 406.559 21.1447ZM365.926 20.9556C361.724 20.9556 358.856 24.2033 358.856 29.6161V30.4443C358.856 36.8788 361.661 39.8722 365.865 39.8722C370.132 39.8722 372.743 37.1332 372.743 30.6356V29.7444C372.743 23.8837 369.938 20.9556 365.926 20.9556ZM480.501 20.9556C476.169 20.9556 473.623 23.9468 473.623 29.7444V30.5704C473.623 37.1962 476.362 39.8722 480.308 39.8722C484.577 39.8722 487.379 36.8136 487.379 30.5726V29.7444C487.379 24.1403 484.64 20.9556 480.501 20.9556ZM201.317 20.1252C196.987 20.1252 194.503 22.3556 193.74 26.6858H208.326C207.815 22.5468 205.65 20.1252 201.317 20.1252ZM295.616 20.1252C291.283 20.1252 288.801 22.3556 288.036 26.6858H302.622C302.111 22.5468 299.948 20.1252 295.616 20.1252Z" fill="#334455"/>
+                  </svg>
+                  <span class="bento-kicker lb-title-suffix">Top 4</span>
                 </div>
-              </div>
-            </div>
 
-            <div class="duolingo-activity">
-              <div class="duolingo-activity-head">
-                <span>Last 15 days XP</span>
-              </div>
-              <div
-                class="duolingo-heatmap"
-                data-duolingo-heatmap
-                role="list"
-                aria-label="Daily Duolingo XP for the last 15 days"
-              >
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="17 May: 55 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-2" role="img" aria-label="18 May: 72 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="19 May: 45 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-2" role="img" aria-label="20 May: 110 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="21 May: 35 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-3" role="img" aria-label="22 May: 138 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-4" role="img" aria-label="23 May: 211 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="24 May: 20 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="25 May: 45 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="26 May: 12 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-2" role="img" aria-label="27 May: 102 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="28 May: 45 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="29 May: 30 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-1" role="img" aria-label="30 May: 29 XP"></span>
-                <span class="duolingo-heatmap-cell is-level-4" role="img" aria-label="31 May: 261 XP"></span>
-              </div>
-              <div class="duolingo-legend" aria-hidden="true">
-                <span>Less</span>
-                <i class="is-level-0"></i>
-                <i class="is-level-1"></i>
-                <i class="is-level-2"></i>
-                <i class="is-level-3"></i>
-                <i class="is-level-4"></i>
-                <span>More</span>
-              </div>
-            </div>
-          </article>
+                <!-- Posters -->
+                <div class="lb-posters">
+                  <a class="poster-wrap" data-film="mulholland" href="https://letterboxd.com/film/mulholland-drive/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/posters/mulholland_drive.png" alt="Mulholland Drive" />
+                  </a>
+                  <a class="poster-wrap" data-film="worst-person" href="https://letterboxd.com/film/the-worst-person-in-the-world/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/posters/worst_person.png" alt="The Worst Person in the World" />
+                  </a>
+                  <a class="poster-wrap" data-film="aftersun" href="https://letterboxd.com/film/aftersun/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/posters/aftersun.png" alt="Aftersun" />
+                  </a>
+                  <a class="poster-wrap" data-film="bttf" href="https://letterboxd.com/film/back-to-the-future/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/posters/back_to_the_future.png" alt="Back to the Future" />
+                  </a>
+                </div>
 
-          <button
-            class="bento-card fishing-card"
-            type="button"
-            aria-haspopup="dialog"
-            aria-controls="fishing-modal"
-            data-fishing-modal-trigger
-          >
-            <span class="bento-kicker">FISHING WITH LYNCH</span>
-            <p>
-              A David Lynch-inspired note on going deeper, catching ideas, and knowing when to
-              let the work swim off.
-            </p>
-          </button>
+              </div><!-- /lb-content -->
+
+            </article>
+
+            <button
+              class="bento-card fishing-card"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="fishing-modal"
+              data-fishing-modal-trigger
+            >
+              <span class="bento-kicker">FISHING WITH LYNCH</span>
+              <p>
+                A David Lynch-inspired note on going deeper, catching ideas, and knowing when to
+                let the work swim off.
+              </p>
+            </button>
+
+          </div>
 
           <article class="bento-card reading-card">
             <span class="bento-kicker">Books</span>
@@ -289,8 +293,7 @@
         <div>
           <h2 id="connect-title">Easy to scan, easy to reach.</h2>
           <p>
-            Replace these with your real email, LinkedIn, CV, and case-study links when the
-            content is ready.
+            Replace this with your real email address when the content is ready.
           </p>
         </div>
         <div class="connect-card">
@@ -308,8 +311,6 @@
               <span>hello@example.com</span>
             </span>
           </a>
-          <span>LinkedIn link slot</span>
-          <span>CV link slot</span>
         </div>
       </section>
     </main>
