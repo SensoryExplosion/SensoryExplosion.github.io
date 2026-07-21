@@ -2,7 +2,7 @@
   color-scheme: light;
   --bg: #fbfcfd;
   --about-bg: #ADD9F4;
-  --ink: oklch(17.5% 0.013 257);
+  --ink: #29334f;
   --hero-ink: oklch(31% 0.055 272);
   --muted: oklch(45% 0.014 257);
   --quiet: oklch(38% 0.015 257);
@@ -315,6 +315,20 @@ main,
   display: block;
   font: inherit;
   font-weight: 400;
+  isolation: isolate;
+  position: relative;
+  width: fit-content;
+}
+
+.hero-title__accent::before {
+  background: #d6f0fe;
+  border-radius: 0.11em;
+  content: "";
+  inset: 0.03em -0.1em -0.02em -0.12em;
+  position: absolute;
+  transform: rotate(-2.3deg);
+  transform-origin: center;
+  z-index: -1;
 }
 
 .hero-copy p {
@@ -492,9 +506,10 @@ main,
 
 .project-content h3 {
   align-items: baseline;
+  color: #29334f;
   display: flex;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
   gap: 24px;
   justify-content: space-between;
   line-height: 1.18;
@@ -502,11 +517,15 @@ main,
   text-wrap: balance;
 }
 
+.project-summary,
+.bento-card p {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
 .project-summary {
-  color: var(--muted);
-  font-size: 1.05rem;
-  font-weight: 500;
-  line-height: 1.5;
+  color: #556071;
+  line-height: 1.68;
   margin: 0;
   max-width: 100%;
 }
@@ -590,11 +609,14 @@ main,
 }
 
 .bento-card p {
-  color: var(--ink);
-  font-size: 1rem;
+  color: #556071;
   line-height: 1.54;
   margin: 0;
   text-wrap: pretty;
+}
+
+.bento-card:not(.duolingo-card):not(.lb-card) .bento-kicker {
+  color: #29334f;
 }
 
 .intro-card {
@@ -1368,6 +1390,11 @@ body.fishing-modal-open {
     margin-top: 26px;
   }
 
+  .project-summary {
+    font-size: 0.93rem;
+    line-height: 1.6;
+  }
+
   .section-heading h2,
   .connect-section h2 {
     font-size: 1.45rem;
@@ -1386,8 +1413,10 @@ body.fishing-modal-open {
     font-size: 1.32rem;
   }
 
-  .project-summary {
+  .project-summary,
+  .bento-card p {
     font-size: 1rem;
+    line-height: 1.6;
   }
 
   .bento-grid {
