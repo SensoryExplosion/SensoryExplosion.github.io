@@ -1,3 +1,72 @@
+// ── Apple-style card corners ──
+(function () {
+  const cards = document.querySelectorAll(
+    ".work-section .thumbnail, .about-section .bento-card"
+  );
+
+  if (
+    !cards.length ||
+    !window.ResizeObserver ||
+    !window.CSS?.supports('clip-path', 'path("M0 0H1V1H0Z")')
+  ) {
+    return;
+  }
+
+  function appleCornerPath({ width, height, radius, smoothing = 60 }) {
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const w = Math.max(0, width);
+    const h = Math.max(0, height);
+    const r = clamp(radius, 0, Math.min(w, h) / 2);
+    const exponent = 2 + clamp(smoothing, 0, 100) / 100 * 3.35;
+    const points = [];
+    const steps = 22;
+
+    const corner = (cx, cy, start, end) => {
+      for (let index = 0; index <= steps; index += 1) {
+        const angle = start + (end - start) * (index / steps);
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const x = cx + r * Math.sign(cos) * Math.abs(cos) ** (2 / exponent);
+        const y = cy + r * Math.sign(sin) * Math.abs(sin) ** (2 / exponent);
+        points.push([+x.toFixed(3), +y.toFixed(3)]);
+      }
+    };
+
+    points.push([r, 0], [w - r, 0]);
+    corner(w - r, r, -Math.PI / 2, 0);
+    points.push([w, h - r]);
+    corner(w - r, h - r, 0, Math.PI / 2);
+    points.push([r, h]);
+    corner(r, h - r, Math.PI / 2, Math.PI);
+    points.push([0, r]);
+    corner(r, r, Math.PI, Math.PI * 1.5);
+
+    return `M${points.map(([x, y]) => `${x} ${y}`).join("L")}Z`;
+  }
+
+  function smoothCard(card) {
+    const width = card.clientWidth;
+    const height = card.clientHeight;
+    const radius = parseFloat(getComputedStyle(card).borderTopLeftRadius);
+
+    if (!width || !height || !radius) {
+      return;
+    }
+
+    const path = appleCornerPath({ width, height, radius, smoothing: 60 });
+    card.style.clipPath = `path("${path}")`;
+  }
+
+  const observer = new ResizeObserver((entries) => {
+    entries.forEach(({ target }) => smoothCard(target));
+  });
+
+  cards.forEach((card) => {
+    smoothCard(card);
+    observer.observe(card);
+  });
+})();
+
 (function () {
   const topbar = document.querySelector(".topbar");
   const navToggle = document.querySelector(".nav-toggle");
@@ -154,632 +223,6 @@
   );
 
   observer.observe(aboutSection);
-})();
-
-// ── Expanding project modal ──
-(function () {
-  const modal = document.getElementById("project-scroll-modal");
-  const triggers = document.querySelectorAll("[data-scroll-modal]");
-
-  if (!modal || !triggers.length) {
-    return;
-  }
-
-  const content = modal.querySelector(".sm-content");
-  const deckHost = modal.querySelector(".sm-deck-host");
-  const closeButton = modal.querySelector(".sm-close-btn");
-  const deckTemplate = document.getElementById("pet-insurance-case-study-template");
-  const caseStudyUrl = new URL("pet-insurance-case-study/index.html", document.baseURI);
-  const caseStudyStylesUrl = new URL("pet-insurance-case-study/styles.css?v=3", document.baseURI);
-  const mobileCaseStudy = window.matchMedia("(max-width: 680px)");
-  const modalGapRatio = 0.22;
-  const deckWheelThreshold = 90;
-  const deckSlideCooldown = 800;
-  const deckExpansionSettleDuration = 600;
-  let animationFrame;
-  let deckApi;
-  let deckLoadPromise;
-  let deckInputUnlockAt = 0;
-  let modalCollapseUnlockAt = 0;
-  let expansionUnlocked = false;
-  let lastTrigger;
-
-  function updateScrollModalStyles() {
-    const maxScrollThreshold = window.innerHeight * modalGapRatio;
-    const maxScrollableDistance = Math.max(0, modal.scrollHeight - modal.clientHeight);
-    const fullScreenThreshold = Math.min(maxScrollThreshold, maxScrollableDistance);
-    const rawProgress =
-      fullScreenThreshold > 0
-        ? Math.min(1, Math.max(0, modal.scrollTop / fullScreenThreshold))
-        : 0;
-    const isAtScrollEnd =
-      fullScreenThreshold > 0 && modal.scrollTop >= maxScrollableDistance - 1;
-    const isExpanded = isAtScrollEnd || rawProgress >= 0.999;
-    const progress = isExpanded ? 1 : rawProgress;
-    const currentShrink = 2 - 2 * progress;
-    const currentRadius = 30 - 30 * progress;
-    const becameExpanded = isExpanded && !modal.classList.contains("is-expanded");
-
-    content.style.setProperty("--shrink-x", currentShrink);
-    content.style.setProperty("--radius", `${currentRadius}px`);
-    modal.classList.toggle("is-expanded", isExpanded);
-    document.body.classList.toggle("sm-modal-expanded", isExpanded);
-
-    if (becameExpanded) {
-      deckInputUnlockAt = window.performance.now() + deckExpansionSettleDuration;
-      modalCollapseUnlockAt = 0;
-      deckApi?.resetWheel();
-    }
-  }
-
-  function requestStyleUpdate() {
-    if (animationFrame) {
-      return;
-    }
-
-    animationFrame = window.requestAnimationFrame(() => {
-      updateScrollModalStyles();
-      animationFrame = undefined;
-    });
-  }
-
-  function initializeDeck(deckRoot) {
-    const main = deckRoot.querySelector("main");
-    const sections = Array.from(main.querySelectorAll(":scope > section"));
-    const counter = deckRoot.querySelector("#counter");
-    const previousButton = deckRoot.querySelector("#prev-slide");
-    const nextButton = deckRoot.querySelector("#next-slide");
-    const heartLayer = deckRoot.querySelector(".shared-heart");
-    const heartArtifact = heartLayer.querySelector(".long-artifact");
-    const consentLayer = deckRoot.querySelector(".shared-consent");
-    const consentArtifact = consentLayer.querySelector(".long-artifact");
-    let current = 0;
-    let wheelLocked = false;
-    let wheelRemainder = 0;
-    let touchStartY = 0;
-    let touchStartScrollTop = 0;
-    const artifactExitTimers = new WeakMap();
-
-    function setLayerOffset(layer, offset) {
-      layer.style.setProperty("--artifact-slide-y", `${offset}px`);
-    }
-
-    function suppressTransition(element, callback) {
-      const previousTransition = element.style.transition;
-      element.style.transition = "none";
-      callback();
-      element.offsetHeight;
-      element.style.transition = previousTransition;
-    }
-
-    function clearArtifactExit(layer) {
-      const exitTimer = artifactExitTimers.get(layer);
-
-      if (exitTimer) {
-        window.clearTimeout(exitTimer);
-        artifactExitTimers.delete(layer);
-      }
-    }
-
-    function resetArtifact(layer, artifact) {
-      clearArtifactExit(layer);
-      layer.classList.remove("is-visible");
-      layer.removeAttribute("data-step");
-      setLayerOffset(layer, 0);
-      artifact.style.width = "";
-      artifact.style.setProperty("--artifact-x", "0px");
-      artifact.style.setProperty("--artifact-y", "0px");
-      artifact.style.setProperty("--artifact-scale", "1");
-    }
-
-    function positionArtifact(layer, artifact, stepIndex, stepCount, options = {}) {
-      const artifactHeight = artifact.offsetHeight;
-      const isMobile = window.matchMedia("(max-width: 680px)").matches;
-      let scale;
-      let offset;
-      let xOffset;
-
-      if (isMobile) {
-        const visibleWidth = layer.clientWidth;
-        const visibleHeight = layer.clientHeight;
-        const focus = options.mobileFocus?.[stepIndex] || { x: 0.5, y: 0.5 };
-        const artifactWidth = artifact.offsetWidth;
-        const minX = Math.min(0, visibleWidth - artifactWidth);
-        const minY = Math.min(0, visibleHeight - artifactHeight);
-
-        scale = 1;
-        xOffset = Math.min(0, Math.max(minX, visibleWidth / 2 - artifactWidth * focus.x));
-        offset = Math.min(0, Math.max(minY, visibleHeight / 2 - artifactHeight * focus.y));
-      } else {
-        const visibleHeight = deckRoot.clientHeight;
-        scale = options.zoomFirstStep && stepIndex === 0 ? 1 : 1 / 1.34;
-        const maxOffset = Math.max(0, artifactHeight * scale - visibleHeight);
-        const progress = stepCount <= 1 ? 0 : stepIndex / (stepCount - 1);
-        offset = -maxOffset * progress;
-        xOffset =
-          options.zoomFirstStep && stepIndex === 0
-            ? Math.max(0, deckRoot.clientWidth * 0.25 - artifact.offsetWidth * scale * 0.224)
-            : 0;
-      }
-
-      layer.classList.add("is-visible");
-      layer.dataset.step = String(stepIndex);
-      artifact.style.setProperty("--artifact-x", `${xOffset}px`);
-      artifact.style.setProperty("--artifact-y", `${offset}px`);
-      artifact.style.setProperty("--artifact-scale", String(scale));
-    }
-
-    function getArtifactStep(section, classPrefix) {
-      return section?.className.match(new RegExp(`\\b${classPrefix}-(\\d)\\b`));
-    }
-
-    function updateArtifactGroup(config) {
-      const { layer, artifact, step, previousStep, stepCount, direction, options } = config;
-      const isEntering = step && !previousStep;
-      const isLeaving = !step && previousStep;
-
-      if (step) {
-        const stepIndex = Number(step[1]) - 1;
-
-        clearArtifactExit(layer);
-
-        if (isEntering && direction !== 0) {
-          const entryOffset = direction > 0 ? deckRoot.clientHeight : -deckRoot.clientHeight;
-
-          suppressTransition(layer, () => {
-            setLayerOffset(layer, entryOffset);
-          });
-          suppressTransition(artifact, () => {
-            positionArtifact(layer, artifact, stepIndex, stepCount, options);
-          });
-          setLayerOffset(layer, 0);
-          return;
-        }
-
-        setLayerOffset(layer, 0);
-        positionArtifact(layer, artifact, stepIndex, stepCount, options);
-        return;
-      }
-
-      if (isLeaving && direction !== 0) {
-        const exitOffset = direction > 0 ? -deckRoot.clientHeight : deckRoot.clientHeight;
-        const exitTimer = artifactExitTimers.get(layer);
-
-        if (exitTimer) {
-          window.clearTimeout(exitTimer);
-        }
-
-        setLayerOffset(layer, exitOffset);
-        artifactExitTimers.set(
-          layer,
-          window.setTimeout(() => {
-            resetArtifact(layer, artifact);
-          }, 620)
-        );
-        return;
-      }
-
-      resetArtifact(layer, artifact);
-    }
-
-    function updateArtifacts(section, previousSection, direction) {
-      const heartStep = getArtifactStep(section, "heart-frame");
-      const previousHeartStep = getArtifactStep(previousSection, "heart-frame");
-      const consentStep = getArtifactStep(section, "consent-frame");
-      const previousConsentStep = getArtifactStep(previousSection, "consent-frame");
-
-      updateArtifactGroup({
-        layer: heartLayer,
-        artifact: heartArtifact,
-        step: heartStep,
-        previousStep: previousHeartStep,
-        stepCount: 3,
-        direction,
-        options: {
-          zoomFirstStep: true,
-          mobileFocus: [
-            { x: 0.23, y: 0.18 },
-            { x: 0.5, y: 0.56 },
-            { x: 0.55, y: 0.76 },
-          ],
-        },
-      });
-
-      updateArtifactGroup({
-        layer: consentLayer,
-        artifact: consentArtifact,
-        step: consentStep,
-        previousStep: previousConsentStep,
-        stepCount: 2,
-        direction,
-        options: {
-          mobileFocus: [
-            { x: 0.7, y: 0.31 },
-            { x: 0.72, y: 0.81 },
-          ],
-        },
-      });
-    }
-
-    function goTo(index) {
-      if (index < 0 || index >= sections.length) {
-        return;
-      }
-
-      const previous = current;
-      current = index;
-      deckRoot.dataset.slide = String(current + 1);
-      updateArtifacts(sections[current], sections[previous], Math.sign(current - previous));
-      sections[current].scrollTop = 0;
-      deckHost.scrollTop = 0;
-      main.style.transform = `translateY(${-deckRoot.clientHeight * current}px)`;
-      counter.textContent = `${current + 1} / ${sections.length}`;
-      previousButton.disabled = current === 0;
-      nextButton.disabled = current === sections.length - 1;
-    }
-
-    function moveBy(amount) {
-      goTo(current + amount);
-    }
-
-    function handleWheel(deltaY) {
-      if (wheelLocked) {
-        return false;
-      }
-
-      wheelRemainder += deltaY;
-      if (Math.abs(wheelRemainder) < deckWheelThreshold) {
-        return false;
-      }
-
-      const previousSlide = current;
-      moveBy(wheelRemainder > 0 ? 1 : -1);
-      wheelRemainder = 0;
-      wheelLocked = true;
-
-      window.setTimeout(() => {
-        wheelLocked = false;
-      }, deckSlideCooldown);
-
-      return current !== previousSlide;
-    }
-
-    function resetWheel() {
-      wheelLocked = false;
-      wheelRemainder = 0;
-    }
-
-    function isAtFirstSlide() {
-      return current === 0;
-    }
-
-    deckRoot.addEventListener(
-      "touchstart",
-      (event) => {
-        touchStartY = event.touches[0]?.clientY || 0;
-        touchStartScrollTop = sections[current].scrollTop;
-      },
-      { passive: true }
-    );
-
-    deckRoot.addEventListener(
-      "touchend",
-      (event) => {
-        const deltaY = touchStartY - (event.changedTouches[0]?.clientY || touchStartY);
-
-        if (Math.abs(deltaY) < 40) return;
-
-        const activeSlide = sections[current];
-        const maxScroll = Math.max(0, activeSlide.scrollHeight - activeSlide.clientHeight);
-        const startedAtBoundary =
-          deltaY > 0 ? touchStartScrollTop >= maxScroll - 1 : touchStartScrollTop <= 1;
-
-        if (maxScroll > 1 && !startedAtBoundary) return;
-
-        moveBy(deltaY > 0 ? 1 : -1);
-      },
-      { passive: true }
-    );
-
-    previousButton.addEventListener("click", () => moveBy(-1));
-    nextButton.addEventListener("click", () => moveBy(1));
-    window.addEventListener("resize", () => goTo(current));
-    goTo(0);
-
-    return {
-      goTo,
-      moveBy,
-      handleWheel,
-      resetWheel,
-      isAtFirstSlide,
-      refresh: () => goTo(current),
-    };
-  }
-
-  function ensureDeck() {
-    if (deckApi) {
-      return Promise.resolve(deckApi);
-    }
-
-    if (deckLoadPromise) {
-      return deckLoadPromise;
-    }
-
-    if (!deckTemplate) {
-      return Promise.reject(new Error("Case study template is missing."));
-    }
-
-    const shadowRoot = deckHost.attachShadow({ mode: "open" });
-    const deckStyles = document.createElement("link");
-    const deckBaseStyles = document.createElement("style");
-    const deckRoot = document.createElement("div");
-    const deckContent = deckTemplate.content.cloneNode(true);
-
-    deckStyles.rel = "stylesheet";
-    deckStyles.href = caseStudyStylesUrl.href;
-    deckRoot.className = "case-study-deck";
-    deckBaseStyles.textContent = `
-      :host {
-        --surface-brand: #135ee2;
-        --fill-secondary: #537091;
-        --surface-secondary: #e4eaf0;
-        --text-primary: #0a285c;
-        --bg: var(--surface-secondary);
-        --bg-soft: var(--surface-secondary);
-        --paper: #ffffff;
-        --ink: #151719;
-        --ink-soft: #343a40;
-        --muted: #5e6872;
-        --muted-strong: #46505a;
-        --quiet: #e8ecef;
-        --line: #d5dbe0;
-        --line-strong: #9aa4ad;
-        --shadow: 0 18px 50px rgba(21, 23, 25, 0.09);
-        --shadow-soft: 0 10px 30px rgba(21, 23, 25, 0.07);
-        --radius: 8px;
-        --radius-lg: 12px;
-        --max-wide: 1120px;
-        --max-reading: 760px;
-        --space-1: 8px;
-        --space-2: 16px;
-        --space-3: 24px;
-        --space-4: 32px;
-        --space-5: 40px;
-        --space-6: 48px;
-        --space-8: 64px;
-        --space-10: 80px;
-        --space-12: 96px;
-        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-        display: block;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .case-study-deck {
-        background: var(--bg);
-        color: var(--ink);
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 16px;
-        font-weight: 400;
-        height: 100%;
-        letter-spacing: 0;
-        line-height: 1.6;
-        overflow: hidden;
-        position: relative;
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      .case-study-deck main {
-        transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform;
-      }
-    `;
-
-    deckContent.querySelectorAll("[src]").forEach((asset) => {
-      asset.src = new URL(asset.getAttribute("src"), caseStudyUrl).href;
-    });
-
-    deckRoot.append(deckContent);
-    shadowRoot.append(deckStyles, deckBaseStyles, deckRoot);
-    deckApi = initializeDeck(deckRoot);
-    deckStyles.addEventListener("load", () => deckApi?.refresh(), { once: true });
-    deckLoadPromise = Promise.resolve(deckApi);
-
-    return deckLoadPromise;
-  }
-
-  function openScrollModal(trigger) {
-    lastTrigger = trigger;
-    expansionUnlocked = false;
-    deckInputUnlockAt = 0;
-    modalCollapseUnlockAt = 0;
-    modal.scrollTop = 0;
-    modal.classList.remove("is-expanded");
-    document.body.classList.remove("sm-modal-expanded");
-    updateScrollModalStyles();
-    ensureDeck();
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("sm-modal-open");
-  }
-
-  function finalizeScrollModalClose(restoreFocus) {
-    modal.classList.remove("active", "is-closing", "is-expanded");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("sm-modal-open", "sm-modal-expanded");
-    expansionUnlocked = false;
-    deckInputUnlockAt = 0;
-    modalCollapseUnlockAt = 0;
-    deckApi?.goTo(0);
-    modal.scrollTop = 0;
-    updateScrollModalStyles();
-
-    if (restoreFocus && lastTrigger) {
-      lastTrigger.focus({ preventScroll: true });
-    } else if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-  }
-
-  function closeScrollModal({ restoreFocus = true } = {}) {
-    if (!modal.classList.contains("active") || modal.classList.contains("is-closing")) {
-      return;
-    }
-
-    let closeFinished = false;
-    const closeFallback = window.setTimeout(() => {
-      if (!closeFinished) {
-        closeFinished = true;
-        content.removeEventListener("transitionend", handleCloseTransition);
-        finalizeScrollModalClose(restoreFocus);
-      }
-    }, 700);
-
-    function handleCloseTransition(event) {
-      if (closeFinished) {
-        return;
-      }
-
-      if (event.target !== content || event.propertyName !== "transform") {
-        return;
-      }
-
-      content.removeEventListener("transitionend", handleCloseTransition);
-      window.clearTimeout(closeFallback);
-      closeFinished = true;
-      finalizeScrollModalClose(restoreFocus);
-    }
-
-    content.addEventListener("transitionend", handleCloseTransition);
-    modal.classList.add("is-closing");
-  }
-
-  triggers.forEach((trigger) => {
-    trigger.addEventListener("click", (event) => {
-      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-        return;
-      }
-
-      if (mobileCaseStudy.matches) {
-        return;
-      }
-
-      event.preventDefault();
-      openScrollModal(trigger);
-    });
-  });
-
-  closeButton.addEventListener("click", (event) => {
-    closeScrollModal({ restoreFocus: event.detail === 0 });
-  });
-
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeScrollModal({ restoreFocus: false });
-    }
-  });
-
-  function unlockExpansion() {
-    expansionUnlocked = true;
-  }
-
-  modal.addEventListener(
-    "wheel",
-    (event) => {
-      if (modal.classList.contains("is-expanded") && deckApi) {
-        if (event.deltaY < 0 && deckApi.isAtFirstSlide()) {
-          if (window.performance.now() < modalCollapseUnlockAt) {
-            if (event.cancelable) {
-              event.preventDefault();
-            }
-
-            deckApi.resetWheel();
-            return;
-          }
-
-          deckApi.resetWheel();
-          unlockExpansion();
-          return;
-        }
-
-        if (event.cancelable) {
-          event.preventDefault();
-        }
-
-        if (window.performance.now() < deckInputUnlockAt) {
-          deckApi.resetWheel();
-          return;
-        }
-
-        const changedSlide = deckApi.handleWheel(event.deltaY);
-        if (changedSlide && deckApi.isAtFirstSlide()) {
-          modalCollapseUnlockAt = window.performance.now() + deckSlideCooldown;
-        }
-
-        return;
-      }
-
-      unlockExpansion();
-    },
-    { passive: false }
-  );
-  modal.addEventListener("touchstart", unlockExpansion, { passive: true });
-  modal.addEventListener("pointerdown", unlockExpansion, { passive: true });
-  modal.addEventListener(
-    "scroll",
-    () => {
-      if (modal.classList.contains("is-closing")) {
-        return;
-      }
-
-      if (!expansionUnlocked) {
-        modal.scrollTop = 0;
-        updateScrollModalStyles();
-        return;
-      }
-
-      requestStyleUpdate();
-    },
-    { passive: true }
-  );
-
-  window.addEventListener("resize", () => {
-    if (modal.classList.contains("active")) {
-      updateScrollModalStyles();
-    }
-  });
-
-  window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && modal.classList.contains("active")) {
-      closeScrollModal();
-    }
-
-    if (!modal.classList.contains("active")) {
-      return;
-    }
-
-    const forwardKeys = ["ArrowRight", "ArrowDown", "PageDown"];
-    const backKeys = ["ArrowLeft", "ArrowUp", "PageUp"];
-
-    if (modal.classList.contains("is-expanded") && deckApi) {
-      if (forwardKeys.includes(event.key)) {
-        event.preventDefault();
-        deckApi.moveBy(1);
-      }
-
-      if (backKeys.includes(event.key)) {
-        event.preventDefault();
-        deckApi.moveBy(-1);
-      }
-    } else if (["ArrowDown", "PageDown", " ", "End"].includes(event.key)) {
-      unlockExpansion();
-    }
-  });
-
-  if (!mobileCaseStudy.matches) {
-    ensureDeck();
-  }
 })();
 
 // ── Fishing philosophy modal ──
@@ -1059,10 +502,6 @@
     maximumFractionDigits: 0
   });
   const heatmapDayCount = 15;
-  const dateFormatter = new Intl.DateTimeFormat(undefined, {
-    day: "numeric",
-    month: "short"
-  });
 
   function normalizeHeatmapEntry(entry) {
     const xp = Number(entry && entry.xp);
@@ -1127,13 +566,14 @@
           level = Math.max(1, Math.ceil((day.xp / maxXp) * 4));
         }
 
-        label = `${dateFormatter.format(day.date)}: ${formatter.format(day.xp)} XP`;
+        label = `${formatter.format(day.xp)} XP`;
+        cell.dataset.tooltip = label;
+        cell.tabIndex = 0;
       }
 
       cell.className = `duolingo-heatmap-cell is-level-${level}`;
       cell.setAttribute("role", "img");
       cell.setAttribute("aria-label", label);
-      cell.title = label;
       fragment.append(cell);
     });
 
@@ -1210,5 +650,158 @@
       v.pause();
     });
     card.classList.remove('playing');
+  });
+})();
+
+(function () {
+  if (document.documentElement.dataset.pageKind !== "portfolio") {
+    return;
+  }
+
+  let isTransitioning = false;
+  let overlayState;
+
+  function startWhenReady(frame, callback) {
+    let started = false;
+
+    function start() {
+      if (started) {
+        return;
+      }
+
+      started = true;
+      callback();
+    }
+
+    frame.addEventListener(
+      "load",
+      () => {
+        frame.classList.add("is-loaded");
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(start);
+        });
+      },
+      { once: true }
+    );
+  }
+
+  function finishAfterTransition(element, callback) {
+    let finished = false;
+
+    function finish() {
+      if (finished) {
+        return;
+      }
+
+      finished = true;
+      element.removeEventListener("transitionend", handleTransitionEnd);
+      callback();
+    }
+
+    function handleTransitionEnd(event) {
+      if (event.target === element && event.propertyName === "transform") {
+        finish();
+      }
+    }
+
+    element.addEventListener("transitionend", handleTransitionEnd);
+    window.setTimeout(finish, 800);
+  }
+
+  function closeOverlay() {
+    if (!overlayState || overlayState.isClosing) {
+      return;
+    }
+
+    overlayState.isClosing = true;
+    isTransitioning = true;
+    const { overlay, backdrop, trigger } = overlayState;
+
+    finishAfterTransition(overlay, () => {
+      overlay.remove();
+      backdrop.remove();
+      document.body.classList.remove("project-overlay-open");
+      overlayState = undefined;
+      isTransitioning = false;
+      trigger.focus({ preventScroll: true });
+    });
+
+    overlay.classList.remove("is-open", "is-active");
+    backdrop.classList.remove("is-active");
+  }
+
+  window.addEventListener("message", (event) => {
+    if (
+      event.origin === window.location.origin &&
+      event.source === overlayState?.frame.contentWindow &&
+      event.data?.type === "close-project-overlay"
+    ) {
+      closeOverlay();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && overlayState) {
+      closeOverlay();
+    }
+  });
+
+  document.querySelectorAll("[data-project-overlay]").forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      if (
+        event.defaultPrevented ||
+        isTransitioning
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      isTransitioning = true;
+
+      const frameUrl = new URL(trigger.dataset.projectUrl, document.baseURI);
+      const overlay = document.createElement("div");
+      const frame = document.createElement("iframe");
+      const backdrop = document.createElement("div");
+      const closeButton = document.createElement("button");
+
+      frameUrl.searchParams.set("display", "overlay");
+      overlay.className = "project-overlay";
+      overlay.setAttribute("aria-hidden", "true");
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-label", "Project case study");
+      frame.className = "project-overlay-frame";
+      frame.src = frameUrl.href;
+      frame.tabIndex = -1;
+      frame.title = "Project case study";
+      backdrop.className = "project-overlay-backdrop";
+      backdrop.setAttribute("aria-hidden", "true");
+      closeButton.className = "project-overlay-close";
+      closeButton.type = "button";
+      closeButton.setAttribute("aria-label", "Close case study");
+      closeButton.textContent = "×";
+      closeButton.addEventListener("click", closeOverlay);
+      overlay.append(frame, closeButton);
+      document.body.append(backdrop, overlay);
+      overlayState = { overlay, frame, backdrop, trigger };
+      document.body.classList.add("project-overlay-open");
+
+      startWhenReady(frame, () => {
+        finishAfterTransition(overlay, () => {
+          if (overlayState?.overlay !== overlay || overlayState.isClosing) {
+            return;
+          }
+
+          overlay.classList.add("is-open");
+          isTransitioning = false;
+          frame.focus();
+        });
+
+        window.requestAnimationFrame(() => {
+          backdrop.classList.add("is-active");
+          overlay.classList.add("is-active");
+        });
+      });
+    });
   });
 })();
