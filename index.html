@@ -15,7 +15,14 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20260810-eudiw-2">
+    <noscript>
+      <style>
+        .hero-title--animation-pending,
+        .hero-subtitle--animation-pending { visibility: visible; }
+        .hero-title__accent--highlight-pending::before { clip-path: none; }
+      </style>
+    </noscript>
     <script
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js"
       type="module"
@@ -23,7 +30,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/MorphSVGPlugin.min.js" defer></script>
-    <script src="script.js" defer></script>
+    <script src="script.js?v=20260810-eudiw-2" defer></script>
   </head>
   <body>
     <nav class="topbar" aria-label="Portfolio navigation">
@@ -58,11 +65,11 @@
     <header class="site-header" id="top">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <h1 id="hero-title">
+          <h1 class="hero-title--animation-pending" id="hero-title">
             Hi! I’m a designer who also reads the
-            <span class="hero-title__accent">business case.</span>
+            <span class="hero-title__accent hero-title__accent--highlight-pending"><span class="hero-title__accent-text">business case.</span></span>
           </h1>
-          <p>
+          <p class="hero-subtitle--animation-pending" id="hero-subtitle">
             I design in the uncomfortable middle where user needs, business goals and technical constraints all stare awkwardly at each other. That’s usually where the interesting work begins.
           </p>
         </div>
@@ -79,9 +86,10 @@
           <button
             class="project-card"
             type="button"
-            aria-label="Open case study 01"
+            aria-label="Open European Digital Identity Wallet case study"
             data-project-overlay
-            data-project-url="pet-insurance-case-study/index.html"
+            data-project-overlay-background="#fbfcfd"
+            data-project-url="eudiw-case-study/index.html"
           >
             <div class="thumbnail">
               <img
@@ -90,10 +98,17 @@
               >
             </div>
             <div class="project-content">
-              <h3>Project title goes here <span class="project-arrow" aria-hidden="true">→</span></h3>
+              <h3>European Digital Identity Wallet <span class="project-arrow" aria-hidden="true">→</span></h3>
               <p class="project-summary">
-                Two lines on the user problem, your contribution, and the measurable outcome.
+                A concept for making verified credentials, consent, and cross-service handoffs easier
+                to understand without hiding the complexity that matters.
               </p>
+              <div class="project-tags">
+                <span class="project-tag">UX/UI Design</span>
+                <span class="project-tag">AI</span>
+                <span class="project-tag">Digital Identity</span>
+                <span class="project-tag">SwiftUI</span>
+              </div>
             </div>
           </button>
 
@@ -116,6 +131,12 @@
                 A clearer native insurance experience shaped by behavioural science, stronger
                 product storytelling, and simpler legal consent.
               </p>
+              <div class="project-tags">
+                <span class="project-tag">UX/UI Design</span>
+                <span class="project-tag">Finance</span>
+                <span class="project-tag">Design System</span>
+                <span class="project-tag">Behavioural Science</span>
+              </div>
             </div>
           </button>
         </div>
@@ -141,10 +162,11 @@
         <div class="bento-grid">
           <div class="bento-stack bento-stack--left">
             <article class="bento-card intro-card">
-              <span class="bento-kicker">Personal note</span>
+              <span class="bento-kicker">Design philosophy</span>
               <p>
-                I like design work that rewards attention: clearer flows, quieter interfaces,
-                and tiny moments that make products feel more considerate.
+                I enjoy designing thoughtful products where every detail has earned its place. If
+                something takes up space, there must be a compelling reason for it to be there. If
+                it adds no utility, value or clarity, I’d rather leave it out.
               </p>
             </article>
 

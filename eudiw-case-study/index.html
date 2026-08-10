@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="An independent design case study exploring trust, consent, and credential sharing in a European Digital Identity Wallet."
+    />
+    <meta name="theme-color" content="#fbfcfd" />
+    <meta name="color-scheme" content="light" />
+
+    <title>Designing trust into a European Digital Identity Wallet</title>
+
+    <link
+      rel="preload"
+      as="image"
+      href="./assets/images/eudiw-identity-cover.jpg"
+      fetchpriority="high"
+    />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css?v=20260810-3" />
+    <script src="./script.js?v=20260810-2" defer></script>
+    <script src="./assets/vendor/mermaid.min.js" defer></script>
+    <script src="./flow-definitions.js" defer></script>
+    <script src="./flows.js" defer></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#case-study">Skip to the case study</a>
+
+    <main id="case-study">
+      <header class="case-header">
+        <div class="shell">
+          <a class="back-link" href="../#work">
+            <span aria-hidden="true">←</span>
+            <span>Back to work</span>
+          </a>
+
+          <h1
+            id="project-introduction"
+            tabindex="-1"
+            data-toc
+            data-toc-title="Project introduction"
+          >
+            Designing trust into a European Digital Identity Wallet
+          </h1>
+
+          <p class="case-deck">
+            A concept for making verified credentials, consent, and cross-service handoffs easier to
+            understand without hiding the complexity that matters.
+          </p>
+
+          <div class="case-meta">
+            <ul class="case-tags" aria-label="Case study topics">
+              <li>UX/UI Design</li>
+              <li>AI</li>
+              <li>Digital Identity</li>
+              <li>SwiftUI</li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <div class="shell case-layout">
+        <aside class="sticky-toc" aria-labelledby="sticky-toc-title" data-sticky-toc hidden>
+          <p class="sticky-toc__title" id="sticky-toc-title">Contents</p>
+          <ol class="sticky-toc__list" data-sticky-toc-list></ol>
+        </aside>
+
+        <article class="article">
+          <figure class="hero-figure">
+            <img
+              src="./assets/images/eudiw-identity-cover.jpg"
+              width="1726"
+              height="911"
+              alt="Conceptual translucent identity credential arranged with two mobile devices, a secure chip, and a confirmation seal."
+              fetchpriority="high"
+            />
+          </figure>
+
+          <p class="article-lead">
+            This project is an exploration of how the AI tools available today can assist the
+            product design process. I used a range of tools and methods to help me carry out
+            research, create user flows and wireframes, and produce high-fidelity designs.
+          </p>
+
+          <p>
+            I chose the European Digital Identity Framework as my test subject in order to set
+            constraints on the project and to work on something useful.
+          </p>
+
+          <aside class="disclosure" aria-label="Concept disclosure">
+            <strong>Concept disclosure</strong>
+            <span>
+              This is an independent exploration, not an official European Union wallet,
+              commissioned client project, production implementation, or validated claim of
+              regulatory compliance.
+            </span>
+          </aside>
+
+          <section aria-labelledby="trust-model">
+            <h2 id="trust-model" tabindex="-1" data-toc>
+              About the European Digital Identity Framework
+            </h2>
+
+            <p>
+              As digital life evolves faster than the rules designed to protect us, the EU Digital
+              Identity Wallet aims to return control over personal data back in the hands of those
+              it belongs to. Built on European standards, it offers citizens, residents and
+              businesses a privacy-focused solution to identify themselves, access cross-border
+              services, store and share trusted documents, authorise payments and sign documents
+              electronically all from a single app. By allowing users to share only the information
+              that is strictly necessary, the wallet can reduce tracking and profiling whilst
+              simplifying everyday tasks such as opening a bank account, applying for university,
+              obtaining electronic prescriptions or travelling. At the same time, public
+              administration and businesses stand to benefit from stronger fraud prevention, faster
+              and cheaper authentication, reduced administrative burdens and smoother digital
+              services.
+            </p>
+
+            <aside class="principle-card" aria-label="Design principle">
+              <span class="principle-label">Design principle</span>
+              <p>
+                Make the consequence legible before asking for commitment. Security is strongest
+                when the interface explains the decision as clearly as the system enforces it.
+              </p>
+            </aside>
+          </section>
+
+          <section aria-labelledby="service-journey">
+            <h2 id="service-journey" tabindex="-1" data-toc>
+              Framing the service, not just the screens
+            </h2>
+
+            <p>
+              A digital identity journey rarely belongs to one interface. It moves between an
+              issuer, the wallet holder, and a verifier, often crossing browser pages, apps, and
+              authentication steps along the way. Each transition introduces an opportunity for
+              uncertainty.
+            </p>
+
+            <p>
+              The concept therefore begins with a service journey rather than a collection of
+              isolated screens. It follows the sequence from invitation and issuer authentication
+              through credential review, storage, presentation, and confirmation. At every stage,
+              the interface identifies the current actor, the object being handled, its status, and
+              the next expected step.
+            </p>
+
+            <figure class="article-figure">
+              <img
+                src="./assets/images/eudiw-service-journey.jpg"
+                width="1672"
+                height="941"
+                alt="Wordless conceptual journey showing a credential moving from an issuing institution into a mobile wallet and on to a verifying service."
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>
+                Concept illustration: issuance and presentation across an institution, a personal
+                wallet, and a verifying service.
+              </figcaption>
+            </figure>
+
+            <p>
+              The scope is deliberately narrow. Identity proofing, account recovery, governance, and
+              cryptographic implementation remain outside this exploration. Keeping those boundaries
+              visible allows the work to examine the interaction model without presenting a
+              speculative interface as a complete system.
+            </p>
+          </section>
+
+          <section class="how-it-works" aria-labelledby="how-it-works">
+            <div class="how-it-works__layout">
+              <div class="how-it-works__intro">
+                <div class="how-it-works__heading-group">
+                  <h2
+                    class="how-it-works__heading"
+                    id="how-it-works"
+                    tabindex="-1"
+                    data-toc
+                    data-toc-title="Building blocks"
+                  >
+                    Building blocks
+                  </h2>
+                  <p class="how-it-works__summary">
+                    I researched the legal regulations, large-scale pilots, architecture and
+                    technical specifications, and then, with the help of AI, synthesised these into
+                    a developing PRD document which served as the project’s living source of truth.
+                  </p>
+                </div>
+
+                <a class="how-it-works__cta" href="https://aave.com/docs/vaults/stable-vaults">
+                  Read the Docs
+                </a>
+              </div>
+
+              <ol class="how-it-works__steps">
+                <li class="how-it-works__step">
+                  <div class="how-it-works__media how-it-works__media--logo" aria-hidden="true">
+                    <svg
+                      class="motion-stage is-running"
+                      data-building-blocks-logo
+                      viewBox="-50 -50 385 345"
+                      role="img"
+                      aria-labelledby="building-blocks-logo-title building-blocks-logo-description"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title id="building-blocks-logo-title">Animated EUR-Lex logo</title>
+                      <desc id="building-blocks-logo-description">
+                        The complete EUR-Lex logo receives a soft sweep of light while paragraph and
+                        section symbols continuously appear around its outer silhouette.
+                      </desc>
+
+                      <defs>
+                        <!--
+                          The exact European Union EUR-Lex vector, used unchanged as both
+                          visible artwork and the alpha source for the moving highlight.
+                          Source:
+                          https://commons.wikimedia.org/wiki/File:EUR-Lex_logo.svg
+                        -->
+                        <image
+                          id="building-blocks-eurlex-logo"
+                          href="./assets/how-it-works/EUR-Lex_logo.svg"
+                          x="28.55"
+                          y="43.93"
+                          width="228.39"
+                          height="191.44"
+                          preserveAspectRatio="xMidYMid meet"
+                        />
+
+                        <mask
+                          id="building-blocks-logo-alpha-mask"
+                          x="-1"
+                          y="-1"
+                          width="288"
+                          height="242"
+                          maskUnits="userSpaceOnUse"
+                          style="mask-type: alpha"
+                        >
+                          <use href="#building-blocks-eurlex-logo" />
+                        </mask>
+
+                        <!--
+                          Centered vector outlines from Noto Serif Bold. Using paths mirrors
+                          the Aave particle construction and avoids Safari's unstable SVG
+                          text bounding boxes during transforms.
+                        -->
+                        <path
+                          id="building-blocks-glyph-paragraph"
+                          d="M-2.986 9 L-2.986 7.905 L-2.718 7.905 Q-2.242 7.905 -1.86 7.812 Q-1.478 7.719 -1.25 7.409 Q-1.023 7.099 -1.023 6.437 L-1.023 -1.271 L-2.49 -1.271 Q-3.689 -1.271 -4.381 -1.839 Q-5.073 -2.408 -5.363 -3.327 Q-5.652 -4.247 -5.652 -5.321 Q-5.652 -6.975 -4.929 -7.987 Q-4.206 -9 -2.449 -9 L5.652 -9 L5.652 -7.905 L5.383 -7.905 Q4.681 -7.905 4.185 -7.646 Q3.689 -7.388 3.689 -6.417 L3.689 6.437 Q3.689 7.099 3.916 7.409 Q4.144 7.719 4.536 7.812 Q4.929 7.905 5.383 7.905 L5.652 7.905 L5.652 9 L2.201 9 L2.201 -7.719 L0.465 -7.719 L0.465 9 Z"
+                        />
+                        <path
+                          id="building-blocks-glyph-section"
+                          d="M-0.196 9 Q-1.742 9 -2.619 8.598 Q-3.495 8.196 -3.845 7.588 Q-4.196 6.979 -4.196 6.361 Q-4.196 5.557 -3.68 5.144 Q-3.165 4.732 -2.361 4.732 Q-2.361 6.093 -1.753 6.99 Q-1.144 7.887 0.072 7.887 Q1.062 7.887 1.619 7.34 Q2.175 6.794 2.175 5.887 Q2.175 5.454 2.041 5.124 Q1.907 4.794 1.536 4.464 Q1.165 4.134 0.464 3.732 Q-0.237 3.33 -1.371 2.773 Q-3.103 1.928 -3.825 1.021 Q-4.546 0.113 -4.546 -1.103 Q-4.546 -1.804 -4.175 -2.361 Q-3.804 -2.918 -3.227 -3.227 Q-3.577 -3.598 -3.835 -4.216 Q-4.093 -4.835 -4.093 -5.68 Q-4.093 -6.732 -3.567 -7.474 Q-3.041 -8.216 -2.124 -8.608 Q-1.206 -9 -0.031 -9 Q1.784 -9 2.722 -8.34 Q3.66 -7.68 3.66 -6.649 Q3.66 -6.01 3.155 -5.588 Q2.649 -5.165 1.701 -5.165 Q1.701 -5.763 1.546 -6.392 Q1.392 -7.021 1 -7.443 Q0.608 -7.866 -0.113 -7.866 Q-0.979 -7.866 -1.505 -7.361 Q-2.031 -6.856 -2.031 -5.928 Q-2.031 -5.268 -1.742 -4.876 Q-1.454 -4.485 -0.907 -4.175 Q-0.361 -3.866 0.423 -3.495 Q1.866 -2.814 2.784 -2.206 Q3.701 -1.598 4.124 -0.918 Q4.546 -0.237 4.546 0.649 Q4.546 1.392 4.155 2.062 Q3.763 2.732 3.227 3.082 Q3.948 4.01 3.948 5.289 Q3.948 6.918 2.907 7.959 Q1.866 9 -0.196 9 Z M2.258 2.258 Q2.361 2.093 2.443 1.866 Q2.526 1.639 2.526 1.371 Q2.526 0.897 2.32 0.485 Q2.113 0.072 1.567 -0.351 Q1.021 -0.773 0.01 -1.268 Q-0.67 -1.598 -1.278 -1.897 Q-1.887 -2.196 -2.381 -2.546 Q-2.711 -2.196 -2.711 -1.639 Q-2.711 -1.082 -2.443 -0.66 Q-2.175 -0.237 -1.546 0.165 Q-0.918 0.567 0.196 1.103 Q0.876 1.454 1.371 1.711 Q1.866 1.969 2.258 2.258 Z"
+                        />
+
+                        <linearGradient
+                          id="building-blocks-shimmer-gradient"
+                          x1="0"
+                          y1="0"
+                          x2="1"
+                          y2="0"
+                        >
+                          <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
+                          <stop offset="0.28" stop-color="#ffffff" stop-opacity="0.05" />
+                          <stop offset="0.5" stop-color="#fff9d6" stop-opacity="0.44" />
+                          <stop offset="0.72" stop-color="#ffffff" stop-opacity="0.06" />
+                          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+
+                      <use class="logo-base" href="#building-blocks-eurlex-logo" />
+
+                      <g mask="url(#building-blocks-logo-alpha-mask)" aria-hidden="true">
+                        <rect
+                          class="shimmer-band"
+                          x="-150"
+                          y="-70"
+                          width="96"
+                          height="390"
+                          fill="url(#building-blocks-shimmer-gradient)"
+                        />
+                      </g>
+
+                      <g data-particle-field aria-hidden="true"></g>
+                    </svg>
+                  </div>
+                  <div class="how-it-works__step-body">
+                    <div class="how-it-works__step-copy">
+                      <h3>EU Digital Identity Regulation</h3>
+                      <p>
+                        Defined the legal requirements for the wallet, including privacy, security
+                        and user controls, as well as cross-border use.
+                      </p>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="how-it-works__step">
+                  <div class="how-it-works__media how-it-works__media--carousel" aria-hidden="true">
+                    <div class="pilot-carousel" data-pilot-carousel aria-hidden="true">
+                      <div class="pilot-carousel__viewport" data-pilot-viewport>
+                        <div class="pilot-carousel__track" data-pilot-track>
+                          <figure
+                            class="pilot-carousel__slide"
+                            data-pilot-index="0"
+                            data-pilot-name="NOBID"
+                          >
+                            <img
+                              class="pilot-carousel__logo"
+                              src="./assets/how-it-works/pilot-logos/logo-home-nobid.svg"
+                              width="158"
+                              height="40"
+                              alt=""
+                              draggable="false"
+                            />
+                          </figure>
+                          <figure
+                            class="pilot-carousel__slide"
+                            data-pilot-index="1"
+                            data-pilot-name="POTENTIAL"
+                          >
+                            <img
+                              class="pilot-carousel__logo"
+                              src="./assets/how-it-works/pilot-logos/logo-home-potential.svg"
+                              width="160"
+                              height="47"
+                              alt=""
+                              draggable="false"
+                            />
+                          </figure>
+                          <figure
+                            class="pilot-carousel__slide"
+                            data-pilot-index="2"
+                            data-pilot-name="DC4EU"
+                          >
+                            <img
+                              class="pilot-carousel__logo"
+                              src="./assets/how-it-works/pilot-logos/logo-home-dc4eu.svg"
+                              width="160"
+                              height="46"
+                              alt=""
+                              draggable="false"
+                            />
+                          </figure>
+                          <figure
+                            class="pilot-carousel__slide"
+                            data-pilot-index="3"
+                            data-pilot-name="EWC"
+                          >
+                            <img
+                              class="pilot-carousel__logo"
+                              src="./assets/how-it-works/pilot-logos/logo-home-ewc.svg"
+                              width="160"
+                              height="52"
+                              alt=""
+                              draggable="false"
+                            />
+                          </figure>
+                          <figure
+                            class="pilot-carousel__slide"
+                            data-pilot-index="4"
+                            data-pilot-name="APTITUDE"
+                          >
+                            <img
+                              class="pilot-carousel__logo"
+                              src="./assets/how-it-works/pilot-logos/logo-aptitude.svg"
+                              width="99"
+                              height="56"
+                              alt=""
+                              draggable="false"
+                            />
+                          </figure>
+                          <figure
+                            class="pilot-carousel__slide"
+                            data-pilot-index="5"
+                            data-pilot-name="WE BUILD"
+                          >
+                            <img
+                              class="pilot-carousel__logo"
+                              src="./assets/how-it-works/pilot-logos/logo-webuild.svg"
+                              width="160"
+                              height="56"
+                              alt=""
+                              draggable="false"
+                            />
+                          </figure>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="how-it-works__step-body">
+                    <div class="how-it-works__step-copy">
+                      <h3>Large Scale Pilots</h3>
+                      <p>
+                        Revealed how the wallet behaves across real services and messy real-life
+                        contexts.
+                      </p>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="how-it-works__step">
+                  <div class="how-it-works__media how-it-works__media--layers" aria-hidden="true">
+                    <div class="layer-stack" data-layer-stack>
+                      <div class="layer-stack__layers" aria-hidden="true">
+                        <div class="layer-stack__layer layer-stack__layer--bottom">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="218"
+                            height="101"
+                            fill="none"
+                            viewBox="-14 0 218 101"
+                            class="layer-stack__svg layer-stack__svg--bottom"
+                          >
+                            <defs>
+                              <mask
+                                id="layer-stack-bottom-mark-cutout"
+                                maskUnits="userSpaceOnUse"
+                                x="-14"
+                                y="0"
+                                width="218"
+                                height="101"
+                              >
+                                <rect x="-14" y="0" width="218" height="101" fill="white"></rect>
+                                <ellipse
+                                  cx="94.75"
+                                  cy="50.124"
+                                  rx="52"
+                                  ry="34"
+                                  fill="black"
+                                ></ellipse>
+                              </mask>
+                            </defs>
+                            <g mask="url(#layer-stack-bottom-mark-cutout)">
+                              <path
+                                fill="#252228"
+                                fill-opacity=".15"
+                                d="m128.471 87.97.36.715zm-25.822 10.794-.137-.788zM61.027 87.97l.36-.715zM86.85 98.764l.138-.788zm82.086-66.11.36-.714zm19.025 12.702.734-.317zm-19.025 22.238-.359-.714zm19.025-12.702.734.318zM61.027 12.28l.36.714zM86.85 1.484l.138.788zm41.622 10.795-.36.714zM102.649 1.484l-.137.788zm-82.086 31.17-.36-.714zM1.54 45.356l-.735-.317zm19.024 22.238.36-.714zM1.54 54.893l-.735.318zm98.469-.975.4-.693zm0 7.8-.4-.692zm-13.511 0 .4-.692zm0-7.8-.4-.693zm31.163-10.192.4-.693zm0 7.8.4.694zm-13.511 0 .4-.692zm0-7.8.4.693zm-29.96-7.101-.4-.693zm.634 38.712-.4.693a.8.8 0 0 0 .8 0zm8.484-4.898.4.693a.8.8 0 0 0 0-1.386zM82.67 41.52l.4.693zm50.086.367-.4.693a.8.8 0 0 0 .8 0zm8.484-4.898.4.692a.799.799 0 0 0 0-1.385zM126.54 88.047a.8.8 0 1 0 .719 1.429l-.359-.715zm-2.418 3.004a.8.8 0 1 0-.716-1.431l.358.715zm-3.856.128a.8.8 0 1 0 .706 1.436l-.353-.718zm-2.46 2.971a.8.8 0 1 0-.688-1.444l.344.722zm-3.856.023c-.404.18-.584.653-.404 1.056a.8.8 0 0 0 1.057.404l-.327-.73zm-2.606 2.845a.8.8 0 0 0-.593-1.486l.296.743zm-3.841-.301a.8.8 0 0 0 .495 1.521l-.248-.76zm-2.956 2.481a.8.8 0 1 0-.355-1.56l.178.78zm-3.963-.928a.8.8 0 1 0 .207 1.586l-.104-.793zm-3.816 1.934a.8.8 0 1 0-.069-1.598l.035.799zM92.8 98.606a.8.8 0 1 0-.07 1.598l.035-.799zm-4.092 1.25a.8.8 0 1 0 .207-1.586l-.104.793zm-3.401-2.218a.8.8 0 0 0-.356 1.56l.178-.78zm-3.807.6a.8.8 0 1 0 .496-1.521l-.248.76zm-2.752-2.706a.8.8 0 0 0-.593 1.486l.296-.743zm-3.852.101a.8.8 0 0 0 .653-1.46l-.327.73zm-2.516-2.927a.8.8 0 1 0-.687 1.444l.344-.722zm-3.854-.091a.8.8 0 1 0 .707-1.436l-.353.718zm-2.433-2.995a.8.8 0 0 0-.716 1.431l.358-.716zm-3.854-.144a.8.8 0 0 0 .72-1.43l-.36.715zm-2.538-3.07a.8.8 0 1 0-.72 1.43l.36-.715zm-4.091-.268a.8.8 0 0 0 .72-1.43l-.36.715zm-2.653-3.127a.8.8 0 0 0-.72 1.429l.36-.715zm-4.091-.27a.8.8 0 1 0 .72-1.428l-.36.714zm-2.653-3.126a.8.8 0 0 0-.72 1.429l.36-.715zm-4.091-.27a.8.8 0 1 0 .72-1.428l-.36.714zm-2.653-3.126a.8.8 0 1 0-.72 1.429l.36-.715zm-4.092-.27a.8.8 0 0 0 .72-1.428l-.36.714zm-2.652-3.126a.8.8 0 1 0-.72 1.429l.36-.715zm-4.091-.27a.8.8 0 1 0 .72-1.428l-.36.714zm-2.653-3.126a.8.8 0 0 0-.72 1.429l.36-.715zm-4.091-.269a.8.8 0 1 0 .72-1.43l-.36.716zm-2.698-3.15a.8.8 0 0 0-.72 1.429l.36-.715zm-4.173-.323a.8.8 0 0 0 .73-1.424l-.365.712zm-2.687-3.207a.8.8 0 0 0-.755 1.411l.377-.705zm-4.158-.491a.8.8 0 0 0 .814-1.378l-.407.689zM5.819 58.54a.8.8 0 1 0-.953 1.285l.477-.642zm-3.922-1.505a.8.8 0 1 0 1.265-.98l-.632.49zm-.313-4.64a.8.8 0 0 0-1.567.325L.8 52.56zM.017 47.529a.8.8 0 1 0 1.567.324L.8 47.69zm3.145-3.335a.8.8 0 0 0-1.265-.98l.633.49zm1.704-3.77a.8.8 0 0 0 .953 1.285l-.476-.643zm4.122-.784a.8.8 0 1 0-.814-1.377l.407.689zm2.59-3.28a.8.8 0 1 0 .754 1.411l-.378-.705zm4.17-.371a.8.8 0 1 0-.729-1.425l.365.713zm2.724-3.176a.8.8 0 1 0 .72 1.428l-.36-.714zm4.137-.292a.8.8 0 0 0-.72-1.43l.36.715zm2.653-3.127a.8.8 0 1 0 .72 1.429l-.36-.715zm4.091-.27a.8.8 0 0 0-.72-1.428l.36.714zm2.652-3.126a.8.8 0 0 0 .72 1.429l-.36-.715zm4.092-.27a.8.8 0 1 0-.72-1.428l.36.714zm2.652-3.126a.8.8 0 0 0 .72 1.429l-.36-.715zm4.092-.27a.8.8 0 1 0-.72-1.428l.36.714zm2.653-3.126a.8.8 0 1 0 .72 1.429l-.36-.715zm4.091-.269a.8.8 0 0 0-.72-1.429l.36.714zm2.653-3.127a.8.8 0 0 0 .72 1.429l-.36-.715zm4.091-.269a.8.8 0 0 0-.72-1.429l.36.715zm2.653-3.127a.8.8 0 0 0 .72 1.43l-.36-.715zm3.977-.211a.8.8 0 1 0-.72-1.43l.36.715zm2.418-3.004a.8.8 0 0 0 .716 1.43l-.358-.715zm3.856-.129a.8.8 0 1 0-.707-1.435l.354.717zm2.46-2.97a.8.8 0 0 0 .688 1.444l-.344-.722zm3.856-.023a.8.8 0 0 0-.653-1.46l.326.73zm2.606-2.846a.8.8 0 1 0 .593 1.486l-.297-.743zm3.841.302A.8.8 0 1 0 81.5 2.01l.248.76zm2.955-2.482a.8.8 0 0 0 .356 1.56l-.178-.78zm3.964.929a.8.8 0 0 0-.207-1.587l.103.794zM92.73.044a.8.8 0 0 0 .069 1.599l-.035-.8zm3.968 1.599a.8.8 0 0 0 .07-1.599l-.035.8zm4.092-1.25a.8.8 0 1 0-.207 1.586l.103-.793zm3.401 2.217a.8.8 0 1 0 .355-1.56l-.177.78zm3.806-.6a.8.8 0 1 0-.495 1.522l.247-.76zm2.753 2.706a.8.8 0 1 0 .593-1.486l-.297.743zm3.852-.1a.8.8 0 1 0-.653 1.46l.326-.73zm2.515 2.927a.8.8 0 0 0 .688-1.445l-.344.723zm3.854.09a.8.8 0 1 0-.706 1.436l.353-.718zm2.434 2.996a.8.8 0 1 0 .716-1.431l-.358.715zm3.853.144a.8.8 0 1 0-.719 1.429l.36-.715zm2.538 3.07a.8.8 0 0 0 .72-1.43l-.36.715zm4.092.268a.8.8 0 1 0-.72 1.43l.36-.715zm2.653 3.127a.8.8 0 1 0 .719-1.429l-.36.714zm4.091.269a.8.8 0 1 0-.719 1.429l.359-.715zm2.653 3.127a.8.8 0 1 0 .719-1.43l-.36.715zm4.091.269a.8.8 0 1 0-.719 1.429l.359-.715zm2.653 3.127a.8.8 0 1 0 .719-1.43l-.36.715zm4.091.269a.8.8 0 1 0-.719 1.429l.359-.715zm2.653 3.127a.8.8 0 1 0 .719-1.43l-.36.715zm4.091.269a.8.8 0 1 0-.719 1.429l.359-.715zm2.653 3.127a.8.8 0 1 0 .719-1.43l-.36.715zm4.091.269a.8.8 0 1 0-.719 1.429l.359-.715zm2.697 3.15a.8.8 0 0 0 .721-1.43l-.361.715zm4.173.322a.8.8 0 1 0-.729 1.425l.365-.712zm2.688 3.207a.8.8 0 0 0 .755-1.41l-.378.705zm4.158.492a.8.8 0 0 0-.815 1.377l.408-.688zm2.354 3.446a.8.8 0 0 0 .954-1.285l-.477.642zm3.923 1.505a.8.8 0 0 0-1.265.98l.632-.49zm.313 4.639a.8.8 0 0 0 1.567-.324l-.784.162zm1.567 4.87a.801.801 0 0 0-1.567-.325l.783.162zm-3.145 3.334a.8.8 0 1 0 1.265.98l-.633-.49zm-1.704 3.77a.8.8 0 1 0-.954-1.285l.477.643zm-4.123.783a.8.8 0 0 0 .815 1.378l-.407-.689zm-2.588 3.28a.8.8 0 0 0-.755-1.41l.377.705zm-4.172.372a.8.8 0 1 0 .729 1.424l-.364-.712zm-2.723 3.176a.8.8 0 0 0-.721-1.429l.36.714zm-4.137.292a.8.8 0 1 0 .719 1.429l-.36-.715zm-2.653 3.127a.8.8 0 1 0-.719-1.43l.359.715zm-4.091.269a.8.8 0 1 0 .719 1.429l-.36-.715zm-2.653 3.127a.8.8 0 1 0-.719-1.43l.359.715zm-4.091.269a.8.8 0 1 0 .719 1.429l-.36-.715zm-2.653 3.127a.8.8 0 1 0-.719-1.43l.359.715zm-4.091.269a.8.8 0 1 0 .719 1.429l-.36-.715zm-2.653 3.127a.8.8 0 1 0-.719-1.43l.359.715zm-4.091.269a.8.8 0 1 0 .719 1.429l-.36-.715zm-2.653 3.127a.8.8 0 1 0-.719-1.43l.359.715zm-4.092.269a.8.8 0 0 0 .72 1.429l-.36-.715zm-2.652 3.127a.8.8 0 1 0-.72-1.43l.36.715zm-31.82-35.41a.8.8 0 0 0-.557 1.5l.279-.75zm-3.778.764a.8.8 0 0 0 .17-1.59l-.084.795zm-3.504-1.59a.8.8 0 1 0 .17 1.59l-.085-.795zm-3.05 2.326a.8.8 0 0 0-.558-1.5l.279.75zm-4.42 1.087a.8.8 0 0 0 1.252.997l-.626-.499zm1.252 4.612a.8.8 0 1 0-1.252.997l.626-.498zm2.61 3.583a.8.8 0 1 0 .558-1.5l-.28.75zm3.778-.763a.8.8 0 1 0-.17 1.59l.085-.795zm3.505 1.59a.8.8 0 0 0-.17-1.59l.085.795zm3.05-2.326a.8.8 0 1 0 .558 1.5l-.28-.75zm4.419-1.087a.8.8 0 1 0-1.251-.997l.625.499zm-1.251-4.612a.8.8 0 1 0 1.251-.997l-.626.498zm15.042-13.776a.8.8 0 0 0-.558 1.5l.279-.75zm-3.778.764a.8.8 0 1 0 .17-1.59l-.085.795zm-3.505-1.59a.8.8 0 1 0 .17 1.59l-.085-.795zm-3.05 2.326a.8.8 0 1 0-.558-1.5l.279.75zm-4.419 1.086a.799.799 0 1 0 1.251.998l-.626-.499zm1.251 4.613a.8.8 0 1 0-1.251.997l.625-.498zm2.61 3.583a.8.8 0 0 0 .558-1.5l-.279.75zm3.778-.763a.8.8 0 1 0-.17 1.59l.085-.795zm3.505 1.59a.8.8 0 0 0-.17-1.59l.085.795zm3.05-2.326a.8.8 0 1 0 .558 1.5l-.279-.75zm4.419-1.087a.799.799 0 1 0-1.251-.997l.626.499zm-1.251-4.612a.8.8 0 1 0 1.251-.998l-.625.499zm-46.981-8.783a.8.8 0 0 0 .867 1.345l-.434-.672zm-2.427 3.736a.8.8 0 1 0-1.015-1.236l.507.618zm-4.12 1.687a.8.8 0 0 0 1.178 1.082l-.59-.54zm-1.276 4.26a.8.8 0 0 0-1.35-.86l.675.43zm-3.275 3.01a.8.8 0 0 0 1.503.55l-.751-.275zm.611 4.395a.8.8 0 1 0-1.591-.16l.795.08zm-1.463 4.19a.8.8 0 0 0 1.58-.253l-.79.127zm2.678 3.55a.8.8 0 0 0-1.475.62l.738-.31zm.6 4.398a.8.8 0 1 0 1.32-.902l-.66.451zm3.864 2.215a.8.8 0 1 0-1.157 1.106l.579-.553zm1.99 3.98a.8.8 0 0 0 1.001-1.248l-.5.624zm4.315 1.126a.8.8 0 1 0-.863 1.347l.432-.674zm3.868 1.222a.8.8 0 1 0-.8-1.385l.4.693zm3.442-3.834a.8.8 0 0 0 .8 1.385l-.4-.693zm1.364-2.18a.8.8 0 1 0-.875 1.338l.438-.67zm-3.942-.955a.8.8 0 0 0 1.043-1.213l-.522.607zm-1.485-3.767a.8.8 0 1 0-1.231 1.021l.615-.51zm-3.392-2.228a.8.8 0 0 0 1.425-.728l-.712.364zm.264-4.027a.8.8 0 1 0-1.57.31l.785-.155zm-1.728-3.652a.8.8 0 1 0 1.589.187l-.795-.093zm2.514-3.168a.8.8 0 0 0-1.465-.643l.733.322zm.55-4.003a.8.8 0 1 0 1.267.977l-.634-.488zm3.719-1.629a.8.8 0 1 0-1.063-1.196l.531.598zm1.988-3.525a.8.8 0 0 0 .882 1.335l-.441-.667zm4.03-.487a.8.8 0 0 0-.725-1.426l.362.713zm2.739-2.976a.8.8 0 0 0 .584 1.49l-.292-.745zm4.04.303a.8.8 0 0 0-.458-1.534l.229.767zm3.2-2.474a.8.8 0 0 0 .342 1.564l-.17-.782zm3.947.908a.8.8 0 0 0-.233-1.583l.116.791zm3.513-2.011a.8.8 0 0 0 .131 1.595l-.065-.798zm3.797 1.408a.8.8 0 0 0-.033-1.6l.017.8zm3.735-1.561a.8.8 0 1 0-.065 1.598l.033-.8zm3.597 1.858a.8.8 0 0 0 .162-1.592l-.081.796zm3.898-1.092a.8.8 0 0 0-.262 1.578l.131-.79zm3.333 2.297a.8.8 0 0 0 .366-1.557l-.183.779zm4.009-.562a.8.8 0 0 0-.478 1.527l.239-.764zm2.966 2.754a.8.8 0 1 0 .598-1.484l-.299.742zm4.048.087a.8.8 0 0 0-.73 1.424l.365-.712zm3.788 1.068a.8.8 0 1 0-.8-1.386l.4.693zm3.442-3.835a.8.8 0 1 0 .8 1.386l-.4-.693zm1.198-2.174a.8.8 0 1 0-.744 1.417l.372-.708zm-4.182-.228a.8.8 0 1 0 .638-1.468l-.319.734zm-3.011-2.91a.8.8 0 0 0-.54 1.505l.27-.753zm-4.177.326a.8.8 0 0 0 .448-1.536l-.224.768zm-3.342-2.526a.8.8 0 1 0-.362 1.558l.181-.779zm-4.115.791a.8.8 0 1 0 .279-1.575l-.139.787zm-3.587-2.163a.8.8 0 1 0-.201 1.588l.1-.794zm-4.015 1.198a.8.8 0 0 0 .124-1.595l-.062.797zm-3.78-1.808a.8.8 0 1 0-.049 1.6l.024-.8zm-3.884 1.571a.8.8 0 1 0-.026-1.6l.013.8zm-3.933-1.445a.8.8 0 1 0 .101 1.597l-.05-.798zm-3.717 1.932a.8.8 0 0 0-.179-1.59l.09.795zM94.12 29.03a.8.8 0 1 0 .259 1.58l-.13-.79zm-3.504 2.298a.8.8 0 0 0-.342-1.563l.17.782zm-4.145-.616a.8.8 0 0 0 .432 1.54l-.216-.77zm-3.215 2.684a.8.8 0 0 0-.526-1.511l.263.755zM79.07 33.3a.8.8 0 0 0 .63 1.47l-.315-.735zm-2.813 3.1a.8.8 0 0 0-.74-1.418l.37.709zm52.215 51.569-.36-.715-1.571.792.36.714.359.715 1.572-.791zm-4.707 2.365-.358-.715q-1.646.824-3.14 1.56l.353.717.353.718a558 558 0 0 0 3.15-1.564zm-6.302 3.093-.344-.722c-1.114.53-2.166 1.018-3.168 1.467l.326.73.327.73c1.016-.454 2.08-.948 3.203-1.483zm-6.415 2.847-.296-.743a54 54 0 0 1-3.248 1.185l.247.76.248.761a55 55 0 0 0 3.346-1.22zm-6.677 2.143-.178-.78q-.84.192-1.68.338l.137.788.138.788q.88-.153 1.76-.354zm-1.721.346-.137-.788q-.962.168-1.928.294l.103.793.104.793a47 47 0 0 0 1.996-.303zm-5.915.641-.035-.8q-1.95.086-3.9 0l-.034.8-.034.799q2.018.087 4.037 0zm-7.923-.342.104-.793a45 45 0 0 1-1.928-.294l-.138.788-.137.788q.996.174 1.996.304zm-1.962-.299.138-.788q-.84-.146-1.68-.338l-.178.78-.178.78q.88.2 1.76.355zm-5.1-1.286.247-.761a53 53 0 0 1-3.248-1.185l-.297.743-.296.743c1.16.463 2.267.869 3.345 1.22zm-6.526-2.575.326-.73a148 148 0 0 1-3.169-1.467l-.343.722-.344.722c1.123.535 2.186 1.029 3.203 1.483zm-6.343-3.006.353-.718a548 548 0 0 1-3.14-1.559l-.358.715-.358.716q1.648.825 3.15 1.564zm-6.28-3.136.359-.714-1.572-.791-.36.714-.36.715 1.572.79zm-1.573-.791.36-.715-1.686-.849-.36.715-.36.715 1.687.849zm-5.058-2.547.36-.714-3.372-1.698-.36.714-.36.715 3.373 1.698zm-6.744-3.396.36-.714-3.372-1.698-.36.714-.36.715 3.373 1.698zm-6.744-3.396.36-.714-3.372-1.698-.36.714-.36.715 3.373 1.698zm-6.744-3.396.36-.714-3.372-1.698-.36.714-.36.715 3.372 1.698zm-6.744-3.396.36-.714-3.372-1.698-.36.714-.36.715 3.373 1.698zm-6.744-3.395.36-.715-1.686-.85-.36.715-.36.715 1.687.849zm-1.686-.85.36-.714-1.73-.872-.36.714-.36.715 1.73.872zm-5.179-2.621.365-.712a216 216 0 0 1-3.417-1.783l-.378.706-.377.705c1.063.569 2.21 1.165 3.442 1.796zm-6.803-3.675.407-.689c-1.227-.726-2.278-1.407-3.169-2.068l-.476.643-.477.642c.949.704 2.05 1.416 3.308 2.16zM2.53 56.546l.632-.49a7 7 0 0 1-.89-1.482l-.733.318-.735.318c.276.637.64 1.241 1.093 1.825zm-.991-1.654.734-.318a11.2 11.2 0 0 1-.69-2.177l-.783.162-.783.162c.176.848.438 1.682.787 2.489zM.8 47.69l.784.162a11.2 11.2 0 0 1 .689-2.178l-.734-.318-.735-.317c-.349.807-.611 1.64-.787 2.489zm.739-2.334.734.318c.217-.502.51-.992.889-1.481l-.632-.49-.633-.49A8.5 8.5 0 0 0 .804 45.04zm3.804-4.29.476.642c.89-.661 1.942-1.343 3.17-2.069l-.408-.688-.407-.689c-1.258.744-2.36 1.456-3.308 2.16zm6.611-4.001.378.705a216 216 0 0 1 3.417-1.782l-.365-.712-.365-.713a218 218 0 0 0-3.442 1.796zm6.878-3.539.36.714 1.731-.871-.36-.715-.36-.714q-.888.447-1.73.872zm1.731-.872.36.715 1.686-.85-.36-.714-.36-.714-1.686.849zm5.058-2.547.36.715 3.372-1.698-.36-.715-.36-.714-3.371 1.698zm6.744-3.396.36.715 3.372-1.698-.36-.715-.36-.714-3.372 1.698zm6.744-3.396.36.715 3.372-1.698-.36-.715-.36-.714L38.75 22.6zm6.744-3.396.36.715 3.372-1.698-.36-.715-.36-.714-3.371 1.698zm6.744-3.396.36.715 3.372-1.698-.36-.714-.36-.715-3.371 1.698zm6.744-3.395.36.714 1.686-.849-.36-.714-.36-.715-1.685.85zm1.686-.85.36.715 1.572-.791-.36-.715-.36-.714-1.571.791zm4.708-2.365.358.716c1.098-.55 2.142-1.069 3.14-1.56l-.353-.718-.354-.717q-1.5.738-3.149 1.564zm6.302-3.092.343.722c1.115-.53 2.167-1.019 3.17-1.467l-.328-.73-.326-.73c-1.017.454-2.08.948-3.203 1.482zm6.414-2.848.297.743a53 53 0 0 1 3.248-1.184l-.248-.76-.248-.761a55 55 0 0 0-3.345 1.22zM85.13 1.83l.178.78q.84-.19 1.68-.338l-.138-.788-.137-.788q-.882.154-1.76.354zm1.72-.346.138.788a45 45 0 0 1 1.928-.293l-.104-.793-.103-.794q-1 .13-1.996.304zm5.916-.64.035.799q1.95-.084 3.9 0l.034-.8.034-.799a47 47 0 0 0-4.037 0zm7.922.342-.103.793q.966.126 1.928.293l.137-.788.138-.788a47 47 0 0 0-1.996-.304zm1.962.298-.137.788q.84.147 1.68.338l.178-.78.177-.78a35 35 0 0 0-1.76-.354zm5.101 1.287-.247.76c1.04.34 2.115.733 3.248 1.185l.296-.743.297-.743a55 55 0 0 0-3.346-1.22zm6.526 2.575-.326.73c1.002.448 2.054.936 3.168 1.467l.344-.722.344-.723a150 150 0 0 0-3.203-1.483zm6.343 3.005-.353.718q1.494.736 3.14 1.56l.358-.716.358-.715a560 560 0 0 0-3.15-1.564zm6.281 3.136-.36.715 1.571.791.36-.714.36-.715-1.572-.791zm1.571.792-.36.714 1.686.85.36-.715.36-.715-1.686-.849zm5.058 2.547-.36.714 3.373 1.698.359-.715.36-.714-3.372-1.698zm6.744 3.395-.359.715 3.372 1.698.359-.715.36-.714-3.372-1.698zm6.744 3.396-.359.715 3.372 1.698.359-.715.36-.714-3.372-1.698zm6.744 3.396-.359.715 3.372 1.698.359-.715.36-.714-3.372-1.698zm6.744 3.396-.359.715 3.372 1.698.359-.715.36-.714-3.372-1.698zm6.744 3.396-.359.715 1.686.849.359-.715.36-.714-1.686-.85zm1.686.85-.359.714 1.73.871.36-.714.361-.714-1.732-.872zm5.18 2.62-.365.713a217 217 0 0 1 3.417 1.782l.377-.705.378-.706a217 217 0 0 0-3.443-1.796zm6.803 3.676-.408.688c1.228.726 2.279 1.408 3.169 2.069l.477-.643.477-.642c-.949-.705-2.05-1.417-3.308-2.16zm6.051 4.752-.632.49c.379.49.672.98.889 1.481l.734-.318.734-.317a8.5 8.5 0 0 0-1.092-1.826zm.991 1.653-.734.318c.306.707.535 1.436.689 2.178l.783-.162.784-.162a12.8 12.8 0 0 0-.788-2.49zm.738 7.203-.783-.162a11.2 11.2 0 0 1-.689 2.177l.734.318.734.318c.35-.807.612-1.641.788-2.489zm-.738 2.333-.734-.318c-.217.502-.51.992-.889 1.482l.632.49.633.49a8.5 8.5 0 0 0 1.092-1.826zm-3.804 4.291-.477-.642c-.89.661-1.941 1.342-3.169 2.069l.408.688.407.689c1.258-.745 2.359-1.457 3.308-2.161zm-6.612 4-.377-.705a217 217 0 0 1-3.417 1.783l.365.712.364.712q1.849-.945 3.443-1.796zm-6.878 3.54-.36-.715-1.73.872.359.715.36.714 1.732-.872zm-1.731.871-.359-.714-1.686.849.359.715.36.714 1.686-.849zm-5.058 2.547-.359-.714-3.372 1.698.359.714.36.715 3.372-1.698zm-6.744 3.396-.359-.714-3.372 1.698.359.714.36.715 3.372-1.698zm-6.744 3.396-.359-.714-3.372 1.698.359.714.36.715 3.372-1.698zm-6.744 3.396-.359-.714-3.372 1.698.359.714.36.715 3.372-1.698zm-6.744 3.396-.359-.714-3.373 1.698.36.714.36.715 3.372-1.698zm-6.744 3.396-.36-.715-1.686.85.36.714.36.715 1.686-.85zm-30.149-33.204.4-.693c-.536-.309-1.11-.574-1.71-.797l-.28.75-.278.75a9.7 9.7 0 0 1 1.468.683zm-5.003-1.522.085-.796a17.3 17.3 0 0 0-3.675 0l.085.796.085.795c1.101-.118 2.234-.118 3.334 0zm-6.92.781-.278-.75c-.6.224-1.175.49-1.71.798l.4.693.4.693q.677-.39 1.468-.684zm-1.588.741-.4-.693c-.894.516-1.618 1.119-2.152 1.789l.626.498.626.499c.386-.485.946-.965 1.7-1.4zm-1.926 6.207-.626.498c.534.67 1.258 1.273 2.152 1.788l.4-.692.4-.693c-.754-.435-1.314-.915-1.7-1.4zm1.926 1.594-.4.692c.535.31 1.11.575 1.71.798l.279-.75.279-.75a9.7 9.7 0 0 1-1.468-.683zM91.5 63.24l-.085.796c1.214.13 2.46.13 3.675 0l-.085-.796-.086-.795c-1.1.118-2.233.118-3.334 0zm6.919-.782.279.75c.6-.223 1.174-.488 1.71-.797l-.4-.693-.4-.693a9.7 9.7 0 0 1-1.468.684zm1.589-.74.4.692c.893-.515 1.618-1.118 2.151-1.788l-.626-.498-.625-.499c-.387.485-.946.965-1.7 1.4zm1.925-6.207.626-.498c-.533-.67-1.258-1.273-2.151-1.789l-.4.693-.4.693c.754.435 1.313.915 1.7 1.4zm15.727-11.786.4-.693c-.535-.309-1.11-.574-1.71-.797l-.279.75-.279.75a10 10 0 0 1 1.468.683zm-5.003-1.522.085-.796a17.3 17.3 0 0 0-3.675 0l.085.796.085.795a15.8 15.8 0 0 1 3.335 0zm-6.919.781-.279-.75c-.6.224-1.175.49-1.71.798l.4.693.4.693c.45-.26.942-.488 1.468-.684zm-1.589.741-.4-.693c-.894.516-1.618 1.119-2.151 1.788l.625.499.626.498c.386-.485.946-.964 1.7-1.4zm-1.926 6.207-.625.498c.533.67 1.257 1.273 2.151 1.788l.4-.692.4-.693c-.754-.435-1.314-.915-1.7-1.4zm1.926 1.594-.4.692c.535.31 1.11.575 1.71.798l.279-.75.279-.75a9.7 9.7 0 0 1-1.468-.683zm5.003 1.522-.085.796c1.214.13 2.461.13 3.675 0l-.085-.796-.085-.795a15.8 15.8 0 0 1-3.335 0zm6.919-.782.279.75c.6-.223 1.175-.488 1.71-.797l-.4-.693-.4-.693c-.45.26-.943.488-1.468.684zm1.589-.74.4.692c.893-.516 1.618-1.118 2.151-1.788l-.625-.498-.626-.499c-.387.485-.946.965-1.7 1.4zm1.926-6.207.625-.499c-.533-.67-1.258-1.272-2.151-1.788l-.4.693-.4.693c.754.435 1.313.914 1.7 1.4zm-45.397-8.695-.4-.693a43 43 0 0 0-1.81 1.104l.433.673.434.672q.84-.542 1.743-1.064zm-5.145 3.529-.507-.618a30 30 0 0 0-3.106 2.923l.59.541.59.541q1.303-1.422 2.94-2.769zm-5.563 6.135-.675-.43a20 20 0 0 0-1.925 3.87l.752.275.751.275a18.4 18.4 0 0 1 1.772-3.56zm-2.785 7.755-.795-.08a16.8 16.8 0 0 0 .128 4.35l.79-.126.79-.127a15.2 15.2 0 0 1-.117-3.937zm1.274 8.13-.738.31a21.4 21.4 0 0 0 2.075 3.779l.66-.452.66-.451a20 20 0 0 1-1.92-3.496zm4.623 6.856-.579.553a32.5 32.5 0 0 0 3.146 2.873l.501-.623.501-.624a31 31 0 0 1-2.991-2.732zm6.452 5.226-.432.674q.876.56 1.81 1.1l.4-.693.4-.693a44 44 0 0 1-1.747-1.061zm1.778 1.081.4.693 2.12-1.225-.4-.692-.4-.693-2.12 1.224zm6.363-3.674.4.693 2.12-1.224-.4-.693-.4-.693-2.12 1.225zm2.12-1.224.4-.693q-.81-.467-1.556-.956l-.437.67-.438.67a35 35 0 0 0 1.632 1.002zm-4.577-3.21.522-.606a21.3 21.3 0 0 1-2.528-2.554l-.616.51-.615.511q1.177 1.422 2.716 2.746zm-4.685-5.752.712-.364a12.7 12.7 0 0 1-1.161-3.3l-.785.156-.785.155a14.2 14.2 0 0 0 1.306 3.717zm-1.383-7.221.795.093c.132-1.125.44-2.248.925-3.355l-.732-.321-.733-.322a13.3 13.3 0 0 0-1.05 3.811zm2.903-6.776.634.488a19 19 0 0 1 2.452-2.606l-.532-.598-.531-.598a20.8 20.8 0 0 0-2.656 2.825zm5.515-4.975.44.667a31 31 0 0 1 1.552-.957l-.4-.693-.4-.693q-.85.491-1.633 1.008zm1.593-.983.4.693a34 34 0 0 1 1.595-.865l-.362-.713-.362-.713q-.855.433-1.671.905zm5.027-2.403.292.745a44 44 0 0 1 3.455-1.187l-.228-.767-.229-.767a45 45 0 0 0-3.582 1.231zm7.12-2.134.17.782a53 53 0 0 1 3.605-.656l-.117-.792-.116-.791q-1.883.277-3.713.675zm7.354-1.088.065.797a60 60 0 0 1 3.666-.186l-.016-.8-.017-.8a61 61 0 0 0-3.764.192zm7.434-.151-.033.8q1.838.074 3.662.26l.081-.797.081-.796a62 62 0 0 0-3.759-.267zm7.396.756-.131.79q1.822.3 3.595.718l.183-.779.183-.778a57 57 0 0 0-3.699-.74zm7.234 1.71-.239.763a46 46 0 0 1 3.444 1.227l.299-.742.299-.742a47 47 0 0 0-3.564-1.27zM131.125 41l-.365.712q.817.417 1.597.869l.4-.693.4-.693q-.816-.471-1.667-.907zm1.632.888.4.693 2.121-1.225-.4-.693-.4-.693-2.121 1.225zm6.363-3.674.4.693 2.121-1.225-.4-.693-.4-.692-2.121 1.224zm2.121-1.224.4-.693a49 49 0 0 0-1.723-.95l-.372.709-.372.708q.848.445 1.667.918zm-5.186-2.605.319-.733a60 60 0 0 0-3.649-1.444l-.27.753-.27.754q1.819.651 3.551 1.404zm-7.283-2.618.224-.768a70 70 0 0 0-3.79-.99l-.181.779-.181.78q1.88.436 3.704.967zm-7.541-1.755.139-.787a79 79 0 0 0-3.866-.588l-.101.794-.1.794a77 77 0 0 1 3.788.575zm-7.68-.975.062-.797a83 83 0 0 0-3.904-.213l-.025.8-.024.8q1.919.058 3.829.208zm-7.739-.239-.013-.8a83 83 0 0 0-3.907.155l.051.799.05.798a81 81 0 0 1 3.832-.152zm-7.727.492-.089-.795a77 77 0 0 0-3.875.534l.13.79.129.79a76 76 0 0 1 3.795-.524zm-7.64 1.256-.17-.782a69 69 0 0 0-3.803.947l.216.77.216.77q1.826-.51 3.713-.924zm-7.451 2.093-.263-.755q-1.875.652-3.662 1.417l.315.735.315.736a55 55 0 0 1 3.558-1.377zm-7.108 3.053-.37-.71q-.88.46-1.727.949l.4.693.4.692q.818-.472 1.667-.915z"
+                              ></path>
+                            </g>
+                            <defs>
+                              <path
+                                id="layer-stack-bottom-eu-star"
+                                vector-effect="non-scaling-stroke"
+                                d="M0 -4.2L.952 -1.31L3.994 -1.298L1.541 .501L2.469 3.398L0 1.62L-2.469 3.398L-1.541 .501L-3.994 -1.298L-.952 -1.31Z"
+                              ></path>
+                            </defs>
+                            <g
+                              transform="matrix(.785 -.395 .785 .395 94.75 50.124)"
+                              fill="none"
+                              stroke="#252228"
+                              stroke-opacity=".2"
+                              stroke-width=".9"
+                              stroke-linejoin="round"
+                            >
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(0 -31)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(15.5 -26.847)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(26.847 -15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(31 0)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(26.847 15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(15.5 26.847)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(0 31)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(-15.5 26.847)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(-26.847 15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(-31 0)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(-26.847 -15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-bottom-eu-star"
+                                transform="translate(-15.5 -26.847)"
+                              ></use>
+                            </g>
+                          </svg>
+                        </div>
+                        <div class="layer-stack__layer layer-stack__layer--middle">
+                          <svg
+                            class="layer-stack__svg layer-stack__svg--middle"
+                            viewBox="0 0 218 118"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g filter="url(#layer-stack-middle-shadow)">
+                              <path
+                                d="M34.6942 72.2964C23.1637 66.4903 17.3985 63.5872 15.6696 59.5941C14.3525 56.552 14.3525 53.1005 15.6696 50.0584C17.3985 46.0653 23.1637 43.1623 34.6942 37.3561L75.1584 16.9805C87.9014 10.5638 94.273 7.35547 100.98 6.18619C106.208 5.2749 111.553 5.2749 116.78 6.18619C123.488 7.35547 129.859 10.5638 142.602 16.9805L183.066 37.3561C194.597 43.1623 200.362 46.0653 202.091 50.0584C203.408 53.1005 203.408 56.552 202.091 59.5941C200.362 63.5872 194.597 66.4903 183.066 72.2964L142.602 92.672C129.859 99.0887 123.488 102.297 116.78 103.466C111.553 104.378 106.208 104.378 100.98 103.466C94.273 102.297 87.9014 99.0887 75.1584 92.672L34.6942 72.2964Z"
+                                fill="white"
+                              ></path>
+                              <path
+                                d="M100.895 5.69336C106.179 4.77221 111.582 4.7722 116.866 5.69336C123.663 6.87834 130.112 10.1313 142.827 16.5342L183.291 36.9092C189.047 39.8075 193.397 41.9974 196.521 43.9639C199.638 45.9263 201.623 47.718 202.55 49.8594C203.922 53.0283 203.922 56.6241 202.55 59.793C201.623 61.9344 199.638 63.726 196.521 65.6885C193.397 67.6549 189.047 69.8448 183.291 72.7432L142.827 93.1182C130.112 99.5211 123.663 102.774 116.866 103.959C111.582 104.88 106.179 104.88 100.895 103.959C94.0973 102.774 87.6492 99.5211 74.9336 93.1182L34.4697 72.7432C28.714 69.8449 24.364 67.6549 21.2402 65.6885C18.1228 63.726 16.1382 61.9344 15.2109 59.793C13.8389 56.6241 13.8389 53.0283 15.2109 49.8594C16.1382 47.718 18.1229 45.9263 21.2402 43.9639C24.364 41.9975 28.714 39.8075 34.4697 36.9092L74.9336 16.5342C87.6492 10.1313 94.0973 6.87834 100.895 5.69336Z"
+                                stroke="#252228"
+                                stroke-opacity="0.1"
+                              ></path>
+                            </g>
+                            <g
+                              transform="matrix(.785 -.395 .785 .395 108.88 54.826)"
+                              fill="#252228"
+                              fill-opacity=".16"
+                            >
+                              <path
+                                d="M-36.705 13.823L-26.932-13.823H-20.708L-10.865 13.823H-16.284L-21.15-.628Q-21.874-2.903-22.666-5.587Q-23.458-8.271-24.447-11.83H-23.225Q-24.209-8.261-24.992-5.566Q-25.775-2.872-26.492-.628L-31.368 13.823H-36.705ZM-30.949 7.112V3.096H-16.618V7.112H-30.949ZM-6.964 13.823V-13.823H3.63Q6.731-13.823 8.926-12.731Q11.12-11.639 12.282-9.651Q13.443-7.663 13.443-4.982Q13.443-2.312 12.24-.355Q11.037 1.602 8.794 2.663Q6.552 3.723 3.42 3.723H-4.071V-.351H3.162Q4.912-.351 6.101-.906Q7.29-1.461 7.901-2.5Q8.512-3.538 8.512-4.982Q8.512-6.446 7.898-7.489Q7.283-8.533 6.092-9.102Q4.9-9.67 3.138-9.67H-2.031V13.823H-6.964ZM8.727 13.823L2.17 1.323H7.499L14.187 13.823H8.727ZM18.504 13.823V-13.823H36.705V-9.607H23.438V-1.725H35.612V2.415H23.438V13.823H18.504Z"
+                              ></path>
+                            </g>
+                            <defs>
+                              <filter
+                                id="layer-stack-middle-shadow"
+                                x="5.68164"
+                                y="0.501953"
+                                width="206.397"
+                                height="116.648"
+                                filterUnits="userSpaceOnUse"
+                                color-interpolation-filters="sRGB"
+                              >
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+                                <feColorMatrix
+                                  in="SourceAlpha"
+                                  type="matrix"
+                                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                                  result="hardAlpha"
+                                ></feColorMatrix>
+                                <feOffset dy="4"></feOffset>
+                                <feGaussianBlur stdDeviation="4"></feGaussianBlur>
+                                <feColorMatrix
+                                  type="matrix"
+                                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.02 0"
+                                ></feColorMatrix>
+                                <feBlend
+                                  mode="normal"
+                                  in2="BackgroundImageFix"
+                                  result="effect1_dropShadow"
+                                ></feBlend>
+                                <feBlend
+                                  mode="normal"
+                                  in="SourceGraphic"
+                                  in2="effect1_dropShadow"
+                                  result="shape"
+                                ></feBlend>
+                              </filter>
+                            </defs>
+                          </svg>
+                        </div>
+                        <div class="layer-stack__layer layer-stack__layer--top">
+                          <svg
+                            class="layer-stack__svg layer-stack__svg--top"
+                            viewBox="0 0 218 111"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g filter="url(#layer-stack-top-shadow)">
+                              <path
+                                d="M34.6942 72.2964C23.1637 66.4903 17.3985 63.5872 15.6696 59.5941C14.3525 56.552 14.3525 53.1005 15.6696 50.0584C17.3985 46.0653 23.1637 43.1623 34.6942 37.3561L75.1584 16.9805C87.9014 10.5638 94.273 7.35547 100.98 6.18619C106.208 5.2749 111.553 5.2749 116.78 6.18619C123.488 7.35547 129.859 10.5638 142.602 16.9805L183.066 37.3561C194.597 43.1623 200.362 46.0653 202.091 50.0584C203.408 53.1005 203.408 56.552 202.091 59.5941C200.362 63.5872 194.597 66.4903 183.066 72.2964L142.602 92.672C129.859 99.0887 123.488 102.297 116.78 103.466C111.553 104.378 106.208 104.378 100.98 103.466C94.273 102.297 87.9014 99.0887 75.1584 92.672L34.6942 72.2964Z"
+                                fill="#0048D1"
+                              ></path>
+                              <path
+                                d="M101.066 6.67871C106.237 5.7774 111.524 5.77739 116.694 6.67871C123.311 7.83228 129.607 10.9964 142.377 17.4268L182.842 37.8027C188.616 40.7105 192.915 42.8757 195.988 44.8105C199.068 46.7492 200.83 48.4055 201.632 50.2568C202.894 53.1722 202.894 56.4801 201.632 59.3955C200.83 61.2469 199.068 62.9031 195.988 64.8418C192.915 66.7766 188.616 68.9419 182.842 71.8496L142.377 92.2256C129.607 98.656 123.311 101.82 116.694 102.974C111.524 103.875 106.237 103.875 101.066 102.974C94.4492 101.82 88.1533 98.6561 75.3828 92.2256L34.9189 71.8496C29.1444 68.9419 24.8461 66.7767 21.7725 64.8418C18.6928 62.9031 16.9306 61.2469 16.1289 59.3955C14.8667 56.4801 14.8667 53.1722 16.1289 50.2568C16.9306 48.4055 18.6929 46.7492 21.7725 44.8105C24.8461 42.8757 29.1444 40.7105 34.9189 37.8027L75.3828 17.4268C88.1533 10.9962 94.4492 7.8323 101.066 6.67871Z"
+                                stroke="#252228"
+                                stroke-opacity="0.1"
+                              ></path>
+                            </g>
+                            <defs>
+                              <path
+                                id="layer-stack-top-eu-star"
+                                d="M0 -4.2L.952 -1.31L3.994 -1.298L1.541 .501L2.469 3.398L0 1.62L-2.469 3.398L-1.541 .501L-3.994 -1.298L-.952 -1.31Z"
+                              ></path>
+                            </defs>
+                            <g transform="matrix(.785 -.395 .785 .395 108.88 54.826)" fill="white">
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(0 -31)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(15.5 -26.847)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(26.847 -15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(31 0)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(26.847 15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(15.5 26.847)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(0 31)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(-15.5 26.847)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(-26.847 15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(-31 0)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(-26.847 -15.5)"
+                              ></use>
+                              <use
+                                href="#layer-stack-top-eu-star"
+                                transform="translate(-15.5 -26.847)"
+                              ></use>
+                            </g>
+                            <defs>
+                              <filter
+                                id="layer-stack-top-shadow"
+                                x="9.73956"
+                                y="1.79539"
+                                width="198.282"
+                                height="108.533"
+                                filterUnits="userSpaceOnUse"
+                                color-interpolation-filters="sRGB"
+                              >
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+                                <feColorMatrix
+                                  in="SourceAlpha"
+                                  type="matrix"
+                                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                                  result="hardAlpha"
+                                ></feColorMatrix>
+                                <feOffset dy="1.23552"></feOffset>
+                                <feGaussianBlur stdDeviation="2.47104"></feGaussianBlur>
+                                <feComposite in2="hardAlpha" operator="out"></feComposite>
+                                <feColorMatrix
+                                  type="matrix"
+                                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0"
+                                ></feColorMatrix>
+                                <feBlend
+                                  mode="normal"
+                                  in2="BackgroundImageFix"
+                                  result="effect1_dropShadow"
+                                ></feBlend>
+                                <feBlend
+                                  mode="normal"
+                                  in="SourceGraphic"
+                                  in2="effect1_dropShadow"
+                                  result="shape"
+                                ></feBlend>
+                              </filter>
+                            </defs>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="how-it-works__step-body">
+                    <div class="how-it-works__step-copy">
+                      <h3>Architecture and Reference Framework</h3>
+                      <p>
+                        Mapped the actors, components and exchanges powering the wallet, so the
+                        experience was shaped by how the ecosystem actually works.
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          </section>
+
+          <section aria-labelledby="core-user-flows">
+            <h2 id="core-user-flows" tabindex="-1" data-toc>Mapping the core user flows</h2>
+
+            <p>
+              Before committing to screens, I mapped the moments where people cross a service
+              boundary, assess a requester, approve an exchange, or need a safe way out. This made
+              the recurring trust pattern visible across activation, remote presentation, proximity
+              sharing, and activity review.
+            </p>
+
+            <p>
+              Each route keeps the decision in the wallet and makes the outcome explicit. The
+              surrounding service can start a handoff, but it cannot stand in for verified requester
+              information or informed approval.
+            </p>
+
+            <figure class="flow-viewer" data-flow-viewer>
+              <div class="flow-viewer-header">
+                <div>
+                  <span class="flow-viewer-eyebrow">Core user flow</span>
+                  <h3 class="flow-viewer-title" id="flow-viewer-title" data-flow-title>
+                    First-time activation and first credential
+                  </h3>
+                </div>
+                <span class="flow-viewer-count" data-flow-count aria-hidden="true"> 01 / 05 </span>
+              </div>
+
+              <div
+                class="flow-viewer-tabs"
+                role="tablist"
+                aria-label="Choose a core user flow"
+                data-flow-tabs
+              >
+                <button
+                  class="flow-viewer-tab"
+                  id="flow-tab-activation"
+                  type="button"
+                  role="tab"
+                  aria-controls="flow-viewer-stage"
+                  aria-label="First-time activation and first credential"
+                  aria-selected="true"
+                  data-flow-index="0"
+                >
+                  <span>Activation</span>
+                </button>
+                <button
+                  class="flow-viewer-tab"
+                  id="flow-tab-same-device"
+                  type="button"
+                  role="tab"
+                  aria-controls="flow-viewer-stage"
+                  aria-label="Remote same-device presentation"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-flow-index="1"
+                >
+                  <span>Same device</span>
+                </button>
+                <button
+                  class="flow-viewer-tab"
+                  id="flow-tab-cross-device"
+                  type="button"
+                  role="tab"
+                  aria-controls="flow-viewer-stage"
+                  aria-label="Remote cross-device presentation"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-flow-index="2"
+                >
+                  <span>Cross device</span>
+                </button>
+                <button
+                  class="flow-viewer-tab"
+                  id="flow-tab-proximity"
+                  type="button"
+                  role="tab"
+                  aria-controls="flow-viewer-stage"
+                  aria-label="Proximity presentation"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-flow-index="3"
+                >
+                  <span>Proximity</span>
+                </button>
+                <button
+                  class="flow-viewer-tab"
+                  id="flow-tab-activity"
+                  type="button"
+                  role="tab"
+                  aria-controls="flow-viewer-stage"
+                  aria-label="Review activity and exercise a right"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-flow-index="4"
+                >
+                  <span>Activity &amp; rights</span>
+                </button>
+              </div>
+
+              <div
+                class="flow-viewer-stage"
+                id="flow-viewer-stage"
+                role="tabpanel"
+                aria-labelledby="flow-tab-activation"
+                aria-describedby="flow-viewer-caption"
+                aria-busy="false"
+                tabindex="0"
+                data-state="ready"
+                data-flow-stage
+              >
+                <div class="flow-viewer-diagram" data-state="loading">
+                  <p class="flow-viewer-status" role="status">Rendering flow diagram…</p>
+                </div>
+              </div>
+
+              <figcaption id="flow-viewer-caption">
+                <span class="flow-viewer-hint">
+                  Scroll horizontally when needed to follow the complete flow.
+                </span>
+                <span data-flow-summary>
+                  From opening the wallet through provider verification, storage approval,
+                  activation, and confirmation.
+                </span>
+              </figcaption>
+            </figure>
+          </section>
+
+          <section aria-labelledby="wireframes">
+            <h2 id="wireframes" tabindex="-1" data-toc>Wireframes</h2>
+
+            <p>
+              With the flows in place, I moved into wireframes to test how the wallet’s trust model
+              could translate into screen-level decisions. I focused on the moments where people
+              need to recognise a requester, understand what is being asked for, and see the
+              consequence of an action before committing.
+            </p>
+
+            <p>
+              The wireframes explored a small set of recurring patterns across the home screen,
+              credential details, age verification, proximity presentation, and relying-party
+              information. Keeping the visual language deliberately simple made it easier to compare
+              layouts, identify missing context, and refine the hierarchy before introducing
+              high-fidelity styling.
+            </p>
+
+            <p>
+              Based on user flows and research, I used the
+              <span class="skill-reference">Ideate</span> skill from Codex’s
+              <a
+                class="product-design-reference"
+                href="https://chatgpt.com/plugins/product-design"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="./assets/brands/product-design-icon.svg"
+                  width="24"
+                  height="24"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <span>Product Design</span>
+              </a>
+              plugin to quickly generate wireframes to test out different layouts and patterns.
+              Following testing, the best solutions were finalized in Figma.
+            </p>
+
+            <figure class="article-figure">
+              <img
+                src="./assets/images/eudiw-wireframes.png"
+                width="3452"
+                height="1822"
+                alt="Early mobile wallet wireframes for age verification, proximity presentation, the home screen, relying-party information, and credential details."
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          </section>
+
+          <section aria-labelledby="readable-wallet">
+            <h2 id="readable-wallet" tabindex="-1" data-toc>Building a wallet people can read</h2>
+
+            <p>
+              The wallet home is organized around status rather than decoration. Credentials appear
+              as recognizable objects with a plain-language name, issuer, validity period, and any
+              condition that needs attention. The hierarchy favors what is usable now, what has
+              changed, and what may require action.
+            </p>
+
+            <p>
+              A credential detail view adds provenance and context without leading with technical
+              identifiers. It explains where the credential came from, which attributes it contains,
+              when it expires, and where it has recently been used. Technical information can remain
+              available as a secondary layer for people who need it.
+            </p>
+
+            <h3 id="credential-states" tabindex="-1" data-toc>Credential states</h3>
+
+            <p>
+              Expired, revoked, and incomplete credentials are treated as distinct states. Each
+              state explains its practical effect and offers an appropriate next step, avoiding
+              generic warnings that say something is wrong without helping someone recover.
+            </p>
+
+            <ul class="state-list" aria-label="Credential state examples">
+              <li class="state-item">
+                <span class="state-dot state-dot-ready" aria-hidden="true"></span>
+                <div>
+                  <strong>Ready</strong>
+                  <span>Valid, available, and clear about where it came from.</span>
+                </div>
+              </li>
+              <li class="state-item">
+                <span class="state-dot state-dot-attention" aria-hidden="true"></span>
+                <div>
+                  <strong>Needs attention</strong>
+                  <span>Still understandable, with a specific next step.</span>
+                </div>
+              </li>
+              <li class="state-item">
+                <span class="state-dot state-dot-unavailable" aria-hidden="true"></span>
+                <div>
+                  <strong>Unavailable</strong>
+                  <span>Explains the consequence without relying on color alone.</span>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <section aria-labelledby="concrete-consent">
+            <h2 id="concrete-consent" tabindex="-1" data-toc>Making consent concrete</h2>
+
+            <p>
+              A presentation request should read as a decision, not as a permission prompt to
+              dismiss. The proposed request view names the verifier, states the purpose, lists the
+              requested attributes, and identifies the credential that will provide them.
+            </p>
+
+            <p>
+              Required and optional information are separated only when that distinction is real.
+              Where the credential technology permits selective disclosure, each attribute remains
+              visible so the person can understand the exact payload. The primary action describes
+              the consequence—such as “Share three details”—instead of relying on a vague
+              “Continue.”
+            </p>
+
+            <figure class="article-figure">
+              <img
+                src="./assets/images/eudiw-consent-screens.jpg"
+                width="1672"
+                height="941"
+                alt="Conceptual paired mobile wallet screens showing requested information and a confirmation receipt using abstract interface elements."
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>
+                Concept illustration: a presentation request and confirmation receipt. The artwork
+                is not a production interface.
+              </figcaption>
+            </figure>
+
+            <h3 id="useful-receipt" tabindex="-1" data-toc>A useful receipt</h3>
+
+            <p>
+              Confirmation does not end with a success animation. A receipt records the recipient,
+              time, purpose, and information disclosed. Where an ongoing authorization can be
+              managed, that control is shown separately from information already shared; the
+              interface does not imply that a past disclosure can simply be taken back.
+            </p>
+          </section>
+
+          <section aria-labelledby="handoffs-and-failure">
+            <h2 id="handoffs-and-failure" tabindex="-1" data-toc>
+              Designing for handoffs and failure
+            </h2>
+
+            <p>
+              Trust is most fragile at service boundaries. A person may leave one app, authenticate
+              elsewhere, and return without knowing whether the original task is still active.
+              Consistent service names, recognizable visual identifiers, short transition messages,
+              and a clear return destination help preserve continuity.
+            </p>
+
+            <p>
+              Failure states are written around impact and recovery. An expired credential,
+              unavailable issuer, interrupted connection, or mismatch between a request and the
+              available information each requires a different explanation. The interface should say
+              what happened, whether anything was shared, and what can be done next.
+            </p>
+
+            <blockquote>
+              “Nothing was shared” is often the most important success message in a failed identity
+              journey.
+            </blockquote>
+
+            <p>
+              Safe exits matter as much as successful paths. Cancelling a request should leave the
+              credential unchanged, repeated requests should be distinguishable, and a failed
+              selective-disclosure path should never silently fall back to sharing more information.
+            </p>
+          </section>
+
+          <section aria-labelledby="what-the-concept-clarifies">
+            <h2 id="what-the-concept-clarifies" tabindex="-1" data-toc>
+              What the concept clarifies
+            </h2>
+
+            <p>
+              A digital identity wallet is not simply a collection of electronic cards. It is a
+              decision interface connecting institutions, services, and people. The clearest
+              interaction pattern is staged disclosure: establish context, inspect the information,
+              confirm deliberately, and leave a useful record.
+            </p>
+
+            <p>
+              This exploration presents a design direction, not evidence of usability, security,
+              interoperability, or compliance. Meaningful validation would require research across
+              countries, languages, levels of digital confidence, and access needs, alongside
+              technical review with issuers, verifiers, privacy specialists, and security teams.
+            </p>
+
+            <p>
+              The next step would be a focused prototype of the issuance and presentation journeys.
+              Testing should examine whether people can identify the verifier, describe what they
+              are sharing, distinguish required from optional information, and recover confidently
+              when a credential cannot be used.
+            </p>
+
+            <p class="conclusion">
+              A trustworthy identity wallet should not ask for blind confidence. It should earn
+              confidence by making every consequential exchange understandable before it happens—and
+              accountable after it does.
+            </p>
+          </section>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

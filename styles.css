@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
   --bg: #fbfcfd;
-  --about-bg: #ADD9F4;
+  --about-bg: #00ADFE;
   --ink: #29334f;
   --hero-ink: oklch(31% 0.055 272);
   --muted: oklch(45% 0.014 257);
@@ -310,6 +310,27 @@ main,
   max-width: 12.2ch;
 }
 
+.hero-title--animation-pending,
+.hero-subtitle--animation-pending {
+  visibility: hidden;
+}
+
+.soft-blur__word,
+.soft-blur__unit {
+  display: inline-block;
+}
+
+.soft-blur__word {
+  white-space: nowrap;
+}
+
+.soft-blur__unit {
+  backface-visibility: hidden;
+  transform-origin: 50% 55%;
+  white-space: pre;
+  will-change: transform, opacity, filter;
+}
+
 .hero-title__accent {
   color: #00adfe;
   display: block;
@@ -318,6 +339,12 @@ main,
   isolation: isolate;
   position: relative;
   width: fit-content;
+  z-index: 0;
+}
+
+.hero-title__accent-text {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-title__accent::before {
@@ -328,7 +355,25 @@ main,
   position: absolute;
   transform: rotate(-2.3deg);
   transform-origin: center;
-  z-index: -1;
+  z-index: 0;
+}
+
+.hero-title__accent--highlight-pending::before {
+  clip-path: inset(0 100% 0 0 round 0.11em);
+}
+
+.hero-title__accent--highlighted::before {
+  animation: hero-title-highlight-in 520ms var(--ease-out) forwards;
+}
+
+@keyframes hero-title-highlight-in {
+  from {
+    clip-path: inset(0 100% 0 0 round 0.11em);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0 round 0.11em);
+  }
 }
 
 .hero-copy p {
@@ -399,7 +444,11 @@ main,
 }
 
 .about-section .section-heading.compact {
-  margin-bottom: 64px;
+  margin-bottom: 60px;
+}
+
+.about-section #about-title {
+  color: #FFFFFF;
 }
 
 .section-heading h2,
@@ -530,6 +579,27 @@ main,
   max-width: 100%;
 }
 
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  max-width: 100%;
+  margin-block-start: 6px;
+  row-gap: 8px;
+  width: 100%;
+}
+
+.project-tag {
+  background: color-mix(in srgb, var(--about-bg) 8%, transparent);
+  border-radius: 999px;
+  color: var(--about-bg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
 .project-arrow {
   flex: 0 0 auto;
   margin-right: 12px;
@@ -623,6 +693,10 @@ main,
   --card-fall-delay: 0ms;
   --card-rotation: -1.1deg;
   grid-column: span 5;
+}
+
+.intro-card p {
+  text-wrap: wrap;
 }
 
 .film-card {
@@ -1228,6 +1302,15 @@ body.fishing-modal-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-title--animation-pending,
+  .hero-subtitle--animation-pending {
+    visibility: visible;
+  }
+
+  .hero-title__accent--highlight-pending::before {
+    clip-path: none;
+  }
+
   .bento-card,
   .bento-card:hover,
   .bento-card:focus-within {
@@ -1573,7 +1656,7 @@ body.fishing-modal-open {
 
 .project-overlay {
   -webkit-backface-visibility: hidden;
-  background: #135ee2;
+  background: var(--project-overlay-background, #135ee2);
   backface-visibility: hidden;
   clip-path: inset(0 2% 0 2% round 30px);
   contain: paint;
@@ -1600,7 +1683,7 @@ body.fishing-modal-open {
 
 .project-overlay iframe {
   -webkit-backface-visibility: hidden;
-  background: #135ee2;
+  background: var(--project-overlay-background, #135ee2);
   backface-visibility: hidden;
   border: 0;
   display: block;

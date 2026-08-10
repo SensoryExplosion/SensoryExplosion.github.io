@@ -1,0 +1,26 @@
+flowchart LR
+  A[Tap Continue with<br/>EUDI Wallet] --> B[Wallet opens]
+  B --> C[Authenticate requester]
+  C --> D{Requester verified?}
+  D -- No --> E[Block or show<br/>high-severity warning]
+  D -- Yes --> F[Review identity, purpose,<br/>privacy and attributes]
+  F --> G{Request exceeds<br/>registered attributes?}
+  G -- Yes --> H[Show specific<br/>exception warning]
+  G -- No --> I[Ready for decision]
+  H --> I
+  I --> J{Approve sharing?}
+  J -- No --> K[Return without sharing]
+  J -- Yes --> L[Authenticate user]
+  L --> M[Present approved attributes]
+  M --> N[Show outcome and<br/>activity link]
+  classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
+  classDef primary fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
+  classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+  classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
+  classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  class A start
+  class B,C,F,I,L,M secondary
+  class D,G,J decision
+  class E,H,K warning
+  class N success

@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pet insurance reimagined | Case study</title>
+    <meta
+      name="description"
+      content="A native pet insurance redesign shaped by behavioural science."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js"
+      type="module"
+    ></script>
+    <style>
+      :root {
+        --brand: #135ee2;
+        --brand-light: #199cf9;
+        --surface: #e4eaf0;
+        --consent: #537091;
+        --ink: #0a285c;
+        --purple: #aa4bb3;
+        --white: #ffffff;
+        --content: 1160px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--surface);
+        color: var(--ink);
+        font-family: "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 18px;
+        line-height: 1.34;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      main {
+        overflow: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      figure {
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      h1,
+      .display-title {
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1.08;
+      }
+
+      h2 {
+        font-size: 24px;
+        line-height: 1.25;
+      }
+
+      p {
+        max-width: 56ch;
+      }
+
+      img,
+      svg,
+      dotlottie-wc {
+        display: block;
+        max-width: 100%;
+      }
+
+      .shell {
+        width: min(calc(100% - 64px), var(--content));
+        margin-inline: auto;
+      }
+
+      .hero {
+        min-height: 785px;
+        display: flex;
+        align-items: center;
+        background: var(--brand);
+        color: var(--white);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 488px 1fr;
+        gap: 95px;
+        align-items: center;
+      }
+
+      .hero-copy {
+        align-self: center;
+      }
+
+      .hero h1 {
+        max-width: 10ch;
+        color: var(--white);
+      }
+
+      .hero-copy p {
+        max-width: 390px;
+        margin-top: 20px;
+        color: var(--white);
+        font-size: 24px;
+        line-height: 1.25;
+      }
+
+      .hero-product-collage {
+        --collage-text: #0a285c;
+        position: relative;
+        width: min(100%, 514.8px);
+        aspect-ratio: 514.8 / 376.05;
+        container-type: inline-size;
+        isolation: isolate;
+      }
+
+      .hero-product-collage p {
+        margin: 0;
+      }
+
+      .tile-umbrella,
+      .tile-pet,
+      .card-vet,
+      .card-vet-care,
+      .banner-terms {
+        position: absolute;
+        background: var(--white);
+      }
+
+      .tile-umbrella {
+        left: 63.7141%;
+        top: 0;
+        z-index: 5;
+        display: grid;
+        place-items: center;
+        width: 23.7179%;
+        height: 32.4691%;
+        border-radius: 3.108cqw;
+        background: var(--brand-light);
+        box-shadow: 0 11cqw 6.6cqw rgb(0 0 0 / 5%), 0 4.9cqw 4.9cqw rgb(0 0 0 / 9%);
+      }
+
+      .tile-umbrella svg {
+        width: 14cqw;
+      }
+
+      .tile-pet {
+        left: 31.2743%;
+        top: 12.2723%;
+        z-index: 4;
+        width: 43.7063%;
+        height: 59.8325%;
+        overflow: hidden;
+        border-radius: 5.594cqw;
+        box-shadow: 0 11cqw 6.6cqw rgb(0 0 0 / 5%), 0 4.9cqw 4.9cqw rgb(0 0 0 / 9%);
+      }
+
+      .pet-animation {
+        width: 100%;
+        height: 100%;
+      }
+
+      .card-vet,
+      .card-vet-care {
+        display: flex;
+        align-items: center;
+        gap: 2.8cqw;
+        width: 62.5874%;
+        height: 31.1661%;
+        padding: 5.594cqw 2.797cqw;
+        border-radius: 1.748cqw;
+      }
+
+      .card-vet {
+        left: 0;
+        top: 33.9715%;
+        z-index: 2;
+        box-shadow: 0 15.5cqw 9.3cqw rgb(0 0 0 / 5%), 0 6.8cqw 6.8cqw rgb(0 0 0 / 9%);
+      }
+
+      .card-vet-care {
+        left: 37.4126%;
+        top: 68.8339%;
+        z-index: 3;
+        box-shadow: 0 15.5cqw 9.3cqw rgb(0 0 0 / 5%), 0 6.8cqw 6.8cqw rgb(0 0 0 / 9%);
+      }
+
+      .card-icon {
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        width: 11.189cqw;
+        height: 11.189cqw;
+        border-radius: 50%;
+      }
+
+      .card-icon.purple {
+        background: #efebf6;
+        color: #721c7a;
+      }
+
+      .card-icon.blue {
+        background: #e9eefa;
+        color: var(--brand);
+      }
+
+      .card-icon svg {
+        width: 5.4cqw;
+      }
+
+      .card-text {
+        min-width: 0;
+        color: var(--collage-text);
+      }
+
+      .card-title {
+        color: var(--collage-text);
+        font-size: 2.33cqw;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .card-body,
+      .banner-text {
+        margin-top: 0.8cqw !important;
+        color: var(--collage-text);
+        font-size: 1.75cqw;
+        line-height: 1.35;
+      }
+
+      .banner-terms {
+        left: 10.8392%;
+        top: 69.6317%;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 2.448cqw;
+        width: 63.986%;
+        height: 17.4711%;
+        padding: 0 3.335cqw;
+        border-radius: 1.748cqw;
+        filter: drop-shadow(0 3.9cqw 3.9cqw rgb(10 40 92 / 5%));
+      }
+
+      .checkmark {
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        width: 4.2cqw;
+        height: 4.2cqw;
+        border-radius: 50%;
+        background: var(--brand);
+      }
+
+      .checkmark svg {
+        width: 2.2cqw;
+      }
+
+      .case-for-change {
+        min-height: 815px;
+        padding: 100px 0 96px;
+        background: var(--surface);
+      }
+
+      .case-for-change .display-title {
+        margin-bottom: 86px;
+      }
+
+      .case-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 80px;
+      }
+
+      .case-grid h2 {
+        margin-bottom: 14px;
+      }
+
+      .case-grid p {
+        font-size: 18px;
+        line-height: 1.34;
+      }
+
+      .copy-callout {
+        margin-top: 64px;
+        padding: 24px 44px;
+        border-radius: 24px;
+        background: var(--purple);
+        box-shadow: 0 12px 20px rgb(10 40 92 / 12%);
+        color: var(--white);
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.42;
+        text-align: center;
+      }
+
+      .product-story {
+        position: relative;
+        min-height: 2675px;
+        background: var(--surface);
+      }
+
+      .product-brand-band {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 520px;
+        background: var(--brand);
+      }
+
+      .product-layout {
+        position: relative;
+        min-height: 2675px;
+      }
+
+      .product-visual {
+        position: absolute;
+        top: 120px;
+        left: -32px;
+        z-index: 2;
+        width: 1120px;
+        pointer-events: none;
+      }
+
+      .product-visual img {
+        width: 100%;
+        height: auto;
+      }
+
+      .product-intro,
+      .annotation {
+        position: absolute;
+        z-index: 3;
+        right: 0;
+        width: 520px;
+      }
+
+      .product-intro {
+        top: 116px;
+        color: var(--white);
+      }
+
+      .product-intro .display-title {
+        margin-bottom: 24px;
+      }
+
+      .product-intro p,
+      .consent-intro p {
+        color: inherit;
+        font-size: 18px;
+        line-height: 1.38;
+      }
+
+      .annotation h2 {
+        margin-bottom: 16px;
+      }
+
+      .annotation p {
+        font-size: 18px;
+        line-height: 1.38;
+      }
+
+      .annotation-one {
+        top: 540px;
+      }
+
+      .annotation-two {
+        top: 900px;
+      }
+
+      .annotation-three {
+        top: 1995px;
+      }
+
+      .quote-flow {
+        min-height: 766px;
+        background: var(--surface);
+      }
+
+      .quote-copy-band {
+        min-height: 490px;
+        padding: 100px 0 0;
+        background: var(--brand);
+        color: var(--white);
+      }
+
+      .quote-copy-band .display-title {
+        margin-bottom: 24px;
+      }
+
+      .quote-copy-band p {
+        max-width: 1110px;
+        color: var(--white);
+        font-size: 18px;
+        line-height: 1.38;
+      }
+
+      .screen-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 32px;
+        margin-top: -220px;
+        padding-bottom: 80px;
+        align-items: start;
+      }
+
+      .screen-row img {
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 18px 22px rgb(10 40 92 / 13%));
+      }
+
+      .consent-story {
+        position: relative;
+        min-height: 1360px;
+        background: var(--surface);
+      }
+
+      .consent-band {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 500px;
+        background: var(--consent);
+      }
+
+      .consent-layout {
+        position: relative;
+        min-height: 1360px;
+      }
+
+      .consent-visual {
+        position: absolute;
+        top: 74px;
+        left: 0;
+        z-index: 2;
+        width: 430px;
+      }
+
+      .consent-visual img {
+        width: 100%;
+        height: auto;
+      }
+
+      .consent-intro,
+      .consent-note {
+        position: absolute;
+        z-index: 3;
+        right: 0;
+        width: 520px;
+      }
+
+      .consent-intro {
+        top: 118px;
+        color: var(--white);
+      }
+
+      .consent-intro .display-title {
+        margin-bottom: 24px;
+      }
+
+      .consent-note h2 {
+        margin-bottom: 16px;
+      }
+
+      .consent-note p {
+        font-size: 18px;
+        line-height: 1.38;
+      }
+
+      .consent-note-one {
+        top: 700px;
+      }
+
+      .consent-note-two {
+        top: 1100px;
+      }
+
+      .closing {
+        min-height: 1059px;
+        display: grid;
+        place-items: center;
+        padding: 96px 32px;
+        background: var(--brand);
+        color: var(--white);
+        text-align: center;
+      }
+
+      .closing .display-title {
+        margin-bottom: 32px;
+      }
+
+      .closing p {
+        max-width: 670px;
+        margin-inline: auto;
+        color: var(--white);
+        font-size: 18px;
+        line-height: 1.4;
+      }
+
+      @media (max-width: 1100px) {
+        h1,
+        .display-title {
+          font-size: clamp(38px, 8vw, 48px);
+        }
+
+        .shell {
+          width: min(calc(100% - 48px), var(--content));
+        }
+
+        .hero {
+          min-height: auto;
+          padding: 96px 0 112px;
+        }
+
+        .hero-grid {
+          grid-template-columns: 1fr;
+          gap: 72px;
+        }
+
+        .hero-copy,
+        .hero-product-collage {
+          margin-inline: auto;
+        }
+
+        .hero-copy {
+          width: min(100%, 515px);
+          text-align: center;
+        }
+
+        .hero h1,
+        .hero-copy p {
+          max-width: none;
+        }
+
+        .case-for-change {
+          min-height: auto;
+        }
+
+        .case-for-change .display-title {
+          margin-bottom: 56px;
+        }
+
+        .case-grid {
+          gap: 48px;
+        }
+
+        .product-story,
+        .product-layout,
+        .consent-story,
+        .consent-layout {
+          min-height: auto;
+        }
+
+        .product-brand-band,
+        .consent-band {
+          display: none;
+        }
+
+        .product-layout,
+        .consent-layout {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .product-intro,
+        .product-visual,
+        .annotation,
+        .consent-intro,
+        .consent-visual,
+        .consent-note {
+          position: relative;
+          inset: auto;
+          width: auto;
+        }
+
+        .product-intro,
+        .consent-intro {
+          order: 1;
+          padding: 88px max(24px, calc((100% - min(calc(100% - 48px), var(--content))) / 2));
+        }
+
+        .product-intro {
+          background: var(--brand);
+        }
+
+        .consent-intro {
+          background: var(--consent);
+        }
+
+        .product-visual,
+        .consent-visual {
+          order: 2;
+          width: min(calc(100% - 48px), 760px);
+          margin: 64px auto 32px;
+        }
+
+        .consent-visual {
+          width: min(calc(100% - 48px), 430px);
+        }
+
+        .annotation,
+        .consent-note {
+          order: 3;
+          width: min(calc(100% - 48px), 680px);
+          margin: 0 auto;
+          padding: 48px 0;
+          border-top: 1px solid rgb(10 40 92 / 18%);
+        }
+
+        .annotation-three,
+        .consent-note-two {
+          padding-bottom: 88px;
+        }
+
+        .quote-flow {
+          min-height: auto;
+        }
+
+        .closing {
+          min-height: 720px;
+        }
+
+        .quote-copy-band {
+          min-height: auto;
+          padding: 88px 0 250px;
+        }
+
+        .screen-row {
+          gap: 20px;
+          margin-top: -185px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        body {
+          font-size: 16px;
+        }
+
+        .shell {
+          width: calc(100% - 40px);
+        }
+
+        h2 {
+          font-size: 22px;
+        }
+
+        .hero {
+          padding: 72px 0 88px;
+        }
+
+        .hero-grid {
+          gap: 60px;
+        }
+
+        .hero-copy p {
+          font-size: 19px;
+        }
+
+        .case-for-change {
+          padding: 72px 0;
+        }
+
+        .case-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .case-grid p,
+        .annotation p,
+        .product-intro p,
+        .quote-copy-band p,
+        .consent-intro p,
+        .consent-note p,
+        .closing p {
+          font-size: 16px;
+        }
+
+        .copy-callout {
+          margin-top: 48px;
+          padding: 22px 24px;
+          border-radius: 18px;
+          font-size: 15px;
+        }
+
+        .product-intro,
+        .consent-intro {
+          padding: 72px 20px;
+        }
+
+        .product-visual {
+          width: calc(100% - 8px);
+          margin-top: 48px;
+        }
+
+        .consent-visual {
+          width: min(calc(100% - 40px), 380px);
+          margin-top: 48px;
+        }
+
+        .annotation,
+        .consent-note {
+          width: calc(100% - 40px);
+          padding: 40px 0;
+        }
+
+        .quote-copy-band {
+          padding: 72px 0 148px;
+        }
+
+        .screen-row {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+          margin-top: -105px;
+          padding-bottom: 64px;
+        }
+
+        .closing {
+          min-height: 620px;
+          padding-inline: 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main aria-label="Pet insurance reimagined case study">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="shell hero-grid">
+          <div class="hero-copy">
+            <h1 id="page-title">Pet insurance reimagined</h1>
+            <p>Designing a native solution based on insights from behavioural science</p>
+          </div>
+
+          <figure
+            class="hero-product-collage"
+            role="img"
+            aria-label="Collage of redesigned pet insurance screens and visual elements."
+          >
+            <div class="tile-umbrella">
+              <svg viewBox="0 0 72 72" fill="none" aria-hidden="true">
+                <path d="M35.6 3.3c19.7 0 35.6 16.1 35.6 35.7 0 1-.8 1.7-1.7 1.7-1 0-1.6-.8-1.6-1.7 0-17.8-14.5-32.2-32.3-32.2S3.4 21.1 3.4 39c0 1-.7 1.7-1.6 1.7-1 0-1.8-.8-1.8-1.7C0 19.4 15.9 3.3 35.6 3.3Zm13.2 34.7c.7.8.5 1.9-.3 2.4-.8.5-1.9.3-2.4-.3-5.9-8.1-15.1-8.1-21 0-.4.6-1.6.8-2.3.3-.8-.5-1-1.6-.3-2.4 7.1-10 19.2-10 26.3 0ZM25.1 38.2c.7.8.3 1.7-.5 2.2-.7.6-1.9.3-2.3-.5-5-8-14.2-8-19.1 0-.5.8-1.6 1.1-2.4.5-.8-.5-1.1-1.5-.5-2.2 6.2-10.2 18.6-10.2 24.8 0ZM70.9 38c.5.8.3 1.9-.5 2.4-.7.5-1.7.3-2.2-.5-5.5-8-13.8-8-19.4 0-.4.8-1.4 1-2.2.5-.8-.5-1-1.6-.5-2.4 6.9-10 18-10 24.8 0ZM17 61.1c0-1 .7-1.8 1.6-1.8 1 0 1.8.8 1.8 1.8 0 3.8 3 6.8 6.8 6.8 3.7 0 6.7-3 6.7-6.8V32.3c0-1 .8-1.8 1.7-1.8 1 0 1.8.8 1.8 1.8v28.8c0 5.5-4.6 10.1-10.2 10.1C21.5 71.2 17 66.6 17 61.1ZM33.9 1.7c0-1 .8-1.7 1.7-1.7 1 0 1.8.8 1.8 1.7v3.4c0 1-.8 1.7-1.8 1.7-1 0-1.7-.8-1.7-1.7V1.7Z" fill="white" />
+              </svg>
+            </div>
+
+            <div class="tile-pet">
+              <dotlottie-wc
+                class="pet-animation"
+                src="https://lottie.host/13307d53-d595-486c-9500-54d30767be13/bp94djWR6p.lottie"
+                autoplay
+                loop
+                aria-hidden="true"
+              ></dotlottie-wc>
+            </div>
+
+            <div class="card-vet">
+              <span class="card-icon purple" aria-hidden="true">
+                <svg viewBox="0 0 29 30" fill="none"><path d="M4.5 0H12v7.5c1.1 0 2.2-.3 3-1v4.8A6.8 6.8 0 0 1 8.3 18a6.8 6.8 0 0 1-6.8-6.7V6.5c.8.7 1.9 1 3 1V0ZM9 19.5V21a7.5 7.5 0 0 0 15 0v-4.6a3.8 3.8 0 1 1 1.5 0V21a9 9 0 0 1-18 0v-1.5H9Zm15.8-4.5a2.3 2.3 0 1 0 0-4.5 2.3 2.3 0 0 0 0 4.5Z" fill="currentColor" /></svg>
+              </span>
+              <div class="card-text">
+                <p class="card-title">Your vet, your choice</p>
+                <p class="card-body">Freedom to visit any licensed veterinary you and your pet trust.</p>
+              </div>
+            </div>
+
+            <div class="card-vet-care">
+              <span class="card-icon blue" aria-hidden="true">
+                <svg viewBox="0 0 32 30" fill="none"><path d="M23.3 3a6.8 6.8 0 0 1 6.6 5.6 8.5 8.5 0 0 0-6 .1l-.6.2-.7-.2a8.5 8.5 0 0 0-6-.1A6.8 6.8 0 0 1 23.3 3Zm.7-1.5V.8a.8.8 0 0 0-1.5 0v.8a8.3 8.3 0 0 0-7.5 8.2c0 .5.5.9 1 .7l1-.4a6.8 6.8 0 0 1 5.5.2v5.5a2.3 2.3 0 0 1-4.5 0 .8.8 0 0 0-1.5 0 3.8 3.8 0 0 0 7.5 0v-5.5a6.8 6.8 0 0 1 5.5-.2l1 .4c.5.2 1-.2 1-.7A8.3 8.3 0 0 0 24 1.5Z" fill="currentColor" /><path d="M12 28.2c-1.2-1.2-3.1-3-4.7-4.6l-3.5-3.5-.1-.1C3 19.3 1.5 17.5 1.5 15.5c0-3.1 1.9-5 4.9-5 2.2 0 4.2 1.8 5 3.1.3.5 1 .5 1.3 0 .5-.8 1.2-1.6 2-2.2-.3-.4-.6-.9-.7-1.4-.8.6-1.5 1.3-2 2-.4-.5-.9-1-1.6-1.6A6.4 6.4 0 0 0 6.4 9C2.6 9 0 11.6 0 15.5c0 2.7 1.8 5 2.7 5.9l.3.3c.7.8 6.6 6.7 8.5 8.1.3.3.7.3 1 0 1.6-1.5 4.3-4.1 7.7-7.6l1.4-1.4a5 5 0 0 1-2.2.1L18 22.2c-2.2 2.2-4.6 4.6-6 6Z" fill="currentColor" /></svg>
+              </span>
+              <div class="card-text">
+                <p class="card-title">Veterinary care</p>
+                <p class="card-body">Expert medical care to keep your pet healthy and happy.</p>
+              </div>
+            </div>
+
+            <div class="banner-terms">
+              <span class="checkmark" aria-hidden="true">
+                <svg viewBox="0 0 12 12" fill="none"><path d="m2 6 3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <p class="banner-text">By accepting, you confirm that you've read and agree to all the terms outlined above.</p>
+            </div>
+          </figure>
+        </div>
+      </section>
+
+      <section class="case-for-change" aria-labelledby="case-title">
+        <div class="shell">
+          <h2 class="display-title" id="case-title">The case for change</h2>
+          <div class="case-grid">
+            <article>
+              <h2>Understanding user behaviour</h2>
+              <p>We teamed up with a consulting firm specializing in behavioural science to get a better sense of user behavior and the way people engage with insurance products. The research highlighted the cognitive biases that shape user decisions, guiding our efforts to transform abstract insurance concepts into relatable, user-friendly experiences. I followed the insights I’ve gained throughout the project.</p>
+            </article>
+            <article>
+              <h2>Designing a native solution</h2>
+              <p>Our current webview solution limits native functionality - gestures, deeplinking, and animations don’t perform as users expect. The webview also uses different components than the native app, creating a disjointed look and feel. My goal was to design a fully native flow following the George Design System, creating new components that align with its guidelines.</p>
+            </article>
+          </div>
+          <p class="copy-callout">Finance is highly regulated. The language we choose must balance strict legal requirements with human understanding. That’s why copy plays a central role in financial product design.</p>
+        </div>
+      </section>
+
+      <section class="product-story" aria-labelledby="heart-title">
+        <div class="product-brand-band" aria-hidden="true"></div>
+        <div class="shell product-layout">
+          <figure class="product-visual">
+            <img src="assets/product-page-walkthrough.png" alt="A continuous walkthrough of the redesigned pet insurance product page, including cover options, testimonials, and frequently asked questions." />
+          </figure>
+          <div class="product-intro">
+            <h2 class="display-title" id="heart-title">Heart over function</h2>
+            <p>The product page is our opportunity to spark interest by presenting both the product’s details and its value. Legal requirements, along with the tendencies of banks and insurers to emphasize functional benefits over emotional values, result in a dense, text-heavy screen that feels distant and overwhelming from the first moment. In an attempt to make this screen more inviting, I used techniques from our behavioral science research, like framing, chunking, and social proofing, to turn a sea of information into a relatable experience.</p>
+          </div>
+          <article class="annotation annotation-one">
+            <h2>Barking up the right tree</h2>
+            <p>Getting insurance is part of an unconscious process, and cognitive biases play a great role in that. Framing information is a very critical part: people consider a risk much more than an advantage. By focusing on the risks first while also providing a solution, we make our case more convincing and relevant than if we were simply to list the things our product covers.</p>
+          </article>
+          <article class="annotation annotation-two">
+            <h2>Value before variables</h2>
+            <p>When dealing with information-heavy products like insurance, the simplest words are often the most effective. By making the benefits more relatable and less abstract, we can keep the user focused on the value rather than immediately jumping straight to cost and limit comparisons. This approach is especially effective in the early stages, where emotional buy-in is essential.</p>
+          </article>
+          <article class="annotation annotation-three">
+            <h2>The power of stories</h2>
+            <p>While social proofing can build trust and we can influence the behaviour of someone by showing them how others have acted, the goal of including testimonials was to close the gap between something abstract and real. Insurance products are abstract things by nature. Lining up benefits, covers, and pricing won’t help customers grasp the full value. Through unique stories, testimonials show that accidents do happen - and that the product has already made a difference for others when it mattered most.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="quote-flow" aria-labelledby="paw-title">
+        <div class="quote-copy-band">
+          <div class="shell">
+            <h2 class="display-title" id="paw-title">Paw after paw</h2>
+            <p>Screens overloaded with input fields often cause users to abandon the process. By splitting pet details across multiple screens, we ease this burden and create a smoother, more manageable flow. This approach taps into the Spark Effect: starting with simple actions encourages users to keep going. Capturing the pet’s name early lets us personalize later steps, using it to build a sense of involvement and connection that enhances perceived value.</p>
+          </div>
+        </div>
+        <div class="shell screen-row" aria-label="Four steps from the pet insurance quote flow">
+          <figure><img src="assets/quote-flow-pet-name.png" alt="Quote flow asking for the pet’s name." /></figure>
+          <figure><img src="assets/quote-flow-pet-type.png" alt="Quote flow asking whether the pet is a dog or cat." /></figure>
+          <figure><img src="assets/quote-flow-breed.png" alt="Quote flow asking for the pet’s breed." /></figure>
+          <figure><img src="assets/quote-flow-birthday.png" alt="Quote flow asking for the pet’s birthday." /></figure>
+        </div>
+      </section>
+
+      <section class="consent-story" aria-labelledby="consent-title">
+        <div class="consent-band" aria-hidden="true"></div>
+        <div class="shell consent-layout">
+          <figure class="consent-visual">
+            <img src="assets/consent-flow-walkthrough.png" alt="The redesigned legal consent screen with plain-language explanations and one confirmation action." />
+          </figure>
+          <div class="consent-intro">
+            <h2 class="display-title" id="consent-title">Bark yes to consent</h2>
+            <p>Balancing legal requirements with user experience is no small feat in the banking world. Our behavioural research identified dense legal language as a key source of high cognitive load, leading to higher drop-off rates and missed details about insurance products. By focusing on clear copy and logical design, my goal was to create a flow that respects regulatory requirements without overwhelming users, helping them understand the ‘ins and outs' of their insurance before making a decision.</p>
+          </div>
+          <article class="consent-note consent-note-one">
+            <h2>Clear copy, informed choices</h2>
+            <p>Legal consents are often filled with industry-specific language that can overwhelm users, making it harder for them to engage with essential information. Research shows that too much information can actually reduce transparency, as users tend to skip over details they don’t understand. With friendly copy and icons, we can clearly communicate the purpose of each document and can encourage users to make informed choices before insuring their pet.</p>
+          </article>
+          <article class="consent-note consent-note-two">
+            <h2>From toggle-maze to a tap</h2>
+            <p>Our current consent screen presents a maze of toggle switches, with each consent requiring individual interaction. While this design is suitable for scenarios allowing selective consent, it's less appropriate in our “take it or leave it” situation where users must agree to all terms in order to insure their pet. Going from multiple toggles to a single confirmation cell better fits our scenario; it reduces interaction cost without compromising on compliance.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="closing" aria-labelledby="closing-title">
+        <div>
+          <h2 class="display-title" id="closing-title">Thanks for scrolling!</h2>
+          <p>I hope this approach shows that with the right design, even insurance products with complex legal requirements can roll over and play nice with UX.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

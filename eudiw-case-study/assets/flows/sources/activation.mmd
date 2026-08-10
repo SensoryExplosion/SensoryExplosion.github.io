@@ -1,0 +1,25 @@
+flowchart LR
+  A[Open wallet for first time] --> B[Welcome and voluntary-use<br/>explanation]
+  B --> C[Trust mark and provider identity]
+  C --> D[Set up device and wallet<br/>authentication]
+  D --> E[Choose supported PID provider]
+  E --> F[Complete provider identity check]
+  F --> G{Credential verified?}
+  G -- No --> H[Explain failure and<br/>safe next step]
+  G -- Yes --> I[Preview issuer and<br/>credential contents]
+  I --> J{Store this credential?}
+  J -- No --> K[Discard and return to<br/>empty wallet]
+  J -- Yes --> L[Activate PID if required]
+  L --> M[Credential added<br/>confirmation]
+  M --> N[Home]
+  classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
+  classDef primary fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
+  classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+  classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
+  classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  class A start
+  class B,C,D,E,F,I,L secondary
+  class G,J decision
+  class H,K warning
+  class M,N success

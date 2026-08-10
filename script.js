@@ -1,3 +1,130 @@
+const SOFT_BLUR_DURATION = 648;
+const SOFT_BLUR_STAGGER = 18;
+const SOFT_BLUR_INITIAL_TRANSFORM = "translate3d(0, 9.28px, 0) rotateX(0deg) rotateY(0deg) rotate(0deg) scale(1)";
+const SOFT_BLUR_FINAL_TRANSFORM = "translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotate(0deg) scale(1)";
+
+function prepareSoftBlurTitle(title) {
+  const accessibleTitle = title.textContent.replace(/\s+/g, " ").trim();
+  const textNodes = [];
+  const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+  let textNode = walker.nextNode();
+
+  while (textNode) {
+    textNodes.push(textNode);
+    textNode = walker.nextNode();
+  }
+
+  title.setAttribute("aria-label", accessibleTitle);
+
+  const units = [];
+
+  function createUnit(character) {
+    const unit = document.createElement("span");
+    unit.className = "soft-blur__unit";
+    unit.setAttribute("aria-hidden", "true");
+    unit.textContent = character;
+    units.push(unit);
+    return unit;
+  }
+
+  textNodes.forEach((node) => {
+    const text = node.nodeValue.replace(/\s+/g, " ").trimStart();
+
+    if (!text) {
+      node.remove();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    text.match(/\S+|\s+/g).forEach((part) => {
+      if (/^\s+$/.test(part)) {
+        fragment.append(document.createTextNode(part));
+        return;
+      }
+
+      const word = document.createElement("span");
+      word.className = "soft-blur__word";
+      word.setAttribute("aria-hidden", "true");
+      Array.from(part).forEach((character) => {
+        word.append(createUnit(character));
+      });
+      fragment.append(word);
+    });
+
+    node.replaceWith(fragment);
+  });
+
+  units.forEach((unit) => {
+    unit.style.opacity = "0";
+    unit.style.filter = "blur(12px)";
+    unit.style.transform = SOFT_BLUR_INITIAL_TRANSFORM;
+  });
+
+  return units;
+}
+
+function prepareSoftBlurWords(element, blur) {
+  const text = element.textContent.replace(/\s+/g, " ").trim();
+  const fragment = document.createDocumentFragment();
+  const units = [];
+
+  element.setAttribute("aria-label", text);
+
+  text.match(/\S+|\s+/g).forEach((part) => {
+    if (/^\s+$/.test(part)) {
+      fragment.append(document.createTextNode(part));
+      return;
+    }
+
+    const unit = document.createElement("span");
+    unit.className = "soft-blur__unit";
+    unit.setAttribute("aria-hidden", "true");
+    unit.textContent = part;
+    units.push(unit);
+    fragment.append(unit);
+  });
+
+  element.replaceChildren(fragment);
+
+  units.forEach((unit) => {
+    unit.style.opacity = "0";
+    unit.style.filter = `blur(${blur}px)`;
+    unit.style.transform = SOFT_BLUR_INITIAL_TRANSFORM;
+  });
+
+  return units;
+}
+
+function playSoftBlurIn(
+  units,
+  { initialDelay = 0, stagger = SOFT_BLUR_STAGGER, blur = 12 } = {}
+) {
+  const animations = units.map((unit, index) =>
+    unit.animate(
+      [
+        { opacity: 0, filter: `blur(${blur}px)`, transform: SOFT_BLUR_INITIAL_TRANSFORM },
+        { opacity: 1, filter: "blur(0)", transform: SOFT_BLUR_FINAL_TRANSFORM }
+      ],
+      {
+        delay: initialDelay + index * stagger,
+        duration: SOFT_BLUR_DURATION,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "forwards"
+      }
+    )
+  );
+
+  return Promise.all(animations.map((animation) => animation.finished)).then(() => {
+    units.forEach((unit) => {
+      unit.style.opacity = "1";
+      unit.style.filter = "blur(0)";
+      unit.style.transform = SOFT_BLUR_FINAL_TRANSFORM;
+    });
+    animations.forEach((animation) => animation.cancel());
+  });
+}
+
 // ── Apple-style card corners ──
 (function () {
   const cards = document.querySelectorAll(
@@ -65,6 +192,64 @@
     smoothCard(card);
     observer.observe(card);
   });
+})();
+
+// ── Hero soft-blur-in reveal ──
+(function () {
+  const title = document.getElementById("hero-title");
+  const subtitle = document.getElementById("hero-subtitle");
+  const accent = title?.querySelector(".hero-title__accent");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (!title) {
+    subtitle?.classList.remove("hero-subtitle--animation-pending");
+    return;
+  }
+
+  if (reducedMotion.matches || !Element.prototype.animate) {
+    title.classList.remove("hero-title--animation-pending");
+    subtitle?.classList.remove("hero-subtitle--animation-pending");
+    accent?.classList.remove("hero-title__accent--highlight-pending");
+    return;
+  }
+
+  const titleUnits = prepareSoftBlurTitle(title);
+  const subtitleUnits = subtitle ? prepareSoftBlurWords(subtitle, 6) : [];
+  const initialDelay = Math.round(Math.random() * 400);
+  const highlightLead = 160;
+  const subtitleLead = 220;
+  const lastAccentIndex = titleUnits.reduce(
+    (lastIndex, unit, index) => accent?.contains(unit) ? index : lastIndex,
+    -1
+  );
+  const titleEnd =
+    initialDelay +
+    Math.max(0, titleUnits.length - 1) * SOFT_BLUR_STAGGER +
+    SOFT_BLUR_DURATION;
+  const highlightDelay =
+    lastAccentIndex >= 0
+      ? initialDelay +
+        lastAccentIndex * SOFT_BLUR_STAGGER +
+        SOFT_BLUR_DURATION -
+        highlightLead
+      : titleEnd;
+  const subtitleDelay = Math.max(0, highlightDelay - subtitleLead);
+
+  playSoftBlurIn(titleUnits, { initialDelay });
+  playSoftBlurIn(subtitleUnits, {
+    initialDelay: subtitleDelay,
+    stagger: 15,
+    blur: 6
+  });
+
+  title.classList.remove("hero-title--animation-pending");
+  subtitle?.classList.remove("hero-subtitle--animation-pending");
+
+  if (lastAccentIndex >= 0) {
+    window.setTimeout(() => {
+      accent?.classList.add("hero-title__accent--highlighted");
+    }, highlightDelay);
+  }
 })();
 
 (function () {
@@ -766,6 +951,12 @@
 
       frameUrl.searchParams.set("display", "overlay");
       overlay.className = "project-overlay";
+      if (trigger.dataset.projectOverlayBackground) {
+        overlay.style.setProperty(
+          "--project-overlay-background",
+          trigger.dataset.projectOverlayBackground
+        );
+      }
       overlay.setAttribute("aria-hidden", "true");
       overlay.setAttribute("role", "dialog");
       overlay.setAttribute("aria-modal", "true");

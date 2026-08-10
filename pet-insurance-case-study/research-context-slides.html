@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pet Insurance Redesign - Research Context</title>
+    <style>
+      :root {
+        --brand: #135ee2;
+        --brand-deep: #0a285c;
+        --brand-light: #199cf9;
+        --surface: #e4eaf0;
+        --paper: #ffffff;
+        --ink: #151719;
+        --muted: #53606d;
+        --line: #c9d2dc;
+        --accent: #a942b8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+      }
+
+      body {
+        margin: 0;
+        background: #101923;
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .slide-viewport {
+        min-height: 100vh;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      .slide {
+        position: relative;
+        width: min(100vw, calc(100vh * 16 / 9));
+        width: min(100vw, calc(100svh * 16 / 9));
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        container-type: inline-size;
+        background: var(--surface);
+      }
+
+      .slide-number {
+        position: absolute;
+        right: 10.8cqw;
+        bottom: 3.3cqw;
+        z-index: 5;
+        color: currentColor;
+        font-size: 1.15cqw;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .role-slide {
+        display: grid;
+        grid-template-columns: 42% 58%;
+      }
+
+      .role-story {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 5.2cqw 4.7cqw 4.5cqw;
+        overflow: hidden;
+        background: var(--brand);
+        color: var(--paper);
+      }
+
+      .role-story h1 {
+        position: relative;
+        z-index: 2;
+        max-width: 10.5ch;
+        color: var(--paper);
+        font-size: 4cqw;
+        font-weight: 740;
+        line-height: 0.98;
+        letter-spacing: -0.048em;
+        text-wrap: balance;
+      }
+
+      .role-story > p {
+        position: relative;
+        z-index: 2;
+        max-width: 31ch;
+        margin-top: 2.1cqw;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 1.35cqw;
+        line-height: 1.48;
+      }
+
+      .role-path {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        gap: 0.72cqw;
+        width: max-content;
+        color: var(--paper);
+        font-size: 1.2cqw;
+        font-weight: 720;
+        line-height: 1.15;
+      }
+
+      .role-path span {
+        display: flex;
+        align-items: center;
+        gap: 0.7cqw;
+      }
+
+      .role-path span:not(:last-child)::after {
+        content: "";
+        width: 2.7cqw;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .role-art {
+        position: absolute;
+        right: -16cqw;
+        bottom: -0.5cqw;
+        width: 37cqw;
+        opacity: 0.23;
+        mix-blend-mode: screen;
+        pointer-events: none;
+      }
+
+      .research-context {
+        display: flex;
+        flex-direction: column;
+        padding: 5.1cqw 5.1cqw 4.1cqw;
+      }
+
+      .research-context h2 {
+        max-width: 13ch;
+        color: var(--brand-deep);
+        font-size: 3.25cqw;
+        font-weight: 740;
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+      }
+
+      .research-context > p {
+        max-width: 49ch;
+        margin-top: 1.35cqw;
+        color: var(--muted);
+        font-size: 1.34cqw;
+        line-height: 1.48;
+      }
+
+      .research-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 2.2cqw;
+        margin-top: auto;
+        padding-top: 2.4cqw;
+        border-top: 1px solid var(--line);
+      }
+
+      .research-step {
+        min-width: 0;
+      }
+
+      .research-step strong {
+        display: block;
+        margin-bottom: 0.95cqw;
+        color: var(--brand);
+        font-size: 2.15cqw;
+        font-weight: 750;
+        line-height: 1;
+      }
+
+      .research-step h3 {
+        color: var(--ink);
+        font-size: 1.28cqw;
+        font-weight: 720;
+        line-height: 1.2;
+      }
+
+      .research-step p {
+        margin-top: 0.55cqw;
+        color: var(--muted);
+        font-size: 1.02cqw;
+        line-height: 1.48;
+      }
+
+      .scope-line {
+        margin-top: 2.1cqw;
+        color: var(--brand-deep);
+        font-size: 1.02cqw;
+        font-weight: 720;
+        letter-spacing: 0.01em;
+      }
+
+      .findings-slide {
+        display: grid;
+        grid-template-rows: 34% 66%;
+      }
+
+      .findings-intro {
+        display: grid;
+        grid-template-columns: 1.45fr 0.8fr;
+        gap: 5cqw;
+        align-items: end;
+        padding: 4.2cqw 5.4cqw 3.7cqw;
+        background: var(--brand);
+        color: var(--paper);
+      }
+
+      .findings-intro h1 {
+        max-width: 19ch;
+        color: var(--paper);
+        font-size: 3.55cqw;
+        font-weight: 740;
+        line-height: 0.99;
+        letter-spacing: -0.045em;
+        text-wrap: balance;
+      }
+
+      .findings-intro p {
+        max-width: 34ch;
+        padding-bottom: 0.25cqw;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 1.27cqw;
+        line-height: 1.46;
+      }
+
+      .findings-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0;
+        padding: 4.1cqw 5.4cqw 4.2cqw;
+      }
+
+      .finding {
+        position: relative;
+        min-width: 0;
+        padding-right: 3.2cqw;
+      }
+
+      .finding + .finding {
+        padding-left: 3.2cqw;
+        border-left: 1px solid var(--line);
+      }
+
+      .finding:last-child {
+        padding-right: 0;
+      }
+
+      .finding-number {
+        color: var(--brand);
+        font-size: 2.25cqw;
+        font-weight: 760;
+        line-height: 1;
+      }
+
+      .finding h2 {
+        max-width: 11ch;
+        margin-top: 1.2cqw;
+        color: var(--brand-deep);
+        font-size: 2.05cqw;
+        font-weight: 740;
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        text-wrap: balance;
+      }
+
+      .finding > p {
+        margin-top: 1.1cqw;
+        color: var(--muted);
+        font-size: 1.12cqw;
+        line-height: 1.48;
+      }
+
+      .finding .response {
+        margin-top: 1.55cqw;
+        padding-top: 1.35cqw;
+        border-top: 0.32cqw solid var(--brand);
+        color: var(--brand-deep);
+        font-weight: 700;
+      }
+
+      .findings-slide .slide-number {
+        color: var(--brand-deep);
+      }
+
+      .deck-controls {
+        position: fixed;
+        right: 22px;
+        bottom: 20px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.58);
+        border-radius: 999px;
+        background: rgba(10, 20, 34, 0.76);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+      }
+
+      .deck-controls button {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background: var(--paper);
+        color: var(--brand-deep);
+        font-size: 18px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .deck-controls button:focus-visible {
+        outline: 3px solid var(--brand-light);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 720px) {
+        .deck-controls {
+          right: 12px;
+          bottom: 12px;
+          transform: scale(0.82);
+          transform-origin: right bottom;
+        }
+      }
+
+      @media print {
+        @page {
+          size: 16in 9in;
+          margin: 0;
+        }
+
+        html,
+        body {
+          background: transparent;
+          scroll-snap-type: none;
+        }
+
+        .slide-viewport {
+          min-height: 0;
+          break-after: page;
+        }
+
+        .slide {
+          width: 16in;
+          height: 9in;
+        }
+
+        .deck-controls {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main aria-label="Research context for the pet insurance redesign">
+      <section class="slide-viewport" id="slide-1">
+        <article class="slide role-slide" aria-labelledby="role-title">
+          <div class="role-story">
+            <div>
+              <h1 id="role-title">I led the product, then redesigned the experience.</h1>
+              <p>
+                As Product Manager, I owned the product context and led Erste's
+                collaboration with BeHive. I later stepped into the designer role to
+                translate the evidence into a native George concept.
+              </p>
+            </div>
+
+            <div class="role-path" aria-label="My contribution across the project">
+              <span>Product Manager</span>
+              <span>Research lead</span>
+              <span>Designer</span>
+            </div>
+
+            <img
+              class="role-art"
+              src="assets/pet-insurance-thumbnail.png"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
+
+          <div class="research-context">
+            <h2>The research followed the full path to purchase.</h2>
+            <p>
+              The goal was to understand why customers hesitate, not only where they
+              leave the journey.
+            </p>
+
+            <div class="research-steps">
+              <article class="research-step">
+                <strong>01</strong>
+                <h3>Audit the journey</h3>
+                <p>Reviewed the George flow from insurance discovery through purchase.</p>
+              </article>
+
+              <article class="research-step">
+                <strong>02</strong>
+                <h3>Build the evidence</h3>
+                <p>Combined academic research with 15+ insurance and fintech benchmarks.</p>
+              </article>
+
+              <article class="research-step">
+                <strong>03</strong>
+                <h3>Find opportunities</h3>
+                <p>Mapped friction to behavioural principles and possible interventions.</p>
+              </article>
+            </div>
+
+            <p class="scope-line">Discovery&nbsp;&nbsp;→&nbsp;&nbsp;Product selection&nbsp;&nbsp;→&nbsp;&nbsp;Purchase</p>
+          </div>
+
+          <span class="slide-number" aria-hidden="true">01 / 02</span>
+        </article>
+      </section>
+
+      <section class="slide-viewport" id="slide-2">
+        <article class="slide findings-slide" aria-labelledby="findings-title">
+          <header class="findings-intro">
+            <h1 id="findings-title">Customers had to process the product before they could value it.</h1>
+            <p>
+              The audit showed that the experience made protection feel abstract,
+              effortful, and harder to trust.
+            </p>
+          </header>
+
+          <div class="findings-grid">
+            <article class="finding">
+              <span class="finding-number">01</span>
+              <h2>Value arrived too late</h2>
+              <p>
+                Features, policy details, and conditions appeared before customers
+                understood why protection mattered.
+              </p>
+              <p class="response">
+                Lead with relatable risk, care, and reassurance - then introduce price
+                and coverage.
+              </p>
+            </article>
+
+            <article class="finding">
+              <span class="finding-number">02</span>
+              <h2>Complexity invited drop-off</h2>
+              <p>
+                Dense formal copy, weak chunking, and long interactions created cognitive
+                load, especially during purchase.
+              </p>
+              <p class="response">
+                Use progressive disclosure, focused steps, and simpler consent.
+              </p>
+            </article>
+
+            <article class="finding">
+              <span class="finding-number">03</span>
+              <h2>Trust lacked consistency</h2>
+              <p>
+                Tone shifted between friendly and formal, while the hierarchy underplayed
+                important information.
+              </p>
+              <p class="response">
+                Use a human voice, native patterns, clearer emphasis, and social proof.
+              </p>
+            </article>
+          </div>
+
+          <span class="slide-number" aria-hidden="true">02 / 02</span>
+        </article>
+      </section>
+    </main>
+
+    <nav class="deck-controls" aria-label="Slide navigation">
+      <button type="button" id="previous-slide" aria-label="Previous slide">‹</button>
+      <button type="button" id="next-slide" aria-label="Next slide">›</button>
+    </nav>
+
+    <script>
+      const slides = [...document.querySelectorAll(".slide-viewport")];
+
+      function currentSlideIndex() {
+        return slides.reduce((closest, slide, index) => {
+          const distance = Math.abs(slide.getBoundingClientRect().top);
+          return distance < closest.distance ? { index, distance } : closest;
+        }, { index: 0, distance: Number.POSITIVE_INFINITY }).index;
+      }
+
+      function showSlide(offset) {
+        const nextIndex = Math.max(0, Math.min(slides.length - 1, currentSlideIndex() + offset));
+        slides[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      document.querySelector("#previous-slide").addEventListener("click", () => showSlide(-1));
+      document.querySelector("#next-slide").addEventListener("click", () => showSlide(1));
+
+      window.addEventListener("keydown", (event) => {
+        if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) {
+          event.preventDefault();
+          showSlide(1);
+        }
+
+        if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) {
+          event.preventDefault();
+          showSlide(-1);
+        }
+      });
+    </script>
+  </body>
+</html>

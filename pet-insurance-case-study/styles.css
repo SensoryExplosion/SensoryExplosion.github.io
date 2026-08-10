@@ -191,6 +191,12 @@ p {
   min-height: clamp(320px, 46vw, 560px);
 }
 
+@media (min-width: 981px) {
+  .hero-visual {
+    transform: translateY(-12px);
+  }
+}
+
 .hero-product-collage {
   --collage-text-primary: #0a285c;
   --collage-surface-brand: #135ee2;
