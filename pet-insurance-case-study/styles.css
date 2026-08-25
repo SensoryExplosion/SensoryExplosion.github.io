@@ -484,6 +484,61 @@ p {
   line-height: 24px;
 }
 
+.friction-slide {
+  align-items: flex-start;
+  padding: 68px 0 70px;
+  overflow-y: auto;
+  background: #e3eaf1;
+  color: #0a285c;
+}
+
+.friction-layout {
+  display: grid;
+  width: min(calc(100% - var(--space-6)), 1160px);
+  gap: 59px;
+  margin-inline: auto;
+}
+
+.friction-layout > h2 {
+  margin: 0;
+  color: #0a285c;
+  font-size: 37px;
+  font-weight: 700;
+  font-variation-settings: "opsz" 22, "wght" 700;
+  letter-spacing: 0;
+  line-height: 50px;
+}
+
+.friction-list {
+  display: grid;
+  gap: 40px;
+}
+
+.friction-list article {
+  display: grid;
+  gap: 8px;
+}
+
+.friction-list h3,
+.friction-list p {
+  margin: 0;
+  color: #0a285c;
+  letter-spacing: 0;
+}
+
+.friction-list h3 {
+  font-size: 24px;
+  font-weight: 700;
+  font-variation-settings: "opsz" 14, "wght" 700;
+  line-height: 30px;
+}
+
+.friction-list p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
 .overview-slide {
   background: var(--bg);
 }
@@ -528,9 +583,7 @@ p {
   border-top: 1px solid var(--line);
 }
 
-.role-note span,
-.evidence-takeaway span,
-.method-label {
+.role-note span {
   color: var(--text-primary);
   font-size: 0.78rem;
   font-weight: 700;
@@ -573,81 +626,6 @@ p {
   margin-bottom: 0;
 }
 
-.case-change-slide {
-  background: var(--surface-secondary);
-}
-
-.evidence-layout {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.evidence-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(300px, 0.6fr);
-  column-gap: clamp(var(--space-5), 7vw, var(--space-12));
-  align-items: end;
-}
-
-.evidence-heading .eyebrow,
-.evidence-heading h2 {
-  grid-column: 1;
-}
-
-.evidence-heading .lead {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  margin-bottom: 0;
-}
-
-.evidence-heading h2 {
-  margin-bottom: 0;
-}
-
-.research-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--line);
-  box-shadow: var(--shadow-soft);
-}
-
-.research-steps article {
-  min-height: 166px;
-  padding: var(--space-3);
-  background: var(--paper);
-}
-
-.research-steps span {
-  display: block;
-  margin-bottom: var(--space-2);
-  color: var(--surface-brand);
-  font-size: 0.84rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.research-steps h3,
-.research-steps p {
-  margin-bottom: 0;
-}
-
-.evidence-takeaway {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  gap: var(--space-3);
-  max-width: 840px;
-  padding: var(--space-3) 0 0;
-  border-top: 1px solid var(--line);
-}
-
-.evidence-takeaway p {
-  margin-bottom: 0;
-  color: var(--ink-soft);
-}
-
 .meta-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -673,10 +651,6 @@ p {
   background: var(--fill-secondary);
 }
 
-.case-change-slide h2 {
-  max-width: 930px;
-}
-
 .text-columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -688,13 +662,13 @@ p {
   margin-bottom: 0;
 }
 
-.strategy-slide,
 .heart-frame-2,
 .consent-frame-2 {
   background: var(--bg-soft);
 }
 
 .flow-slide {
+  padding-block: clamp(28px, 4.5vh, 44px);
   background: var(--surface-brand);
   color: var(--paper);
 }
@@ -710,47 +684,6 @@ p {
 
 .heart-frame-3 {
   background: var(--surface-secondary);
-}
-
-.strategy-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
-  gap: clamp(var(--space-5), 7vw, var(--space-12));
-  align-items: center;
-}
-
-.principle-stack {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.principle-stack article {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 4px var(--space-2);
-  padding: var(--space-3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper);
-  box-shadow: var(--shadow-soft);
-}
-
-.principle-stack span {
-  grid-row: 1 / span 2;
-  color: var(--line-strong);
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.principle-stack h3,
-.principle-stack p {
-  margin-bottom: 0;
-}
-
-.principle-stack .method-label {
-  margin-bottom: 5px;
-  color: var(--surface-brand);
 }
 
 .annotation-layout {
@@ -863,6 +796,11 @@ p {
   color: var(--text-primary);
   font-size: clamp(1rem, 0.8vw + 0.9rem, 1.15rem);
   line-height: 1.62;
+  text-wrap: pretty;
+}
+
+.copy-keep {
+  white-space: nowrap;
 }
 
 .heart-frame-1 .annotation-card,
@@ -881,6 +819,26 @@ p {
 
 .section-heading h2 {
   margin-bottom: var(--space-2);
+}
+
+.case-for-change-slide p,
+.annotation-card p:last-child,
+.flow-slide .section-heading > p {
+  text-align: justify;
+  text-align-last: start;
+  text-wrap: wrap;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  hyphenate-limit-chars: 12 5 5;
+}
+
+.annotation-card p:last-child {
+  hyphenate-limit-chars: 9 4 4;
+}
+
+.flow-slide .section-heading {
+  width: 100%;
+  max-width: none;
 }
 
 .screen-row {
@@ -917,12 +875,6 @@ p {
   max-width: 11ch;
   margin-inline: auto;
   color: var(--paper);
-}
-
-.closing-slide p {
-  color: var(--paper);
-  max-width: 660px;
-  margin-inline: auto;
 }
 
 .deck-controls {
@@ -1041,6 +993,11 @@ p {
   .case-for-change-callout {
     transform: none;
   }
+
+  .friction-layout {
+    width: min(calc(100% - var(--space-4)), var(--max-wide));
+    padding-inline: clamp(24px, 5vw, 48px);
+  }
 }
 
 @media (max-width: 980px) {
@@ -1078,13 +1035,22 @@ p {
     gap: 40px;
   }
 
+  .friction-layout {
+    width: min(calc(100% - var(--space-4)), var(--max-wide));
+    padding-inline: clamp(24px, 5vw, 48px);
+  }
+
+  .friction-layout > h2 {
+    font-size: clamp(2.75rem, 5vw, 3rem);
+    line-height: 1.05;
+  }
+
   .case-for-change-desktop-break {
     display: none;
   }
 
   .hero-grid,
   .brief-layout,
-  .strategy-grid,
   .annotation-layout,
   .annotation-layout.reverse {
     grid-template-columns: 1fr;
@@ -1109,16 +1075,6 @@ p {
 
   .meta-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .evidence-heading {
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-  }
-
-  .evidence-heading .lead {
-    grid-column: 1;
-    grid-row: auto;
   }
 
   .annotation-layout.reverse .annotation-card {
@@ -1256,6 +1212,31 @@ p {
     border-radius: 24px;
   }
 
+  .friction-layout {
+    width: 100%;
+    gap: 40px;
+    padding: 0;
+  }
+
+  .friction-layout > h2 {
+    font-size: clamp(2.1rem, 9.5vw, 3rem);
+    line-height: 1.03;
+  }
+
+  .friction-list {
+    gap: 32px;
+  }
+
+  .friction-list h3 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  .friction-list p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
   h1 {
     max-width: 9ch;
     margin-bottom: 24px;
@@ -1265,7 +1246,6 @@ p {
 
   h2,
   .overview-slide h2,
-  .case-change-slide h2,
   .annotation-card h2 {
     margin-bottom: 24px;
     font-size: clamp(2.1rem, 9.5vw, 3rem);
@@ -1350,46 +1330,6 @@ p {
     font-size: 1.1rem;
   }
 
-  .evidence-layout {
-    gap: 36px;
-  }
-
-  .evidence-heading {
-    gap: 0;
-  }
-
-  .evidence-heading .lead {
-    margin-top: 0;
-  }
-
-  .research-steps {
-    grid-template-columns: 1fr;
-    gap: 0;
-    overflow: visible;
-    border: 0;
-    border-top: 1px solid var(--line);
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .research-steps article {
-    min-height: 0;
-    padding: 24px 0;
-    border-bottom: 1px solid var(--line);
-    background: transparent;
-  }
-
-  .research-steps span {
-    margin-bottom: 10px;
-  }
-
-  .evidence-takeaway {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding-top: 24px;
-  }
-
   .meta-grid {
     grid-template-columns: 1fr;
     gap: 0;
@@ -1430,35 +1370,6 @@ p {
   .text-columns article:first-child {
     padding-top: 0;
     border-top: 0;
-  }
-
-  .strategy-grid {
-    gap: 0;
-  }
-
-  .strategy-grid .lead {
-    margin-bottom: 0;
-  }
-
-  .principle-stack {
-    gap: 0;
-    margin-top: 48px;
-    border-top: 1px solid var(--line);
-  }
-
-  .principle-stack article {
-    grid-template-columns: 44px minmax(0, 1fr);
-    gap: 18px;
-    padding: 26px 0;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .principle-stack span {
-    font-size: 1.18rem;
   }
 
   .annotation-layout,
@@ -1576,7 +1487,6 @@ p {
 
 h2,
 .overview-slide h2,
-.case-change-slide h2,
 .annotation-card h2,
 .closing-slide h2 {
   width: auto;

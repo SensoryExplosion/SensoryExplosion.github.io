@@ -169,29 +169,6 @@
     });
   };
 
-  const tocObserver = new IntersectionObserver(
-    (observerEntries) => {
-      const candidates = observerEntries
-        .filter((observerEntry) => observerEntry.isIntersecting)
-        .map((observerEntry) => ({
-          index: entries.findIndex((entry) => entry.target === observerEntry.target),
-          distance: Math.abs(observerEntry.boundingClientRect.top - topOffset),
-        }))
-        .filter((candidate) => candidate.index >= 0)
-        .sort((first, second) => first.distance - second.distance);
-
-      if (candidates.length) {
-        activate(candidates[0].index);
-      }
-    },
-    {
-      rootMargin: `-${topOffset + 8}px 0px -60% 0px`,
-      threshold: 0,
-    },
-  );
-
-  entries.forEach((entry) => tocObserver.observe(entry.target));
-
   const easeInOutCubic = (progress) =>
     progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 

@@ -1,57 +1,45 @@
-# Pet insurance slide 2 — senior design QA
+# Pet insurance friction slide — design QA
 
-- Source visual: `/var/folders/0n/5vjszlvd2gd_nbtzpsh6v9nr0000gn/T/codex-clipboard-846af1af-a6e7-4b88-8766-04267544bc86.png`
-- Figma JSON: `/Users/fred/.codex/attachments/43c14334-ca88-4f2e-95eb-5908c49063b4/pasted-text.txt`
-- Final desktop render: `/private/tmp/pet-insurance-senior-review/02-slide-final-v8-aligned.jpg`
-- Source/final comparison: `/private/tmp/pet-insurance-senior-review/02-source-vs-final.jpg`
-- Stable deck samples: slides 1, 5, 6, 8, and 9 in `/private/tmp/pet-insurance-senior-review/`
-- Responsive renders: `02-slide-final-1280x720.jpg`, `02-slide-final-1088x720-v3.jpg`, `02-slide-final-1280x700.jpg`, and `02-slide-final-mobile-exact.jpg`
-- Stepper comparison: `/private/tmp/pet-insurance-stepper-qa/stepper-comparison.jpg`
-- Reference constraint: slides 3 and 4 were excluded from all design decisions.
+- Source visual truth: `/var/folders/0n/5vjszlvd2gd_nbtzpsh6v9nr0000gn/T/codex-clipboard-366e45c9-d2d1-4934-a902-476d76879372.png`
+- Final implementation screenshot: `/private/tmp/pet-friction-qa/implementation-final-1470x735.png`
+- Full-view comparison: `/private/tmp/pet-friction-qa/comparison-final.png`
+- Responsive screenshots: `/private/tmp/pet-friction-qa/implementation-tablet-980x720.png` and `/private/tmp/pet-friction-qa/implementation-mobile-390x844-settled.png`
+- Viewport and state: 1470 × 735 CSS px, slide 3 of 12, desktop deck controls visible.
+- Density normalization: the 2940 × 1470 source is a 2× capture. It was downsampled to 1470 × 735 and compared against the 1470 × 735 implementation capture at device scale factor 1.
 
-## Design decision
+## Findings
 
-The Figma slide remains the primary visual source. The final pass deliberately harmonizes its composition with the stable deck: the content now uses the shared 1120px rail, the title uses the deck's insight-title scale, and the spacing follows the existing 8px rhythm. The Figma palette, two-column density, 24px subheads, purple callout, 32px radius, copy, and two-line desktop callout are preserved.
+No actionable P0, P1, or P2 differences remain.
 
-Intentional refinements from the source:
+The persistent previous/next control is absent from the isolated source image but intentionally remains in the implementation because it is shared deck navigation. It clears the final line of copy and does not alter the reference composition.
 
-- Moved the visible content rail from 155px to the deck-standard 175px at 1470px.
-- Changed the desktop column gap from 120px to the deck's 80px spacing token while preserving two 520px columns.
-- Scaled the title from 48px/57.6px to 51.45px/53.51px with the deck's 0.012em tracking.
-- Increased body leading from 24px to 26px for readability without changing 18px type.
-- Kept “fully native experience.” together to remove the lone-word orphan.
-- Kept “without compromising” together so the callout never ends a line on “without.”
-- Set an explicit 80px gap between the paragraph row and the callout so the vertical rhythm remains stable when copy changes.
+## Required fidelity surfaces
 
-## Final desktop geometry — 1470 × 735
+- Fonts and typography: Inter is available and used. The final title is a single 37px/50px line; section headings are 24px/30px at weight 700; body copy is 18px/24px at weight 400. Hierarchy, wrapping, and optical weight match the normalized source.
+- Spacing and layout rhythm: the content uses the source's 1160px rail at x=155px. The title begins at y=68px, the first article begins at y=177px, article gaps are 40px, and the final content line clears the deck controls. There is no desktop horizontal or vertical overflow.
+- Colors and visual tokens: the computed background is `rgb(227, 234, 241)` (`#e3eaf1`) and all text is `rgb(10, 40, 92)` (`#0a285c`), matching the source.
+- Image quality and asset fidelity: the reference contains no image assets, icons, illustrations, or decorative marks, so no generated or substitute assets are needed.
+- Copy and content: the title, four headings, punctuation, and all four paragraphs match the supplied slide.
 
-- Shared rail: x=175px, width=1120px.
-- Title: 51.45px/53.51px, weight 700, one line.
-- Columns: 520px + 80px + 520px.
-- Column headings: 24px/30px, weight 700.
-- Body: 18px/26px; left eight lines, right seven lines.
-- Callout: x=175px, y=517px, 1120×112px, 32px radius.
-- Navigation clearance: approximately 32px between callout and controls.
-- Horizontal overflow: none.
+## Full-view comparison evidence
 
-## Responsive and interaction QA
+The final side-by-side comparison preserves the source at its normalized 1470 × 735 CSS size. Title width, left rail, heading positions, paragraph line breaks, and bottom clearance align visually. The complete text remains legible at this scale, so a separate focused crop was not required.
 
-- 1280 × 720: two 520px columns remain intact; no overflow; approximately 43px callout/control clearance.
-- 1088 × 720: columns stack on the shared rail before they become too narrow; all content fits the viewport; no overflow.
-- 1280 × 700: the compact-height layout switches to top alignment and vertical scrolling to protect the fixed controls.
-- 980 × 720: stacked layout is vertically scrollable with no horizontal overflow.
-- 390 × 844: continuous mobile layout has no horizontal overflow; controls remain hidden; the protected phrases fit within the 343px content rail.
-- Slide navigation updates the counter to `2 / 11` and the final desktop state aligns exactly to the viewport.
-- Stepper alignment at 1280 × 720: slide 1 and slide 2 both render at x=1094px, y=646px, 24px from the right edge and 16px from the bottom edge. The slide-2-only bottom override was removed, so the control no longer jumps during navigation.
+## Comparison history
+
+1. Initial implementation: the 48px title wrapped to two lines, shifting every article down and producing vertical overflow. This was a P1 composition mismatch. Evidence: `/private/tmp/pet-friction-qa/comparison-v1.png`.
+2. Fix applied: reduced the title to the measured 37px size and aligned the slide padding and title-to-list gap to the source. The title became one line, the four article starts aligned to the reference, and overflow was removed. Evidence: `/private/tmp/pet-friction-qa/comparison-v2.png`.
+3. Final pass: repeated the desktop capture after responsive testing and rechecked the combined source/implementation image. No P0/P1/P2 mismatches remain. Evidence: `/private/tmp/pet-friction-qa/comparison-final.png`.
+
+## Responsive and interaction verification
+
+- 980 × 720: no horizontal overflow; the deck keeps its intended internal vertical scrolling and controls remain available.
+- 390 × 844: the slide joins the continuous mobile document, controls are hidden by the existing mobile system, and document width remains exactly 390px with no horizontal overflow.
+- Navigation tested: next moved `1 / 12` → `2 / 12` → `3 / 12`; previous returned to `2 / 12`; next returned to `3 / 12`.
 - Browser console errors and warnings: none.
 
-## Final review
+## Follow-up polish
 
-- Hierarchy and deck consistency: passed.
-- Line breaks and paragraph endings: passed.
-- Spacing, alignment, and optical balance: passed.
-- Short-height, tablet, and mobile behavior: passed.
-- Overlap, clipping, and horizontal overflow: passed.
-- Fixed stepper position across slides: passed.
+No P3 follow-up is required for this slide.
 
 final result: passed

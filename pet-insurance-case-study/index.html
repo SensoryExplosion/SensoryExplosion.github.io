@@ -13,7 +13,7 @@
       src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js"
       type="module"
     ></script>
-    <link rel="stylesheet" href="styles.css?v=13" />
+    <link rel="stylesheet" href="styles.css?v=25" />
   </head>
   <body>
     <main id="deck" aria-label="Pet insurance reimagined case study">
@@ -99,10 +99,12 @@
                 <h3>From product ownership to design</h3>
                 <p>
                   I originally worked on the product as a Product Manager, representing my team
-                  during a research project with a behavioral science research firm. Together, we
+                  during a research project with a behavioral science research firm.
+                  <span class="copy-keep">Together, we</span>
                   examined the academic literature, insurance best practices, and our existing
-                  customer journeys to understand where and why customers were dropping off. In
-                  this project, I step into the role of a designer to translate those research
+                  customer journeys to understand where and why customers were dropping off.
+                  <span class="copy-keep">In this</span> project, I step into the role of a designer
+                  to translate those research
                   findings into a <span class="case-for-change-no-break">native experience.</span>
                 </p>
               </article>
@@ -111,9 +113,11 @@
                 <h3>What the research revealed</h3>
                 <p>
                   Insurance asks people to make an abstract, emotionally charged decision about an
-                  uncertain future. Their value is difficult to perceive before something goes
+                  uncertain future. <span class="copy-keep">Their value</span> is difficult to
+                  perceive before something goes
                   wrong, while dense product details and legal language increase the cognitive load
-                  at the moment of decision-making. Trust, emotional attachment, perceived risks,
+                  at the moment of <span class="copy-keep">decision-making.</span>
+                  <span class="copy-keep">Trust, emotional</span> attachment, perceived risks,
                   and social influences therefore influence decisions just as much as coverage and
                   premiums.
                 </p>
@@ -131,77 +135,50 @@
         </div>
       </section>
 
-      <section class="slide case-change-slide" aria-labelledby="case-change-title">
-        <div class="slide-shell evidence-layout">
-          <div class="evidence-heading">
-            <p class="eyebrow">02 / Research</p>
-            <h2 id="case-change-title">From assumptions to behavioural evidence.</h2>
-            <p class="lead">
-              I partnered with a behavioural-science consultancy to understand why customers
-              hesitate - not just where they drop off.
-            </p>
-          </div>
+      <section class="slide friction-slide" aria-labelledby="friction-title">
+        <div class="friction-layout">
+          <h2 id="friction-title">
+            Main areas of friction and challenges the redesign aims to resolve
+          </h2>
 
-          <div class="research-steps" aria-label="Research approach">
+          <div class="friction-list">
             <article>
-              <span>01</span>
-              <h3>Audit the journey</h3>
-              <p>Mapped the existing George flow and its friction points.</p>
+              <h3>Inconsistent forms of address and personalisation</h3>
+              <p>
+                Using forms of address can make the app experience more personal and familiar,
+                however, their use is neither strong enough nor consistent.
+                <span class="copy-keep">The formality</span> and style
+                of the language also vary (between direct, friendly and formal, transactional)
+              </p>
             </article>
-            <article>
-              <span>02</span>
-              <h3>Review the evidence</h3>
-              <p>Combined academic research with insurance best practice.</p>
-            </article>
-            <article>
-              <span>03</span>
-              <h3>Turn insight into design</h3>
-              <p>Applied behavioural principles to the native redesign.</p>
-            </article>
-          </div>
 
-          <div class="evidence-takeaway">
-            <span>What the audit revealed</span>
-            <p>
-              High cognitive load, feature-first storytelling, and missed opportunities to build trust and personal relevance.
-            </p>
-          </div>
-        </div>
-      </section>
+            <article>
+              <h3>Over-emphasising function at the expense of other values</h3>
+              <p>
+                For users, the value of a product extends beyond its function.
+                <span class="copy-keep">If we</span> place greater
+                emphasis on other (personal, emotional, social) values, we can foster a more
+                meaningful connection.
+              </p>
+            </article>
 
-      <section class="slide strategy-slide" aria-labelledby="strategy-title">
-        <div class="slide-shell strategy-grid">
-          <div>
-            <p class="eyebrow">03 / Design response</p>
-            <h2 id="strategy-title">Three research findings shaped the redesign.</h2>
-            <p class="lead">
-              Each design move responds directly to a behavioural finding from the research.
-            </p>
-          </div>
-          <div class="principle-stack" aria-label="Design principles">
             <article>
-              <span>01</span>
-              <div>
-                <p class="method-label">Framing + loss aversion</p>
-                <h3>Frame the risk, then offer reassurance</h3>
-                <p>Start with a relatable vet-bill risk, then position protection as peace of mind.</p>
-              </div>
+              <h3>Sub-optimal use of visual elements</h3>
+              <p>
+                The failure to break information down into chunks, to highlight it according to its
+                relevance, to bring it to the fore (salience, anchoring), or to illustrate it often
+                puts insurance policies at a disadvantage.
+              </p>
             </article>
+
             <article>
-              <span>02</span>
-              <div>
-                <p class="method-label">Perceived value</p>
-                <h3>Make value human, not only functional</h3>
-                <p>Show care, choice, and support before price, limits, and exclusions.</p>
-              </div>
-            </article>
-            <article>
-              <span>03</span>
-              <div>
-                <p class="method-label">Chunking + Spark Effect</p>
-                <h3>Reduce effort at every step</h3>
-                <p>Break information and forms into focused, manageable actions.</p>
-              </div>
+              <h3>Cognitive load</h3>
+              <p>
+                At several points in the user flow (and particularly during the legal consent
+                process), the cognitive load is very significant (due to continuous formal text),
+                which increases the risk of the process being abandoned and reduces the likelihood
+                of positive emotional engagement.
+              </p>
             </article>
           </div>
         </div>
@@ -214,8 +191,10 @@
           <article class="annotation-card">
             <h2 id="heart-1-title">Barking up the right tree</h2>
             <p>
-              Frame the insurance need around concrete risks before presenting coverage. This
-              makes the product feel relevant before users start comparing features.
+              Insurance decisions are not entirely rational: cognitive biases and framing shape
+              people’s assessment of risks. <span class="copy-keep">By focusing</span> on risk first,
+              <span class="copy-keep">whilst also</span> offering a solution, we can make our case
+              more convincing and relevant than if we simply listed what our product covers.
             </p>
           </article>
         </div>
@@ -228,8 +207,12 @@
           <article class="annotation-card">
             <h2 id="heart-2-title">Value before variables</h2>
             <p>
-              Explain the value of coverage before leading with limits and prices. The goal is
-              to make the benefits understandable before the user evaluates cost.
+              For <span class="copy-keep">information-heavy</span> products such as insurance,
+              simple language is often the most
+              effective. <span class="copy-keep">By making</span> the benefits more relatable and
+              specific, we can keep users focused on the value rather than the costs and limits,
+              particularly in early stages when emotional
+              <span class="copy-keep">buy-in</span> is essential.
             </p>
           </article>
         </div>
@@ -242,8 +225,11 @@
           <article class="annotation-card">
             <h2 id="heart-3-title">The power of stories</h2>
             <p>
-              Use testimonials as a bridge from abstract insurance language to real outcomes,
-              showing how the product helps when a pet owner needs support.
+              While social proof builds trust, the aim of the testimonials was to make an abstract
+              product feel real. <span class="copy-keep">Benefits, cover</span> and pricing alone
+              cannot convey the full value. <span class="copy-keep">Personal stories</span> show
+              that accidents do indeed happen and how the product has already
+              made a difference when it mattered most.
             </p>
           </article>
         </div>
@@ -254,8 +240,13 @@
           <div class="section-heading">
             <h2 id="paw-title">Paw after paw</h2>
             <p>
-              Splitting pet details across focused steps reduces cognitive load and creates a
-              smoother, more manageable flow.
+              <span class="copy-keep">Input-heavy</span> screens often cause users to abandon the
+              process. <span class="copy-keep">Splitting the</span> pet
+              details into smaller steps creates a smoother flow and makes use of the Spark Effect:
+              simple actions encourage users to keep going.
+              <span class="copy-keep">Obtaining the</span> pet’s name early allows
+              us to personalise <span class="copy-keep">the next steps</span>, thereby building
+              involvement, connection and perceived value.
             </p>
           </div>
 
@@ -283,8 +274,14 @@
           <article class="annotation-card">
             <h2 id="consent-1-title">Clear copy, informed choices</h2>
             <p>
-              Explain the purpose of each document with friendly copy and simple structure, so
-              users can understand what they are agreeing to before they continue.
+              Striking a balance between legal requirements and
+              <span class="copy-keep">a good</span> customer experience is no small feat in banking.
+              <span class="copy-keep">Our research</span> has shown that complex legal language
+              increases cognitive load, leading to <span class="copy-keep">drop-offs</span> and
+              overlooked information. <span class="copy-keep">The aim</span> was to create a
+              consent screen that
+              helps users understand their policy before deciding and also meets regulatory
+              requirements.
             </p>
           </article>
 
@@ -297,8 +294,14 @@
           <article class="annotation-card">
             <h2 id="consent-2-title">From toggle-maze to a tap</h2>
             <p>
-              Replace multiple toggles with one confirmation cell for a take-it-or-leave-it
-              consent scenario, reducing interaction cost without hiding the required terms.
+              Multiple toggles make our current consent screen feel like a maze.
+              <span class="copy-keep">While useful</span> for
+              selective consent, it simply creates unnecessary friction when users have to accept
+              all the terms and conditions to insure their pet.
+              <span class="copy-keep">Based on</span> best practices and
+              regulatory requirements, a single confirmation cell better fits our ‘take it or
+              leave it’ situation, thereby reducing the interaction cost without compromising
+              compliance.
             </p>
           </article>
 
@@ -309,10 +312,6 @@
       <section class="slide closing-slide" aria-labelledby="closing-title">
         <div class="slide-shell narrow">
           <h2 id="closing-title">Clearer, warmer, easier to act on</h2>
-          <p>
-            This case study should show how thoughtful UX can make even regulated insurance
-            products feel clearer, warmer, and easier to act on.
-          </p>
         </div>
       </section>
     </main>

@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fbfcfd" />
     <meta name="color-scheme" content="light" />
 
-    <title>Designing trust into a European Digital Identity Wallet</title>
+    <title>Designing a digital identity app with AI in the loop</title>
 
     <link
       rel="preload"
@@ -19,8 +19,8 @@
       fetchpriority="high"
     />
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=20260810-3" />
-    <script src="./script.js?v=20260810-2" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20260822-toc-stable-emphasis" />
+    <script src="./script.js?v=20260822-toc-stability" defer></script>
     <script src="./assets/vendor/mermaid.min.js" defer></script>
     <script src="./flow-definitions.js" defer></script>
     <script src="./flows.js" defer></script>
@@ -43,12 +43,12 @@
             data-toc
             data-toc-title="Project introduction"
           >
-            Designing trust into a European Digital Identity Wallet
+            Designing a digital identity app with AI in the loop
           </h1>
 
           <p class="case-deck">
-            A concept for making verified credentials, consent, and cross-service handoffs easier to
-            understand without hiding the complexity that matters.
+            A concept for making credentials, consent and data sharing easier to understand while
+            exploring AI across the product design process.
           </p>
 
           <div class="case-meta">
@@ -90,14 +90,106 @@
             constraints on the project and to work on something useful.
           </p>
 
-          <aside class="disclosure" aria-label="Concept disclosure">
-            <strong>Concept disclosure</strong>
-            <span>
-              This is an independent exploration, not an official European Union wallet,
-              commissioned client project, production implementation, or validated claim of
-              regulatory compliance.
-            </span>
-          </aside>
+          <section class="tools-used" aria-labelledby="tools-used">
+            <h2 id="tools-used" tabindex="-1" data-toc>Made with</h2>
+            <ul class="tools-used__list" aria-label="Tools used in this project">
+              <li class="tools-used__item">
+                <a
+                  class="tools-used__link"
+                  href="https://openai.com/codex/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Codex — opens in a new tab"
+                  title="Codex"
+                >
+                  <span class="tools-used__icon-frame" aria-hidden="true">
+                    <img
+                      src="./assets/tools/codex.png?v=20260819-1504"
+                      width="400"
+                      height="400"
+                      alt=""
+                    />
+                  </span>
+                </a>
+              </li>
+              <li class="tools-used__item">
+                <a
+                  class="tools-used__link"
+                  href="https://claude.ai/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Claude — opens in a new tab"
+                  title="Claude"
+                >
+                  <span class="tools-used__icon-frame" aria-hidden="true">
+                    <img
+                      src="./assets/tools/claude.png?v=20260819-400"
+                      width="400"
+                      height="400"
+                      alt=""
+                    />
+                  </span>
+                </a>
+              </li>
+              <li class="tools-used__item">
+                <a
+                  class="tools-used__link"
+                  href="https://www.figma.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Figma — opens in a new tab"
+                  title="Figma"
+                >
+                  <span class="tools-used__icon-frame" aria-hidden="true">
+                    <img
+                      src="./assets/tools/figma.png?v=20260819-400"
+                      width="400"
+                      height="400"
+                      alt=""
+                    />
+                  </span>
+                </a>
+              </li>
+              <li class="tools-used__item">
+                <a
+                  class="tools-used__link"
+                  href="https://developer.apple.com/xcode/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Xcode — opens in a new tab"
+                  title="Xcode"
+                >
+                  <span class="tools-used__icon-frame" aria-hidden="true">
+                    <img
+                      src="./assets/tools/xcode.png?v=20260819-400"
+                      width="400"
+                      height="400"
+                      alt=""
+                    />
+                  </span>
+                </a>
+              </li>
+              <li class="tools-used__item">
+                <a
+                  class="tools-used__link"
+                  href="https://developer.apple.com/icon-composer/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Icon Composer — opens in a new tab"
+                  title="Icon Composer"
+                >
+                  <span class="tools-used__icon-frame" aria-hidden="true">
+                    <img
+                      src="./assets/tools/icon-composer.png?v=20260819-400"
+                      width="400"
+                      height="400"
+                      alt=""
+                    />
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </section>
 
           <section aria-labelledby="trust-model">
             <h2 id="trust-model" tabindex="-1" data-toc>
@@ -105,70 +197,21 @@
             </h2>
 
             <p>
-              As digital life evolves faster than the rules designed to protect us, the EU Digital
-              Identity Wallet aims to return control over personal data back in the hands of those
-              it belongs to. Built on European standards, it offers citizens, residents and
-              businesses a privacy-focused solution to identify themselves, access cross-border
-              services, store and share trusted documents, authorise payments and sign documents
-              electronically all from a single app. By allowing users to share only the information
-              that is strictly necessary, the wallet can reduce tracking and profiling whilst
-              simplifying everyday tasks such as opening a bank account, applying for university,
-              obtaining electronic prescriptions or travelling. At the same time, public
-              administration and businesses stand to benefit from stronger fraud prevention, faster
-              and cheaper authentication, reduced administrative burdens and smoother digital
-              services.
+              The European Digital Identity Wallet aims to provide people with a secure,
+              interoperable way to prove who they are and to share verified information with public
+              and private services across the EU. Instead of users having to hand over their entire
+              identity document, they can share only the data the service needs – for example,
+              whether they are over 18 – while keeping their other personal data private. Member
+              States will develop their own wallets to common European standards, allowing
+              credentials to work across borders and services.
             </p>
 
             <aside class="principle-card" aria-label="Design principle">
               <span class="principle-label">Design principle</span>
               <p>
-                Make the consequence legible before asking for commitment. Security is strongest
-                when the interface explains the decision as clearly as the system enforces it.
+              Users shall have full control of the use of and of the data in their European Digital Identity Wallet.
               </p>
             </aside>
-          </section>
-
-          <section aria-labelledby="service-journey">
-            <h2 id="service-journey" tabindex="-1" data-toc>
-              Framing the service, not just the screens
-            </h2>
-
-            <p>
-              A digital identity journey rarely belongs to one interface. It moves between an
-              issuer, the wallet holder, and a verifier, often crossing browser pages, apps, and
-              authentication steps along the way. Each transition introduces an opportunity for
-              uncertainty.
-            </p>
-
-            <p>
-              The concept therefore begins with a service journey rather than a collection of
-              isolated screens. It follows the sequence from invitation and issuer authentication
-              through credential review, storage, presentation, and confirmation. At every stage,
-              the interface identifies the current actor, the object being handled, its status, and
-              the next expected step.
-            </p>
-
-            <figure class="article-figure">
-              <img
-                src="./assets/images/eudiw-service-journey.jpg"
-                width="1672"
-                height="941"
-                alt="Wordless conceptual journey showing a credential moving from an issuing institution into a mobile wallet and on to a verifying service."
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>
-                Concept illustration: issuance and presentation across an institution, a personal
-                wallet, and a verifying service.
-              </figcaption>
-            </figure>
-
-            <p>
-              The scope is deliberately narrow. Identity proofing, account recovery, governance, and
-              cryptographic implementation remain outside this exploration. Keeping those boundaries
-              visible allows the work to examine the interaction model without presenting a
-              speculative interface as a complete system.
-            </p>
           </section>
 
           <section class="how-it-works" aria-labelledby="how-it-works">
@@ -185,15 +228,11 @@
                     Building blocks
                   </h2>
                   <p class="how-it-works__summary">
-                    I researched the legal regulations, large-scale pilots, architecture and
-                    technical specifications, and then, with the help of AI, synthesised these into
-                    a developing PRD document which served as the project’s living source of truth.
+                    I researched the regulation, large‑scale pilots, architecture and technical
+                    specifications, then used AI to synthesize the material into an evolving PRD I
+                    updated as the project developed.
                   </p>
                 </div>
-
-                <a class="how-it-works__cta" href="https://aave.com/docs/vaults/stable-vaults">
-                  Read the Docs
-                </a>
               </div>
 
               <ol class="how-it-works__steps">
@@ -393,7 +432,7 @@
                   </div>
                   <div class="how-it-works__step-body">
                     <div class="how-it-works__step-copy">
-                      <h3>Large Scale Pilots</h3>
+                      <h3>Large-scale Pilots</h3>
                       <p>
                         Revealed how the wallet behaves across real services and messy real-life
                         contexts.
@@ -692,8 +731,8 @@
                     <div class="how-it-works__step-copy">
                       <h3>Architecture and Reference Framework</h3>
                       <p>
-                        Mapped the actors, components and exchanges powering the wallet, so the
-                        experience was shaped by how the ecosystem actually works.
+                        Explained how the wallet ecosystem works across issuers, users and relying
+                        parties, grounding the experience in real system interactions.
                       </p>
                     </div>
                   </div>
@@ -702,20 +741,62 @@
             </div>
           </section>
 
+          <section aria-labelledby="findings-that-shaped-the-app">
+            <h2 id="findings-that-shaped-the-app" tabindex="-1" data-toc>
+              Findings that shaped the app
+            </h2>
+
+            <h3>Accessibility pushed the app toward native iOS</h3>
+            <p>
+              The pilots treated accessibility as a baseline requirement, not a nice-to-have.
+              System-level accessibility settings should carry through into the app. That makes
+              native components the sensible default, since they inherit much of this behaviour
+              automatically. That’s why I decided to go for a native Swift iOS app.
+            </p>
+
+            <h3>Digital credentials shouldn’t resemble digital cards</h3>
+            <p>
+              Most digital identity documents contain the same data and pictograms as their
+              physical counterparts, but they should not function like digital ID cards. In all
+              cases, they must be validated by a reader, it is not sufficient simply to display
+              them on a screen. So I deliberately avoided card-like UI and physical ID
+              conventions, making that distinction clear in the design.
+            </p>
+
+            <h3>One presentation flow</h3>
+            <p>
+              The pilots showed that users were often unsure which document and which QR code to
+              present. Aligned with the ARF, the wallet therefore uses a single QR code: the
+              relying party requests the required data, the wallet gathers it from the available
+              documents, and the user simply reviews and approves what is shared.
+            </p>
+          </section>
+
           <section aria-labelledby="core-user-flows">
             <h2 id="core-user-flows" tabindex="-1" data-toc>Mapping the core user flows</h2>
 
             <p>
-              Before committing to screens, I mapped the moments where people cross a service
-              boundary, assess a requester, approve an exchange, or need a safe way out. This made
-              the recurring trust pattern visible across activation, remote presentation, proximity
-              sharing, and activity review.
-            </p>
-
-            <p>
-              Each route keeps the decision in the wallet and makes the outcome explicit. The
-              surrounding service can start a handoff, but it cannot stand in for verified requester
-              information or informed approval.
+              Based on the use cases analysed during the research, I tasked Codex with mapping out
+              the key user journeys. In the majority of cases, her solutions were spot on. The
+              diagrams were created using the
+              <a
+                class="mermaid-chart-reference"
+                href="https://chatgpt.com/plugins/mermaid-chart"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  class="plugin-reference-icon"
+                  src="./assets/brands/mermaid-chart-icon.svg?v=20260815-4"
+                  width="24"
+                  height="24"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <span class="plugin-reference-label">Mermaid Chart</span>
+              </a>
+              plugin, which I was able to easily modify using natural language whenever a node
+              needed adjusting.
             </p>
 
             <figure class="flow-viewer" data-flow-viewer>
@@ -833,22 +914,7 @@
             <h2 id="wireframes" tabindex="-1" data-toc>Wireframes</h2>
 
             <p>
-              With the flows in place, I moved into wireframes to test how the wallet’s trust model
-              could translate into screen-level decisions. I focused on the moments where people
-              need to recognise a requester, understand what is being asked for, and see the
-              consequence of an action before committing.
-            </p>
-
-            <p>
-              The wireframes explored a small set of recurring patterns across the home screen,
-              credential details, age verification, proximity presentation, and relying-party
-              information. Keeping the visual language deliberately simple made it easier to compare
-              layouts, identify missing context, and refine the hierarchy before introducing
-              high-fidelity styling.
-            </p>
-
-            <p>
-              Based on user flows and research, I used the
+              With the flows in place, I used the
               <span class="skill-reference">Ideate</span> skill from Codex’s
               <a
                 class="product-design-reference"
@@ -857,16 +923,31 @@
                 rel="noopener noreferrer"
               >
                 <img
+                  class="plugin-reference-icon"
                   src="./assets/brands/product-design-icon.svg"
                   width="24"
                   height="24"
                   alt=""
                   aria-hidden="true"
                 />
-                <span>Product Design</span>
+                <span class="plugin-reference-label">Product Design</span>
               </a>
               plugin to quickly generate wireframes to test out different layouts and patterns.
-              Following testing, the best solutions were finalized in Figma.
+            </p>
+
+            <p>
+              The aim was to explore a small set of recurring patterns that could be reused across
+              the app and easily adapted to native iOS components.
+            </p>
+
+            <p>
+              Codex initially struggled with low-fidelity wireframes. Mentioning iOS often pushed
+              the output toward polished glass materials with heavy styling, when I was still
+              trying to explore patterns. To get the model under control, I eventually created a
+              simple Figma reference, along with a DESIGN.md file containing design guidelines,
+              which resulted in much simpler and more accurate iterations. It was perfect for
+              prototypes, but because of inconsistencies if I wanted to use them as the basis for
+              the final designs, I had to finalise them in Figma.
             </p>
 
             <figure class="article-figure">
@@ -881,161 +962,97 @@
             </figure>
           </section>
 
-          <section aria-labelledby="readable-wallet">
-            <h2 id="readable-wallet" tabindex="-1" data-toc>Building a wallet people can read</h2>
+          <section aria-labelledby="final-swiftui-solution">
+            <h2 id="final-swiftui-solution" tabindex="-1" data-toc>
+              The final experience in SwiftUI
+            </h2>
 
             <p>
-              The wallet home is organized around status rather than decoration. Credentials appear
-              as recognizable objects with a plain-language name, issuer, validity period, and any
-              condition that needs attention. The hierarchy favors what is usable now, what has
-              changed, and what may require action.
+              The final high-fidelity design was created using Swift and iOS 27 components based
+              on the wireframes. I relied on the Figma MCP, a UI to JSON plugin and screenshots to
+              provide context for Codex.
             </p>
 
             <p>
-              A credential detail view adds provenance and context without leading with technical
-              identifiers. It explains where the credential came from, which attributes it contains,
-              when it expires, and where it has recently been used. Technical information can remain
-              available as a secondary layer for people who need it.
+              Codex handled standard native components very well and stayed close to Apple’s Human
+              Interface Guidelines. Custom compositions were harder: components built from several
+              native elements often drifted visually or structurally. Manually looking up the exact
+              API from the Developer Documentation and showing Codex reference screenshots from
+              other native iOS apps usually got the implementation back on track.
             </p>
 
-            <h3 id="credential-states" tabindex="-1" data-toc>Credential states</h3>
-
-            <p>
-              Expired, revoked, and incomplete credentials are treated as distinct states. Each
-              state explains its practical effect and offers an appropriate next step, avoiding
-              generic warnings that say something is wrong without helping someone recover.
-            </p>
-
-            <ul class="state-list" aria-label="Credential state examples">
-              <li class="state-item">
-                <span class="state-dot state-dot-ready" aria-hidden="true"></span>
-                <div>
-                  <strong>Ready</strong>
-                  <span>Valid, available, and clear about where it came from.</span>
-                </div>
-              </li>
-              <li class="state-item">
-                <span class="state-dot state-dot-attention" aria-hidden="true"></span>
-                <div>
-                  <strong>Needs attention</strong>
-                  <span>Still understandable, with a specific next step.</span>
-                </div>
-              </li>
-              <li class="state-item">
-                <span class="state-dot state-dot-unavailable" aria-hidden="true"></span>
-                <div>
-                  <strong>Unavailable</strong>
-                  <span>Explains the consequence without relying on color alone.</span>
-                </div>
-              </li>
-            </ul>
-          </section>
-
-          <section aria-labelledby="concrete-consent">
-            <h2 id="concrete-consent" tabindex="-1" data-toc>Making consent concrete</h2>
-
-            <p>
-              A presentation request should read as a decision, not as a permission prompt to
-              dismiss. The proposed request view names the verifier, states the purpose, lists the
-              requested attributes, and identifies the credential that will provide them.
-            </p>
-
-            <p>
-              Required and optional information are separated only when that distinction is real.
-              Where the credential technology permits selective disclosure, each attribute remains
-              visible so the person can understand the exact payload. The primary action describes
-              the consequence—such as “Share three details”—instead of relying on a vague
-              “Continue.”
-            </p>
+            <aside class="disclosure disclosure--tip" aria-label="Codex simulator tip">
+              <strong>Tip</strong>
+              <span>
+                Spinning up an in-app simulator stream within Codex lets you annotate exact details
+                on screens so you don’t need to take screenshots or over-explain a change request
+                in detail.
+              </span>
+            </aside>
 
             <figure class="article-figure">
               <img
-                src="./assets/images/eudiw-consent-screens.jpg"
-                width="1672"
-                height="941"
-                alt="Conceptual paired mobile wallet screens showing requested information and a confirmation receipt using abstract interface elements."
+                src="./assets/images/eudiw-swift.png"
+                width="3452"
+                height="2938"
+                alt="High-fidelity SwiftUI wallet screens showing credential presentation, verification, the wallet home, and credential deletion."
                 loading="lazy"
                 decoding="async"
               />
-              <figcaption>
-                Concept illustration: a presentation request and confirmation receipt. The artwork
-                is not a production interface.
-              </figcaption>
             </figure>
+          </section>
 
-            <h3 id="useful-receipt" tabindex="-1" data-toc>A useful receipt</h3>
+          <section aria-labelledby="a-couple-of-lessons">
+            <h2 id="a-couple-of-lessons" tabindex="-1" data-toc>A couple of lessons</h2>
+
+            <h3>About AI</h3>
 
             <p>
-              Confirmation does not end with a success animation. A receipt records the recipient,
-              time, purpose, and information disclosed. Where an ongoing authorization can be
-              managed, that control is shown separately from information already shared; the
-              interface does not imply that a past disclosure can simply be taken back.
+              I enjoy using AI to brainstorm, help me with research, draft outlines or draw
+              diagrams. Using AI to help me think through problems, quickly try out solutions and
+              iterate is lovely and the models really speed things up. The final output, visual
+              judgment, consistency and knowing when something simply felt wrong still demanded
+              the most human attention. In many cases, prompting my way through polish was tiresome
+              and frustrating. Nevertheless, I like to look at things from the perspective of
+              potential: if a model is capable of doing something today, even at a basic level, it
+              will be able to do it perfectly in the future.
+            </p>
+
+            <p>
+              Writing followed the same pattern. I love the saying “Every first draft is perfect,
+              because all a first draft has to do is exist,” and in that sense it’s useful because
+              I don’t have to stare at a blank page, but without careful review and editing, it
+              still feels off.
+            </p>
+
+            <p>
+              Model choice also became part of the workflow. The weekly usage limit can be hit very
+              quickly. Choosing the right model and effort is a valuable skill in this regard. At
+              the time of writing, I use GPT-5.6 Sol High to plan and reason through more complex
+              tasks, then hand most of the execution over to GPT-5.6 Luna Extra High. At the moment,
+              this is perhaps the best intelligence-to-usage ratio that has worked for me.
+            </p>
+
+            <h3>About the European Digital Identity Framework</h3>
+
+            <p>
+              I have a positive outlook in that, in many cases, it would be useful if we had common
+              European cross-border standards and did not outsource the processing of our data to
+              US tech companies. Recently, I’ve actually come across two extreme cases while
+              travelling. In digitally advanced Norway, I had to upload my travel documents to a
+              hotel management system when booking accommodation, whilst in the digitally less
+              advanced Spain, we had to send photos of our ID via WhatsApp. Now, the former is
+              obviously more credible than the latter, but honestly, I wouldn’t want to share my
+              official documents with any US tech company. Therefore, a common European
+              infrastructure would be welcome.
+            </p>
+
+            <p>
+              The harder challenge is adoption. A wallet can be technically secure and
+              standards-compliant and still fail if people do not trust the institutions behind it.
             </p>
           </section>
 
-          <section aria-labelledby="handoffs-and-failure">
-            <h2 id="handoffs-and-failure" tabindex="-1" data-toc>
-              Designing for handoffs and failure
-            </h2>
-
-            <p>
-              Trust is most fragile at service boundaries. A person may leave one app, authenticate
-              elsewhere, and return without knowing whether the original task is still active.
-              Consistent service names, recognizable visual identifiers, short transition messages,
-              and a clear return destination help preserve continuity.
-            </p>
-
-            <p>
-              Failure states are written around impact and recovery. An expired credential,
-              unavailable issuer, interrupted connection, or mismatch between a request and the
-              available information each requires a different explanation. The interface should say
-              what happened, whether anything was shared, and what can be done next.
-            </p>
-
-            <blockquote>
-              “Nothing was shared” is often the most important success message in a failed identity
-              journey.
-            </blockquote>
-
-            <p>
-              Safe exits matter as much as successful paths. Cancelling a request should leave the
-              credential unchanged, repeated requests should be distinguishable, and a failed
-              selective-disclosure path should never silently fall back to sharing more information.
-            </p>
-          </section>
-
-          <section aria-labelledby="what-the-concept-clarifies">
-            <h2 id="what-the-concept-clarifies" tabindex="-1" data-toc>
-              What the concept clarifies
-            </h2>
-
-            <p>
-              A digital identity wallet is not simply a collection of electronic cards. It is a
-              decision interface connecting institutions, services, and people. The clearest
-              interaction pattern is staged disclosure: establish context, inspect the information,
-              confirm deliberately, and leave a useful record.
-            </p>
-
-            <p>
-              This exploration presents a design direction, not evidence of usability, security,
-              interoperability, or compliance. Meaningful validation would require research across
-              countries, languages, levels of digital confidence, and access needs, alongside
-              technical review with issuers, verifiers, privacy specialists, and security teams.
-            </p>
-
-            <p>
-              The next step would be a focused prototype of the issuance and presentation journeys.
-              Testing should examine whether people can identify the verifier, describe what they
-              are sharing, distinguish required from optional information, and recover confidently
-              when a credential cannot be used.
-            </p>
-
-            <p class="conclusion">
-              A trustworthy identity wallet should not ask for blind confidence. It should earn
-              confidence by making every consequential exchange understandable before it happens—and
-              accountable after it does.
-            </p>
-          </section>
         </article>
       </div>
     </main>

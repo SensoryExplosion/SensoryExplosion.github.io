@@ -17,6 +17,7 @@ function prepareSoftBlurTitle(title) {
   title.setAttribute("aria-label", accessibleTitle);
 
   const units = [];
+  let hasVisibleText = false;
 
   function createUnit(character) {
     const unit = document.createElement("span");
@@ -28,7 +29,8 @@ function prepareSoftBlurTitle(title) {
   }
 
   textNodes.forEach((node) => {
-    const text = node.nodeValue.replace(/\s+/g, " ").trimStart();
+    const normalizedText = node.nodeValue.replace(/\s+/g, " ");
+    const text = hasVisibleText ? normalizedText : normalizedText.trimStart();
 
     if (!text) {
       node.remove();
@@ -53,6 +55,7 @@ function prepareSoftBlurTitle(title) {
     });
 
     node.replaceWith(fragment);
+    hasVisibleText ||= /\S/.test(text);
   });
 
   units.forEach((unit) => {
@@ -125,6 +128,98 @@ function playSoftBlurIn(
   });
 }
 
+function playFadeUp(element) {
+  element.style.opacity = "0";
+  element.style.translate = "0 30px";
+  element.style.willChange = "opacity, translate";
+
+  const animation = element.animate(
+    [
+      { opacity: 0, translate: "0 30px" },
+      { opacity: 1, translate: "0" }
+    ],
+    {
+      duration: 500,
+      easing: "ease",
+      fill: "forwards"
+    }
+  );
+
+  return animation.finished.then(() => {
+    element.style.opacity = "1";
+    element.style.translate = "0";
+    element.style.willChange = "";
+    animation.cancel();
+  });
+}
+
+function revealSoftBlurTitle({
+  title,
+  subtitle = null,
+  accent = null,
+  titlePendingClass,
+  subtitlePendingClass = null,
+  accentPendingClass,
+  accentHighlightClass,
+  onHighlightStart = null,
+  initialDelay = 0
+}) {
+  const titleUnits = prepareSoftBlurTitle(title);
+  const subtitleUnits = subtitle ? prepareSoftBlurWords(subtitle, 6) : [];
+  const highlightLead = 160;
+  const subtitleLead = 220;
+  const lastAccentIndex = titleUnits.reduce(
+    (lastIndex, unit, index) => accent?.contains(unit) ? index : lastIndex,
+    -1
+  );
+  const titleEnd =
+    initialDelay +
+    Math.max(0, titleUnits.length - 1) * SOFT_BLUR_STAGGER +
+    SOFT_BLUR_DURATION;
+  const highlightDelay =
+    lastAccentIndex >= 0
+      ? initialDelay +
+        lastAccentIndex * SOFT_BLUR_STAGGER +
+        SOFT_BLUR_DURATION -
+        highlightLead
+      : titleEnd;
+  const subtitleDelay = Math.max(0, highlightDelay - subtitleLead);
+
+  playSoftBlurIn(titleUnits, { initialDelay });
+  playSoftBlurIn(subtitleUnits, {
+    initialDelay: subtitleDelay,
+    stagger: 15,
+    blur: 6
+  });
+
+  title.classList.remove(titlePendingClass);
+  if (subtitle && subtitlePendingClass) {
+    subtitle.classList.remove(subtitlePendingClass);
+  }
+
+  if (lastAccentIndex >= 0) {
+    window.setTimeout(() => {
+      accent?.classList.add(accentHighlightClass);
+      onHighlightStart?.();
+    }, highlightDelay);
+  }
+}
+
+function revealSoftBlurTitleImmediately({
+  title,
+  subtitle = null,
+  accent = null,
+  titlePendingClass,
+  subtitlePendingClass = null,
+  accentPendingClass
+}) {
+  title?.classList.remove(titlePendingClass);
+  if (subtitle && subtitlePendingClass) {
+    subtitle.classList.remove(subtitlePendingClass);
+  }
+  accent?.classList.remove(accentPendingClass);
+}
+
 // ── Apple-style card corners ──
 (function () {
   const cards = document.querySelectorAll(
@@ -194,12 +289,152 @@ function playSoftBlurIn(
   });
 })();
 
+// ── About card directional spring ──
+(function () {
+  const cards = document.querySelectorAll(".about-section .bento-card");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const settings = {
+    distance: 5,
+    hold: 200,
+    stiffness: 100,
+    damping: 10,
+    mass: 1,
+  };
+
+  if (!cards.length) {
+    return;
+  }
+
+  cards.forEach((card) => {
+    const position = { x: 0, y: 0 };
+    const velocity = { x: 0, y: 0 };
+    const target = { x: 0, y: 0 };
+    let frame = null;
+    let returnTimer = null;
+    let previousTime = null;
+
+    function start() {
+      if (frame !== null) {
+        return;
+      }
+
+      previousTime = null;
+      frame = requestAnimationFrame(animate);
+    }
+
+    function animate(time) {
+      if (previousTime === null) {
+        previousTime = time;
+      }
+
+      const delta = Math.min((time - previousTime) / 1000, 0.032);
+      previousTime = time;
+
+      for (const axis of ["x", "y"]) {
+        const displacement = position[axis] - target[axis];
+        const springForce = -settings.stiffness * displacement;
+        const dampingForce = -settings.damping * velocity[axis];
+        const acceleration = (springForce + dampingForce) / Math.max(settings.mass, 0.01);
+
+        velocity[axis] += acceleration * delta;
+        position[axis] += velocity[axis] * delta;
+      }
+
+      card.style.translate = `${position.x}px ${position.y}px`;
+
+      const atRest =
+        Math.abs(position.x - target.x) < 0.01 &&
+        Math.abs(position.y - target.y) < 0.01 &&
+        Math.abs(velocity.x) < 0.01 &&
+        Math.abs(velocity.y) < 0.01;
+
+      if (atRest) {
+        position.x = target.x;
+        position.y = target.y;
+        velocity.x = 0;
+        velocity.y = 0;
+        frame = null;
+
+        if (target.x === 0 && target.y === 0) {
+          card.style.translate = "none";
+        }
+
+        return;
+      }
+
+      frame = requestAnimationFrame(animate);
+    }
+
+    function stop() {
+      clearTimeout(returnTimer);
+
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+      }
+
+      position.x = 0;
+      position.y = 0;
+      velocity.x = 0;
+      velocity.y = 0;
+      target.x = 0;
+      target.y = 0;
+      frame = null;
+      returnTimer = null;
+      previousTime = null;
+      card.style.translate = "none";
+    }
+
+    function handleMouseEnter(event) {
+      if (reduceMotion.matches) {
+        return;
+      }
+
+      const bounds = card.getBoundingClientRect();
+      const halfWidth = Math.max(bounds.width / 2, 1);
+      const halfHeight = Math.max(bounds.height / 2, 1);
+      const normalizedX = Math.min(
+        Math.max((event.clientX - (bounds.left + halfWidth)) / halfWidth, -1),
+        1,
+      );
+      const normalizedY = Math.min(
+        Math.max((event.clientY - (bounds.top + halfHeight)) / halfHeight, -1),
+        1,
+      );
+
+      target.x = -normalizedX * settings.distance;
+      target.y = -normalizedY * settings.distance;
+
+      clearTimeout(returnTimer);
+      start();
+
+      returnTimer = setTimeout(() => {
+        target.x = 0;
+        target.y = 0;
+        start();
+      }, settings.hold);
+    }
+
+    card.addEventListener("mouseenter", handleMouseEnter);
+    reduceMotion.addEventListener("change", ({ matches }) => {
+      if (matches) {
+        stop();
+      }
+    });
+  });
+})();
+
 // ── Hero soft-blur-in reveal ──
 (function () {
   const title = document.getElementById("hero-title");
   const subtitle = document.getElementById("hero-subtitle");
   const accent = title?.querySelector(".hero-title__accent");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const pendingClasses = {
+    title: "hero-title--animation-pending",
+    subtitle: "hero-subtitle--animation-pending",
+    accent: "hero-title__accent--highlight-pending",
+    highlightedAccent: "hero-title__accent--highlighted"
+  };
 
   if (!title) {
     subtitle?.classList.remove("hero-subtitle--animation-pending");
@@ -207,49 +442,143 @@ function playSoftBlurIn(
   }
 
   if (reducedMotion.matches || !Element.prototype.animate) {
-    title.classList.remove("hero-title--animation-pending");
-    subtitle?.classList.remove("hero-subtitle--animation-pending");
-    accent?.classList.remove("hero-title__accent--highlight-pending");
+    revealSoftBlurTitleImmediately({
+      title,
+      subtitle,
+      accent,
+      titlePendingClass: pendingClasses.title,
+      subtitlePendingClass: pendingClasses.subtitle,
+      accentPendingClass: pendingClasses.accent
+    });
     return;
   }
 
-  const titleUnits = prepareSoftBlurTitle(title);
-  const subtitleUnits = subtitle ? prepareSoftBlurWords(subtitle, 6) : [];
-  const initialDelay = Math.round(Math.random() * 400);
-  const highlightLead = 160;
-  const subtitleLead = 220;
-  const lastAccentIndex = titleUnits.reduce(
-    (lastIndex, unit, index) => accent?.contains(unit) ? index : lastIndex,
-    -1
-  );
-  const titleEnd =
-    initialDelay +
-    Math.max(0, titleUnits.length - 1) * SOFT_BLUR_STAGGER +
-    SOFT_BLUR_DURATION;
-  const highlightDelay =
-    lastAccentIndex >= 0
-      ? initialDelay +
-        lastAccentIndex * SOFT_BLUR_STAGGER +
-        SOFT_BLUR_DURATION -
-        highlightLead
-      : titleEnd;
-  const subtitleDelay = Math.max(0, highlightDelay - subtitleLead);
-
-  playSoftBlurIn(titleUnits, { initialDelay });
-  playSoftBlurIn(subtitleUnits, {
-    initialDelay: subtitleDelay,
-    stagger: 15,
-    blur: 6
+  revealSoftBlurTitle({
+    title,
+    subtitle,
+    accent,
+    titlePendingClass: pendingClasses.title,
+    subtitlePendingClass: pendingClasses.subtitle,
+    accentPendingClass: pendingClasses.accent,
+    accentHighlightClass: pendingClasses.highlightedAccent,
+    initialDelay: Math.round(Math.random() * 400)
   });
+})();
 
-  title.classList.remove("hero-title--animation-pending");
-  subtitle?.classList.remove("hero-subtitle--animation-pending");
+// ── Contact title soft-blur reveal ──
+(function () {
+  const title = document.getElementById("connect-title");
+  const emailButton = document.getElementById("connect-email");
+  const emailLabel = emailButton?.querySelector(".rolling-email__label");
+  const accent = title?.querySelector(".connect-title__accent");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const pendingClasses = {
+    title: "connect-title--animation-pending",
+    accent: "connect-title__accent--highlight-pending",
+    highlightedAccent: "connect-title__accent--highlighted"
+  };
 
-  if (lastAccentIndex >= 0) {
-    window.setTimeout(() => {
-      accent?.classList.add("hero-title__accent--highlighted");
-    }, highlightDelay);
+  const syncEmailButtonWidths = () => {
+    const [idleLabel, hoverLabel] = emailLabel ? Array.from(emailLabel.children) : [];
+
+    if (!idleLabel || !hoverLabel) {
+      return;
+    }
+
+    const measureLabel = (source) => {
+      const styles = window.getComputedStyle(source);
+      const probe = document.createElement("span");
+      probe.textContent = source.textContent;
+      probe.style.position = "fixed";
+      probe.style.inset = "auto";
+      probe.style.inlineSize = "max-content";
+      probe.style.visibility = "hidden";
+      probe.style.pointerEvents = "none";
+      probe.style.whiteSpace = "nowrap";
+      probe.style.fontFamily = styles.fontFamily;
+      probe.style.fontSize = styles.fontSize;
+      probe.style.fontStyle = styles.fontStyle;
+      probe.style.fontWeight = styles.fontWeight;
+      probe.style.fontStretch = styles.fontStretch;
+      probe.style.fontFeatureSettings = styles.fontFeatureSettings;
+      probe.style.fontVariationSettings = styles.fontVariationSettings;
+      probe.style.letterSpacing = styles.letterSpacing;
+      probe.style.textTransform = styles.textTransform;
+      document.body.append(probe);
+
+      const width = Math.ceil(probe.getBoundingClientRect().width);
+      probe.remove();
+      return width;
+    };
+
+    emailLabel.style.setProperty(
+      "--rolling-email-idle-width",
+      `${measureLabel(idleLabel)}px`
+    );
+    emailLabel.style.setProperty(
+      "--rolling-email-hover-width",
+      `${measureLabel(hoverLabel)}px`
+    );
+  };
+
+  syncEmailButtonWidths();
+  document.fonts?.ready.then(syncEmailButtonWidths);
+
+  if (!title) {
+    emailButton?.classList.remove("connect-email--animation-pending");
+    return;
   }
+
+  const revealImmediately = () => {
+    revealSoftBlurTitleImmediately({
+      title,
+      accent,
+      titlePendingClass: pendingClasses.title,
+      accentPendingClass: pendingClasses.accent
+    });
+    emailButton?.classList.remove("connect-email--animation-pending");
+  };
+
+  if (reducedMotion.matches || !Element.prototype.animate || !("IntersectionObserver" in window)) {
+    revealImmediately();
+    return;
+  }
+
+  let hasRevealed = false;
+  const observer = new IntersectionObserver(([entry]) => {
+    if (hasRevealed || !entry.isIntersecting || entry.intersectionRatio < 1) {
+      return;
+    }
+
+    hasRevealed = true;
+    observer.disconnect();
+    revealSoftBlurTitle({
+      title,
+      accent,
+      titlePendingClass: pendingClasses.title,
+      accentPendingClass: pendingClasses.accent,
+      accentHighlightClass: pendingClasses.highlightedAccent,
+      onHighlightStart: () => {
+        if (!emailButton) {
+          return;
+        }
+
+        playFadeUp(emailButton);
+        emailButton.classList.remove("connect-email--animation-pending");
+      }
+    });
+  }, { threshold: 1 });
+
+  observer.observe(title);
+  reducedMotion.addEventListener("change", ({ matches }) => {
+    if (!matches || hasRevealed) {
+      return;
+    }
+
+    hasRevealed = true;
+    observer.disconnect();
+    revealImmediately();
+  });
 })();
 
 (function () {
@@ -846,24 +1175,12 @@ function playSoftBlurIn(
   let isTransitioning = false;
   let overlayState;
 
-  function startWhenReady(frame, callback) {
-    let started = false;
-
-    function start() {
-      if (started) {
-        return;
-      }
-
-      started = true;
-      callback();
-    }
-
+  function revealWhenReady(frame) {
     frame.addEventListener(
       "load",
       () => {
-        frame.classList.add("is-loaded");
         window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(start);
+          frame.classList.add("is-loaded");
         });
       },
       { once: true }
@@ -965,6 +1282,7 @@ function playSoftBlurIn(
       frame.src = frameUrl.href;
       frame.tabIndex = -1;
       frame.title = "Project case study";
+      revealWhenReady(frame);
       backdrop.className = "project-overlay-backdrop";
       backdrop.setAttribute("aria-hidden", "true");
       closeButton.className = "project-overlay-close";
@@ -977,17 +1295,17 @@ function playSoftBlurIn(
       overlayState = { overlay, frame, backdrop, trigger };
       document.body.classList.add("project-overlay-open");
 
-      startWhenReady(frame, () => {
-        finishAfterTransition(overlay, () => {
-          if (overlayState?.overlay !== overlay || overlayState.isClosing) {
-            return;
-          }
+      finishAfterTransition(overlay, () => {
+        if (overlayState?.overlay !== overlay || overlayState.isClosing) {
+          return;
+        }
 
-          overlay.classList.add("is-open");
-          isTransitioning = false;
-          frame.focus();
-        });
+        overlay.classList.add("is-open");
+        isTransitioning = false;
+        frame.focus();
+      });
 
+      window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
           backdrop.classList.add("is-active");
           overlay.classList.add("is-active");

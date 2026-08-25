@@ -15,12 +15,15 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260810-eudiw-2">
+    <link rel="stylesheet" href="styles.css?v=20260817-contact-email-6">
     <noscript>
       <style>
         .hero-title--animation-pending,
-        .hero-subtitle--animation-pending { visibility: visible; }
-        .hero-title__accent--highlight-pending::before { clip-path: none; }
+        .hero-subtitle--animation-pending,
+        .connect-title--animation-pending,
+        .connect-email--animation-pending { visibility: visible; }
+        .hero-title__accent--highlight-pending::before,
+        .connect-title__accent--highlight-pending::before { clip-path: none; }
       </style>
     </noscript>
     <script
@@ -30,7 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/MorphSVGPlugin.min.js" defer></script>
-    <script src="script.js?v=20260810-eudiw-2" defer></script>
+    <script src="script.js?v=20260817-contact-email-3" defer></script>
   </head>
   <body>
     <nav class="topbar" aria-label="Portfolio navigation">
@@ -86,10 +89,10 @@
           <button
             class="project-card"
             type="button"
-            aria-label="Open European Digital Identity Wallet case study"
+            aria-label="Open Designing a digital identity app with AI in the loop case study"
             data-project-overlay
             data-project-overlay-background="#fbfcfd"
-            data-project-url="eudiw-case-study/index.html"
+            data-project-url="eudiw-case-study/index.html?v=20260825-copy-edit"
           >
             <div class="thumbnail">
               <img
@@ -100,8 +103,8 @@
             <div class="project-content">
               <h3>European Digital Identity Wallet <span class="project-arrow" aria-hidden="true">→</span></h3>
               <p class="project-summary">
-                A concept for making verified credentials, consent, and cross-service handoffs easier
-                to understand without hiding the complexity that matters.
+                A concept for making credentials, consent and data sharing easier to understand while
+                exploring AI across the product design process.
               </p>
               <div class="project-tags">
                 <span class="project-tag">UX/UI Design</span>
@@ -117,7 +120,7 @@
             type="button"
             aria-label="Open Pet Insurance Reimagined case study"
             data-project-overlay
-            data-project-url="pet-insurance-case-study/index.html"
+            data-project-url="pet-insurance-case-study/index.html?v=20260818-remove-closing-copy-1"
           >
             <div class="thumbnail">
               <img
@@ -316,24 +319,24 @@
       </section>
 
       <section class="connect-section" id="connect" aria-labelledby="connect-title">
-        <div>
-          <h2 id="connect-title">Easy to scan, easy to reach.</h2>
-          <p>
-            Replace this with your real email address when the content is ready.
-          </p>
-        </div>
+        <h2 class="connect-title--animation-pending" id="connect-title">
+          Have a problem
+          <span class="connect-title__accent connect-title__accent--highlight-pending"><span class="connect-title__accent-text">worth</span></span>
+          solving?
+        </h2>
         <div class="connect-card">
           <a
-            class="rolling-email"
+            class="rolling-email connect-email--animation-pending"
+            id="connect-email"
             href="mailto:hello@example.com"
-            aria-label="Email hello@example.com"
+            aria-label="Send me an email at hello@example.com"
           >
             <span
               class="rolling-email__label"
-              data-label="hello@example.com"
+              data-label="Send me an email"
               aria-hidden="true"
             >
-              <span>hello@example.com</span>
+              <span>Send me an email</span>
               <span>hello@example.com</span>
             </span>
           </a>
