@@ -1174,6 +1174,10 @@ function revealSoftBlurTitleImmediately({
 
   let isTransitioning = false;
   let overlayState;
+  const preparedOverlays = new Map();
+  const overlayTriggers = Array.from(
+    document.querySelectorAll("[data-project-overlay]")
+  );
 
   function revealWhenReady(frame) {
     frame.addEventListener(
@@ -1210,6 +1214,66 @@ function revealSoftBlurTitleImmediately({
     window.setTimeout(finish, 800);
   }
 
+  function createOverlay(trigger) {
+    const frameUrl = new URL(trigger.dataset.projectUrl, document.baseURI);
+    const overlay = document.createElement("div");
+    const frame = document.createElement("iframe");
+    const backdrop = document.createElement("div");
+    const closeButton = document.createElement("button");
+
+    frameUrl.searchParams.set("display", "overlay");
+    overlay.className = "project-overlay";
+    if (trigger.dataset.projectOverlayBackground) {
+      overlay.style.setProperty(
+        "--project-overlay-background",
+        trigger.dataset.projectOverlayBackground
+      );
+    }
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Project case study");
+    frame.className = "project-overlay-frame";
+    frame.src = frameUrl.href;
+    frame.tabIndex = -1;
+    frame.title = "Project case study";
+    revealWhenReady(frame);
+    backdrop.className = "project-overlay-backdrop";
+    backdrop.setAttribute("aria-hidden", "true");
+    closeButton.className = "project-overlay-close";
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Close case study");
+    closeButton.textContent = "×";
+    closeButton.addEventListener("click", closeOverlay);
+    overlay.append(frame, closeButton);
+
+    return { overlay, frame, backdrop, trigger };
+  }
+
+  function prepareOverlay(trigger) {
+    if (preparedOverlays.has(trigger) || overlayState?.trigger === trigger) {
+      return;
+    }
+
+    const preparedOverlay = createOverlay(trigger);
+    preparedOverlay.overlay.classList.add("is-preloading");
+    document.body.append(preparedOverlay.backdrop, preparedOverlay.overlay);
+    preparedOverlays.set(trigger, preparedOverlay);
+  }
+
+  function prepareOverlaysAfterLoad() {
+    const prepare = () => {
+      overlayTriggers.forEach(prepareOverlay);
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(prepare, { timeout: 1500 });
+      return;
+    }
+
+    window.setTimeout(prepare, 0);
+  }
+
   function closeOverlay() {
     if (!overlayState || overlayState.isClosing) {
       return;
@@ -1226,6 +1290,7 @@ function revealSoftBlurTitleImmediately({
       overlayState = undefined;
       isTransitioning = false;
       trigger.focus({ preventScroll: true });
+      prepareOverlay(trigger);
     });
 
     overlay.classList.remove("is-open", "is-active");
@@ -1248,7 +1313,7 @@ function revealSoftBlurTitleImmediately({
     }
   });
 
-  document.querySelectorAll("[data-project-overlay]").forEach((trigger) => {
+  overlayTriggers.forEach((trigger) => {
     trigger.addEventListener("click", (event) => {
       if (
         event.defaultPrevented ||
@@ -1260,39 +1325,17 @@ function revealSoftBlurTitleImmediately({
       event.preventDefault();
       isTransitioning = true;
 
-      const frameUrl = new URL(trigger.dataset.projectUrl, document.baseURI);
-      const overlay = document.createElement("div");
-      const frame = document.createElement("iframe");
-      const backdrop = document.createElement("div");
-      const closeButton = document.createElement("button");
-
-      frameUrl.searchParams.set("display", "overlay");
-      overlay.className = "project-overlay";
-      if (trigger.dataset.projectOverlayBackground) {
-        overlay.style.setProperty(
-          "--project-overlay-background",
-          trigger.dataset.projectOverlayBackground
-        );
+      const preparedOverlay = preparedOverlays.get(trigger);
+      if (preparedOverlay) {
+        preparedOverlays.delete(trigger);
+        preparedOverlay.overlay.classList.remove("is-preloading");
+        overlayState = preparedOverlay;
+      } else {
+        overlayState = createOverlay(trigger);
+        document.body.append(overlayState.backdrop, overlayState.overlay);
       }
-      overlay.setAttribute("aria-hidden", "true");
-      overlay.setAttribute("role", "dialog");
-      overlay.setAttribute("aria-modal", "true");
-      overlay.setAttribute("aria-label", "Project case study");
-      frame.className = "project-overlay-frame";
-      frame.src = frameUrl.href;
-      frame.tabIndex = -1;
-      frame.title = "Project case study";
-      revealWhenReady(frame);
-      backdrop.className = "project-overlay-backdrop";
-      backdrop.setAttribute("aria-hidden", "true");
-      closeButton.className = "project-overlay-close";
-      closeButton.type = "button";
-      closeButton.setAttribute("aria-label", "Close case study");
-      closeButton.textContent = "×";
-      closeButton.addEventListener("click", closeOverlay);
-      overlay.append(frame, closeButton);
-      document.body.append(backdrop, overlay);
-      overlayState = { overlay, frame, backdrop, trigger };
+
+      const { overlay, frame, backdrop } = overlayState;
       document.body.classList.add("project-overlay-open");
 
       finishAfterTransition(overlay, () => {
@@ -1313,4 +1356,10 @@ function revealSoftBlurTitleImmediately({
       });
     });
   });
+
+  if (document.readyState === "complete") {
+    prepareOverlaysAfterLoad();
+  } else {
+    window.addEventListener("load", prepareOverlaysAfterLoad, { once: true });
+  }
 })();

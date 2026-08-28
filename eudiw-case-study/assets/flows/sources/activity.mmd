@@ -1,15 +1,17 @@
 flowchart LR
-  A[Open Activity] --> B[Filter or select transaction]
-  B --> C[Review requester, purpose,<br/>requested and presented attributes]
+  A[Open Activity] --> B[Filter and select transaction]
+  B --> C[Review date and requester,<br/>intended use, contact routes and<br/>attribute identifiers]
   C --> D{User goal}
   D -- Request erasure --> E[Choose available web, email<br/>or phone channel]
-  D -- Report request --> F[Choose DPA channel and<br/>supporting log excerpt]
-  D -- Export --> G[Choose records and destination]
-  D -- Delete local log --> H[Review rights consequence]
-  E --> I[Log initiation]
-  F --> I
-  G --> J[Export confirmation]
-  H --> K[Confirm deletion]
+  D -- Report transaction --> F[Choose DPA channel and<br/>machine-readable log excerpt]
+  D -- Export --> G[Choose records and external<br/>or remote destination]
+  D -- Delete local log --> H[Review consequence for<br/>data-protection rights]
+  E --> I[Erasure request initiated;<br/>log the initiation]
+  F --> J[Report initiated;<br/>log the initiation]
+  G --> K[Confirm export]
+  H --> L{Delete selected<br/>local record?}
+  L -- No --> M[Keep transaction record]
+  L -- Yes --> N[Delete local transaction record]
   classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
   classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
   classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
@@ -17,8 +19,7 @@ flowchart LR
   classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
   classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
   class A start
-  class B,C secondary
-  class D decision
-  class E,F,G action
-  class H warning
-  class I,J,K success
+  class B,C,E,F,G secondary
+  class D,L decision
+  class H,M warning
+  class I,J,K,N success

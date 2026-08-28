@@ -1,0 +1,30 @@
+flowchart LR
+  A[Self-service terminal prompts<br/>for identity information] --> B[Open and unlock wallet]
+  B --> C[Show wallet QR or initiate<br/>NFC or BLE engagement]
+  C --> D[Terminal establishes connection]
+  D --> E[Wallet authenticates relying party<br/>and validates request online or offline]
+  E --> F{Requester and<br/>request valid?}
+  F -- No --> G{Wallet policy}
+  G -- Block --> H[Blocked;<br/>no presentation]
+  G -- Warn and continue --> I[Show high-severity<br/>warning]
+  F -- Yes --> J[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+  I --> J
+  J --> K{Choose to share?}
+  K -- No --> L[Decline request;<br/>no presentation]
+  K -- Yes --> M[Authenticate to<br/>confirm approval]
+  M --> N[Transfer approved attributes]
+  N --> O[Terminal validates presentation]
+  O --> P{Transfer outcome clear?}
+  P -- Yes --> Q[Show wallet and terminal outcome]
+  P -- No --> R[Show uncertain or failed state;<br/>say whether data may have left]
+  classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
+  classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
+  classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+  classDef action fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
+  classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  class A start
+  class B,C,D,E,I,J,M,N,O secondary
+  class F,G,K,P decision
+  class H,L,R warning
+  class Q success

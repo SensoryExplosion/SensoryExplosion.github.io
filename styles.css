@@ -1707,6 +1707,11 @@ body.fishing-modal-open {
   transform: translate3d(0, 0, 0);
 }
 
+.project-overlay.is-preloading {
+  visibility: hidden;
+  will-change: auto;
+}
+
 .project-overlay.is-active,
 .project-overlay.is-open {
   pointer-events: auto;

@@ -15,12 +15,12 @@
     <link
       rel="preload"
       as="image"
-      href="./assets/images/eudiw-identity-cover.jpg"
+      href="./assets/images/eudiw-identity-cover.png"
       fetchpriority="high"
     />
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=20260822-toc-stable-emphasis" />
-    <script src="./script.js?v=20260822-toc-stability" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20260826-toc-curved-indicator-aligned" />
+    <script src="./script.js?v=20260826-toc-click-state" defer></script>
     <script src="./assets/vendor/mermaid.min.js" defer></script>
     <script src="./flow-definitions.js" defer></script>
     <script src="./flows.js" defer></script>
@@ -71,7 +71,7 @@
         <article class="article">
           <figure class="hero-figure">
             <img
-              src="./assets/images/eudiw-identity-cover.jpg"
+              src="./assets/images/eudiw-identity-cover.png"
               width="1726"
               height="911"
               alt="Conceptual translucent identity credential arranged with two mobile devices, a secure chip, and a confirmation seal."
@@ -804,10 +804,10 @@
                 <div>
                   <span class="flow-viewer-eyebrow">Core user flow</span>
                   <h3 class="flow-viewer-title" id="flow-viewer-title" data-flow-title>
-                    First-time activation and first credential
+                    Activate wallet and obtain Person Identification Data (PID)
                   </h3>
                 </div>
-                <span class="flow-viewer-count" data-flow-count aria-hidden="true"> 01 / 05 </span>
+                <span class="flow-viewer-count" data-flow-count aria-hidden="true"> 01 / 06 </span>
               </div>
 
               <div
@@ -822,7 +822,7 @@
                   type="button"
                   role="tab"
                   aria-controls="flow-viewer-stage"
-                  aria-label="First-time activation and first credential"
+                  aria-label="Activate wallet and obtain Person Identification Data (PID)"
                   aria-selected="true"
                   data-flow-index="0"
                 >
@@ -856,16 +856,29 @@
                 </button>
                 <button
                   class="flow-viewer-tab"
-                  id="flow-tab-proximity"
+                  id="flow-tab-proximity-supervised"
                   type="button"
                   role="tab"
                   aria-controls="flow-viewer-stage"
-                  aria-label="Proximity presentation"
+                  aria-label="Supervised proximity presentation"
                   aria-selected="false"
                   tabindex="-1"
                   data-flow-index="3"
                 >
-                  <span>Proximity</span>
+                  <span>Supervised</span>
+                </button>
+                <button
+                  class="flow-viewer-tab"
+                  id="flow-tab-proximity-unsupervised"
+                  type="button"
+                  role="tab"
+                  aria-controls="flow-viewer-stage"
+                  aria-label="Unsupervised proximity presentation"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-flow-index="4"
+                >
+                  <span>Unsupervised</span>
                 </button>
                 <button
                   class="flow-viewer-tab"
@@ -876,7 +889,7 @@
                   aria-label="Review activity and exercise a right"
                   aria-selected="false"
                   tabindex="-1"
-                  data-flow-index="4"
+                  data-flow-index="5"
                 >
                   <span>Activity &amp; rights</span>
                 </button>
@@ -903,8 +916,8 @@
                   Scroll horizontally when needed to follow the complete flow.
                 </span>
                 <span data-flow-summary>
-                  From opening the wallet through provider verification, storage approval,
-                  activation, and confirmation.
+                  Wallet Unit activation is completed before the user optionally obtains a PID
+                  from a PID Provider.
                 </span>
               </figcaption>
             </figure>
@@ -979,6 +992,12 @@
               native elements often drifted visually or structurally. Manually looking up the exact
               API from the Developer Documentation and showing Codex reference screenshots from
               other native iOS apps usually got the implementation back on track.
+            </p>
+
+            <p>
+              I created the app icon by hand in Figma and Icon Composer. For in-app icons, I used
+              the Lucide open-source icon library and SF Symbols when animation and a native look
+              were needed.
             </p>
 
             <aside class="disclosure disclosure--tip" aria-label="Codex simulator tip">

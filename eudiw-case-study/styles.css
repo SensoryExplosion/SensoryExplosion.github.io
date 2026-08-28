@@ -266,7 +266,12 @@ h1 {
 }
 
 .sticky-toc__list {
+  --toc-indicator-size: 0.375rem;
+  --toc-indicator-inset-x: 0.25rem;
+  --toc-indicator-inset-y: 0.75rem;
+
   display: grid;
+  position: relative;
   width: 100%;
   gap: 0.125rem;
   margin: 0;
@@ -299,16 +304,17 @@ h1 {
     background-color var(--duration-short) var(--ease-standard);
 }
 
-.sticky-toc__link::before {
+.sticky-toc__indicator {
   position: absolute;
-  top: 0.875rem;
-  left: 0.25rem;
-  width: 0.375rem;
-  height: 0.375rem;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--toc-indicator-size);
+  height: var(--toc-indicator-size);
   border-radius: 50%;
-  background: transparent;
-  content: "";
-  transition: background-color var(--duration-short) var(--ease-standard);
+  background: var(--color-accent);
+  pointer-events: none;
+  will-change: transform;
 }
 
 .sticky-toc__link:hover {
@@ -322,16 +328,12 @@ h1 {
   paint-order: stroke fill;
 }
 
-.sticky-toc__link.is-active::before {
-  background: var(--color-accent);
-}
-
 .hero-figure {
   aspect-ratio: 1200 / 628;
   margin: 0 0 3rem;
   overflow: hidden;
   border-radius: var(--radius-hero);
-  background: var(--color-soft);
+  background: transparent;
 }
 
 .hero-figure img {
@@ -1146,9 +1148,29 @@ h1 {
   ry: 18px;
 }
 
+.flow-viewer-mermaid .phase-frame rect {
+  fill: #fbfcfd;
+  stroke: #d5dbe0;
+  stroke-width: 1px;
+}
+
+.flow-viewer-mermaid .phase-frame text {
+  fill: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.flow-viewer-mermaid .phase-connector {
+  fill: none;
+  stroke: #8a96a6;
+  stroke-width: 2px;
+}
+
 .flow-viewer-mermaid .node .label foreignObject > div {
-  display: flex !important;
-  width: 100% !important;
+  display: inline-flex !important;
+  width: auto !important;
   height: 100% !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1268,7 +1290,7 @@ h1 {
 @media (min-width: 48rem) {
   .flow-viewer-tabs {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     overflow: visible;
   }
 
@@ -1421,7 +1443,7 @@ h1 {
     background: Canvas;
   }
 
-  .sticky-toc__link.is-active::before {
+  .sticky-toc__indicator {
     background: Highlight;
   }
 }

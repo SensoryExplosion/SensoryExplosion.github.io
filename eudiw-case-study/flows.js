@@ -3,37 +3,44 @@ const definitions = window.EUDI_FLOW_DEFINITIONS ?? {};
 const flows = [
   {
     id: "activation",
-    title: "First-time activation and first credential",
+    title: "Activate wallet and obtain Person Identification Data (PID)",
     summary:
-      "From opening the wallet through provider verification, storage approval, activation, and confirmation.",
+      "Wallet Unit activation is completed before the user optionally obtains a PID from a PID Provider.",
     source: definitions.activation,
   },
   {
     id: "same-device",
     title: "Remote same-device presentation",
     summary:
-      "A deep link opens the wallet, which verifies the requester, explains the request, asks for approval, and records the outcome.",
+      "A deep link opens the wallet, which verifies the relying party and registered request before authenticated approval and presentation.",
     source: definitions["same-device"],
   },
   {
     id: "cross-device",
     title: "Remote cross-device presentation",
     summary:
-      "A QR handoff is checked before the wallet verifies the requester, presents the request, and returns the result to both devices.",
+      "The wallet scans a QR code on another device, validates the relying party and request, then returns a clear result to both devices.",
     source: definitions["cross-device"],
   },
   {
-    id: "proximity",
-    title: "Proximity presentation",
+    id: "proximity-supervised",
+    title: "Supervised proximity presentation",
     summary:
-      "A nearby QR, NFC, or reader handoff makes verification limits visible before approval, transfer, and a clear receipt or failure state.",
-    source: definitions.proximity,
+      "A person-operated verifier presents an engagement method; the wallet validates it online or offline before authenticated sharing.",
+    source: definitions["proximity-supervised"],
+  },
+  {
+    id: "proximity-unsupervised",
+    title: "Unsupervised proximity presentation",
+    summary:
+      "A self-service terminal connects to the wallet, which validates the terminal and request online or offline before authenticated sharing.",
+    source: definitions["proximity-unsupervised"],
   },
   {
     id: "activity",
     title: "Review activity and exercise a right",
     summary:
-      "A transaction can lead to an erasure request, a report, an export, or local-log deletion, each with its own consequence and confirmation.",
+      "Transaction records expose identifiers and contact routes without retaining attribute values, then support erasure, reporting, export, or local deletion.",
     source: definitions.activity,
   },
 ];
@@ -102,6 +109,166 @@ if (viewer) {
     viewer.style.setProperty("--flow-diagram-scale", scale.toFixed(3));
   };
 
+  const addActivationPhaseFrames = (svg) => {
+    const sourceViewBox = svg.viewBox.baseVal;
+    const viewBox = {
+      x: sourceViewBox.x,
+      y: sourceViewBox.y,
+      width: sourceViewBox.width,
+      height: sourceViewBox.height,
+    };
+    const root = svg.querySelector("g.root");
+
+    if (!root) {
+      return viewBox;
+    }
+
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const frameLayer = document.createElementNS(svgNamespace, "g");
+    const phaseDefinitions = [
+      {
+        label: "Phase 1 - Activate Wallet Unit",
+        nodeIds: ["A", "B", "C", "D", "E"],
+      },
+      {
+        label: "Phase 2 - Obtain PID",
+        nodeIds: ["F", "G", "H", "I", "J", "K", "L", "M", "N"],
+      },
+    ];
+    const horizontalInset = 20;
+    const titleInset = 58;
+    const bottomInset = 28;
+    const frameBounds = [];
+
+    const getTranslation = (element) => {
+      const transform = element?.getAttribute("transform")?.match(
+        /translate\(\s*(-?[\d.]+)(?:\s*,\s*|\s+)(-?[\d.]+)\s*\)/,
+      );
+
+      return transform
+        ? { x: Number(transform[1]), y: Number(transform[2]) }
+        : { x: 0, y: 0 };
+    };
+
+    const getNodeBounds = (nodeId) => {
+      const node = Array.from(svg.querySelectorAll("g.node")).find((candidate) =>
+        candidate.id.includes(`-flowchart-${nodeId}-`),
+      );
+      const shape = node?.querySelector("rect, polygon");
+
+      if (!shape || !node) {
+        return null;
+      }
+
+      const nodeTranslation = getTranslation(node);
+      const shapeTranslation = getTranslation(shape);
+      const translateX = nodeTranslation.x + shapeTranslation.x;
+      const translateY = nodeTranslation.y + shapeTranslation.y;
+
+      if (shape.tagName.toLowerCase() === "rect") {
+        const x = translateX + Number(shape.getAttribute("x"));
+        const y = translateY + Number(shape.getAttribute("y"));
+        const width = Number(shape.getAttribute("width"));
+        const height = Number(shape.getAttribute("height"));
+
+        return { left: x, top: y, right: x + width, bottom: y + height };
+      }
+
+      const points = shape
+        .getAttribute("points")
+        .trim()
+        .split(/\s+/)
+        .map((point) => point.split(",").map(Number));
+      const xValues = points.map(([x]) => translateX + x);
+      const yValues = points.map(([, y]) => translateY + y);
+
+      return {
+        left: Math.min(...xValues),
+        top: Math.min(...yValues),
+        right: Math.max(...xValues),
+        bottom: Math.max(...yValues),
+      };
+    };
+
+    phaseDefinitions.forEach(({ label, nodeIds }) => {
+      const nodeBounds = nodeIds.map(getNodeBounds).filter(Boolean);
+
+      if (!nodeBounds.length) {
+        return;
+      }
+
+      const left = Math.min(...nodeBounds.map((bounds) => bounds.left)) - horizontalInset;
+      const top = Math.min(...nodeBounds.map((bounds) => bounds.top)) - titleInset;
+      const right = Math.max(...nodeBounds.map((bounds) => bounds.right)) + horizontalInset;
+      const bottom = Math.max(...nodeBounds.map((bounds) => bounds.bottom)) + bottomInset;
+      const frame = document.createElementNS(svgNamespace, "g");
+      const rect = document.createElementNS(svgNamespace, "rect");
+      const title = document.createElementNS(svgNamespace, "text");
+
+      frame.classList.add("phase-frame");
+      rect.setAttribute("x", String(left));
+      rect.setAttribute("y", String(top));
+      rect.setAttribute("width", String(right - left));
+      rect.setAttribute("height", String(bottom - top));
+      rect.setAttribute("rx", "20");
+      rect.setAttribute("ry", "20");
+      title.setAttribute("x", String((left + right) / 2));
+      title.setAttribute("y", String(top + 25));
+      title.setAttribute("text-anchor", "middle");
+      title.setAttribute("dominant-baseline", "middle");
+      title.textContent = label;
+      frame.append(rect, title);
+      frameLayer.append(frame);
+      frameBounds.push({ left, top, right, bottom });
+    });
+
+    if (frameBounds.length === 2) {
+      const phaseOneEnd = getNodeBounds("E");
+      const phaseTwoStart = getNodeBounds("F");
+      const marker = svg.querySelector('marker[id$="pointEnd"]');
+      const connector = document.createElementNS(svgNamespace, "line");
+      const markerTipOffset = 5;
+
+      connector.classList.add("phase-connector");
+      connector.setAttribute("x1", String(frameBounds[0].right));
+      connector.setAttribute("x2", String(frameBounds[1].left - markerTipOffset));
+      connector.setAttribute("y1", String((phaseOneEnd.top + phaseOneEnd.bottom) / 2));
+      connector.setAttribute("y2", String((phaseTwoStart.top + phaseTwoStart.bottom) / 2));
+
+      if (marker?.id) {
+        connector.setAttribute("marker-end", `url(#${marker.id})`);
+      }
+
+      frameLayer.append(connector);
+    }
+
+    root.insertBefore(frameLayer, root.firstChild);
+
+    const expandedLeft = Math.min(viewBox.x, ...frameBounds.map((bounds) => bounds.left));
+    const expandedTop = Math.min(viewBox.y, ...frameBounds.map((bounds) => bounds.top));
+    const expandedRight = Math.max(
+      viewBox.x + viewBox.width,
+      ...frameBounds.map((bounds) => bounds.right),
+    );
+    const expandedBottom = Math.max(
+      viewBox.y + viewBox.height,
+      ...frameBounds.map((bounds) => bounds.bottom),
+    );
+    const expandedViewBox = {
+      x: expandedLeft,
+      y: expandedTop,
+      width: expandedRight - expandedLeft,
+      height: expandedBottom - expandedTop,
+    };
+
+    svg.setAttribute(
+      "viewBox",
+      `${expandedViewBox.x} ${expandedViewBox.y} ${expandedViewBox.width} ${expandedViewBox.height}`,
+    );
+
+    return expandedViewBox;
+  };
+
   const setPanelError = (index) => {
     const panel = panels[index];
 
@@ -138,7 +305,16 @@ if (viewer) {
         throw new Error(`Mermaid did not return an SVG for ${flow.id}`);
       }
 
-      const viewBox = svg.viewBox.baseVal;
+      const sourceViewBox = svg.viewBox.baseVal;
+      const viewBox =
+        flow.id === "activation"
+          ? addActivationPhaseFrames(svg)
+          : {
+              x: sourceViewBox.x,
+              y: sourceViewBox.y,
+              width: sourceViewBox.width,
+              height: sourceViewBox.height,
+            };
       flow.renderWidth = viewBox.width;
       flow.renderHeight = viewBox.height;
       maximumDiagramWidth = Math.max(maximumDiagramWidth, viewBox.width);
@@ -277,9 +453,14 @@ if (viewer) {
       flowchart: {
         curve: "basis",
         htmlLabels: true,
-        nodeSpacing: 34,
-        rankSpacing: 48,
+        nodeSpacing: 42,
+        rankSpacing: 56,
         padding: 18,
+        wrappingWidth: 300,
+        subGraphTitleMargin: {
+          top: 14,
+          bottom: 24,
+        },
         useMaxWidth: false,
       },
     });

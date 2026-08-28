@@ -1,25 +1,25 @@
 flowchart LR
-  A[Open wallet for first time] --> B[Welcome and voluntary-use<br/>explanation]
-  B --> C[Trust mark and provider identity]
-  C --> D[Set up device and wallet<br/>authentication]
-  D --> E[Choose supported PID provider]
-  E --> F[Complete provider identity check]
-  F --> G{Credential verified?}
-  G -- No --> H[Explain failure and<br/>safe next step]
-  G -- Yes --> I[Preview issuer and<br/>credential contents]
-  I --> J{Store this credential?}
-  J -- No --> K[Discard and return to<br/>empty wallet]
-  J -- Yes --> L[Activate PID if required]
-  L --> M[Credential added<br/>confirmation]
-  M --> N[Home]
+  A[Open wallet for<br/>first time] --> B[Welcome and voluntary-use<br/>explanation]
+  B --> C[Review Wallet Provider identity,<br/>certification and data purposes]
+  C --> D[Give consent and set up device<br/>and wallet authentication]
+  D --> E[Activate Wallet Unit]
+  E ~~~~ F{Add a PID now?}
+  F -- No --> G[Wallet home;<br/>add PID later]
+  F -- Yes --> H[Choose PID Provider<br/>and request PID]
+  H --> I[Complete provider<br/>identity check]
+  I --> J{Identity verified?}
+  J -- No --> K[Explain failure and<br/>safe next step]
+  J -- Yes --> L[Review PID issuer<br/>and data to be issued]
+  L --> M[PID issued and stored]
+  M --> N[Confirmation and<br/>wallet home]
   classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
-  classDef primary fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
   classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
   classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+  classDef action fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
   classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
   classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
   class A start
-  class B,C,D,E,F,I,L secondary
-  class G,J decision
-  class H,K warning
-  class M,N success
+  class B,C,D,H,I,L secondary
+  class F,J decision
+  class K warning
+  class E,G,M,N success

@@ -1,0 +1,28 @@
+flowchart LR
+  A[Person-operated verifier presents<br/>QR, NFC or BLE engagement] --> B[Open and unlock wallet;<br/>scan or tap]
+  B --> C[Wallet authenticates relying party<br/>and validates request online or offline]
+  C --> D{Requester and<br/>request valid?}
+  D -- No --> E{Wallet policy}
+  E -- Block --> F[Blocked;<br/>no presentation]
+  E -- Warn and continue --> G[Show high-severity<br/>warning]
+  D -- Yes --> H[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+  G --> H
+  H --> I{Choose to share?}
+  I -- No --> J[Decline request;<br/>no presentation]
+  I -- Yes --> K[Authenticate to<br/>confirm approval]
+  K --> L[Transfer approved attributes]
+  L --> M[Verifier validates presentation]
+  M --> N{Transfer outcome clear?}
+  N -- Yes --> O[Show wallet and verifier outcome]
+  N -- No --> P[Show uncertain or failed state;<br/>say whether data may have left]
+  classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
+  classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
+  classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+  classDef action fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
+  classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+  class A start
+  class B,C,G,H,K,L,M secondary
+  class D,E,I,N decision
+  class F,J,P warning
+  class O success

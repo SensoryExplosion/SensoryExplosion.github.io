@@ -84,6 +84,12 @@
     entry.tocLink = tocLink;
   });
 
+  const tocIndicator = document.createElement("li");
+  tocIndicator.className = "sticky-toc__indicator";
+  tocIndicator.setAttribute("aria-hidden", "true");
+  tocIndicator.setAttribute("role", "presentation");
+  stickyTocList.append(tocIndicator);
+
   stickyToc.hidden = false;
   stickyToc.dataset.ready = "true";
 
@@ -98,6 +104,125 @@
   let measureFrame = 0;
   let scrollFrame = 0;
   let resizeTimer = 0;
+  let indicatorFrame = 0;
+  let indicatorPosition = null;
+
+  const quadraticBezier = (start, control, end, progress) => {
+    const remaining = 1 - progress;
+    return (
+      remaining * remaining * start +
+      2 * remaining * progress * control +
+      progress * progress * end
+    );
+  };
+
+  const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
+
+  const cssLengthToPixels = (value) => {
+    const numericValue = Number.parseFloat(value);
+
+    if (value.trim().endsWith("rem")) {
+      return numericValue * Number.parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+    }
+
+    return numericValue;
+  };
+
+  const getIndicatorTarget = (index) => {
+    const link = entries[index]?.tocLink;
+
+    if (!link) {
+      return null;
+    }
+
+    const listBounds = stickyTocList.getBoundingClientRect();
+    const linkBounds = link.getBoundingClientRect();
+    const listStyles = window.getComputedStyle(stickyTocList);
+    const insetX = cssLengthToPixels(listStyles.getPropertyValue("--toc-indicator-inset-x"));
+    const insetY = cssLengthToPixels(listStyles.getPropertyValue("--toc-indicator-inset-y"));
+
+    return {
+      x: linkBounds.left - listBounds.left + insetX,
+      y: linkBounds.top - listBounds.top + insetY,
+    };
+  };
+
+  const setIndicatorPosition = (position) => {
+    tocIndicator.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
+    indicatorPosition = position;
+  };
+
+  const cancelIndicatorAnimation = () => {
+    if (!indicatorFrame) {
+      return;
+    }
+
+    window.cancelAnimationFrame(indicatorFrame);
+    indicatorFrame = 0;
+  };
+
+  const snapIndicator = (index = activeIndex) => {
+    const target = getIndicatorTarget(index);
+
+    if (!target) {
+      return;
+    }
+
+    cancelIndicatorAnimation();
+    setIndicatorPosition(target);
+  };
+
+  const moveIndicator = (nextIndex, shouldAnimate) => {
+    const target = getIndicatorTarget(nextIndex);
+
+    if (!target) {
+      return;
+    }
+
+    cancelIndicatorAnimation();
+
+    if (!shouldAnimate || reducedMotion.matches || !indicatorPosition) {
+      setIndicatorPosition(target);
+      return;
+    }
+
+    const start = indicatorPosition;
+    const distanceX = target.x - start.x;
+    const distanceY = target.y - start.y;
+    const travel = Math.hypot(distanceX, distanceY);
+
+    if (travel < 0.5) {
+      setIndicatorPosition(target);
+      return;
+    }
+
+    const controlPoint = {
+      x: (start.x + target.x) / 2 - clamp(travel * 0.25, 8, 40),
+      y: (start.y + target.y) / 2,
+    };
+    const duration = clamp(180 + travel * 1.4, 220, 500);
+    const startedAt = window.performance.now();
+
+    const step = (currentTime) => {
+      const progress = Math.min((currentTime - startedAt) / duration, 1);
+      const easedProgress = easeInOutCubic(progress);
+
+      setIndicatorPosition({
+        x: quadraticBezier(start.x, controlPoint.x, target.x, easedProgress),
+        y: quadraticBezier(start.y, controlPoint.y, target.y, easedProgress),
+      });
+
+      if (progress < 1) {
+        indicatorFrame = window.requestAnimationFrame(step);
+        return;
+      }
+
+      indicatorFrame = 0;
+      setIndicatorPosition(target);
+    };
+
+    indicatorFrame = window.requestAnimationFrame(step);
+  };
 
   const activate = (nextIndex) => {
     if (nextIndex < 0 || nextIndex >= entries.length || nextIndex === activeIndex) {
@@ -115,7 +240,9 @@
       }
     });
 
+    const shouldAnimate = activeIndex >= 0;
     activeIndex = nextIndex;
+    moveIndicator(nextIndex, shouldAnimate);
   };
 
   const calculateActiveIndex = () => {
@@ -147,15 +274,23 @@
 
     updateFrame = window.requestAnimationFrame(() => {
       updateFrame = 0;
+
+      if (scrollFrame) {
+        return;
+      }
+
       activate(calculateActiveIndex());
     });
   };
 
-  const measureEntries = () => {
+  const measureEntries = ({ updateActive = true } = {}) => {
     entryOffsets = entries.map(
       (entry) => window.scrollY + entry.target.getBoundingClientRect().top,
     );
-    scheduleUpdate();
+
+    if (updateActive) {
+      scheduleUpdate();
+    }
   };
 
   const scheduleMeasure = () => {
@@ -166,6 +301,7 @@
     measureFrame = window.requestAnimationFrame(() => {
       measureFrame = 0;
       measureEntries();
+      snapIndicator();
     });
   };
 
@@ -199,7 +335,7 @@
       updateFrame = 0;
     }
 
-    measureEntries();
+    measureEntries({ updateActive: false });
 
     const startY = window.scrollY;
     const maximumY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
@@ -267,6 +403,11 @@
   window.addEventListener("scroll", scheduleUpdate, { passive: true });
   window.addEventListener("load", scheduleMeasure);
   window.addEventListener("pageshow", scheduleMeasure);
+  reducedMotion.addEventListener("change", () => {
+    if (reducedMotion.matches) {
+      snapIndicator();
+    }
+  });
   window.addEventListener("resize", () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(scheduleMeasure, 120);
@@ -309,6 +450,11 @@
   if ("ResizeObserver" in window && article) {
     const articleResizeObserver = new ResizeObserver(scheduleMeasure);
     articleResizeObserver.observe(article);
+  }
+
+  if ("ResizeObserver" in window) {
+    const tocResizeObserver = new ResizeObserver(() => snapIndicator());
+    tocResizeObserver.observe(stickyTocList);
   }
 })();
 

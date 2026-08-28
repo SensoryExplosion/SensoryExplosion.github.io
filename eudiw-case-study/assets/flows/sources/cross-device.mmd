@@ -1,20 +1,35 @@
 flowchart LR
-  A[Open scanner] --> B[Scan service QR]
-  B --> C{Readable and current?}
+  A[Open wallet scanner] --> B[Scan service QR on<br/>the other device]
+  B --> C{QR readable<br/>and current?}
   C -- No --> D[Explain scan problem<br/>and retry]
-  C -- Yes --> E[Authenticate requester]
-  E --> F[Review request on<br/>wallet device]
-  F --> G{Approve?}
-  G -- No --> H[Cancel; other device receives<br/>no attributes]
-  G -- Yes --> I[User authentication]
-  I --> J[Share and show result<br/>on both devices]
+  C -- Yes --> E[Wallet authenticates relying party<br/>and validates registration and request]
+  E --> F{Requester and<br/>request valid?}
+  F -- No --> G{Wallet policy}
+  G -- Block --> H[Blocked; other device receives<br/>no attributes]
+  G -- Warn and continue --> I[Show high-severity<br/>warning]
+  F -- Yes --> J[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+  I --> J
+  J --> K{Request exceeds<br/>registered attributes?}
+  K -- No --> L[Review final request]
+  K -- Yes --> M{Apply wallet policy}
+  M -- Reject all --> N[Request rejected; other device<br/>receives no attributes]
+  M -- Registered only --> O[Limit to registered attributes]
+  M -- Allow all --> P[Show exception warning]
+  O --> L
+  P --> L
+  L --> Q{Choose to share?}
+  Q -- No --> R[Decline request; other device<br/>receives no attributes]
+  Q -- Yes --> S[Authenticate to<br/>confirm approval]
+  S --> T[Present approved attributes]
+  T --> U[Show wallet presentation outcome<br/>and service result on both devices]
   classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
   classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
   classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+  classDef action fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
   classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
   classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
   class A start
-  class B,E,F,I secondary
-  class C,G decision
-  class D,H warning
-  class J success
+  class B,E,I,J,L,O,P,S,T secondary
+  class C,F,G,K,M,Q decision
+  class D,H,N,R warning
+  class U success

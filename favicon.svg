@@ -1,14 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#fff"/>
+  <style>
+    @font-face {
+      font-family: "Favicon Inter";
+      font-style: normal;
+      font-weight: 400;
+      src: url("data:font/woff2;base64,d09GMgABAAAAAAQ8AA8AAAAAB+AAAAPhAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbgSIcbgZgP1NUQVReADwRCAqDHIJ5CwwAATYCJAMUBCAFhFwHIBuqBsgEHiov+tedzmw2oyWykHthZOCaySzkE6Sb8CHe/lXIH/vNEAmVKhoJlZq4978/zL2RKpVq3mSiaStxact0BpiYYZKKH99qEUCIGSfGKM/AudWmLzNQQ4aNmULzxSuKGerEi26aCDMLvZwFpU7/NzTy7BbItFvMUYMWI4D0DKu0oiIWAwLcrIWknq27PU0ZGnrGBvpGiccoryPoJM3RSIwgEkR00rKykCtnqead9ZHckSjykjoE3mCtDyCfUt9UlOcYKLO12I8JZhf1DnDkqiLfYbc8acHEfFSivkf6VTjts3t40uSxk3mCw6AKT/6vAtY38jCIk/ywmmd+yLQEQxHQyjdWO/9EW2S+UFopesKyeMITApH0FmaERtKcGgQwysIpBpaqziidBrEf5IP8WUWvHJPlT3sGrqgaipYYyCsvsfE+3m6Hgb7v/+w/0aDaQ9T3id7R/PLaMOE2TvT3NfSKS9XdryhbqVDAVoFQRFWz7RWRVdHlhIU9XYQIzpJhY4otrp02QRHEFtMkFqa9gdiMMSO+SS61/m5wVXCFvfLTT6cFP/54yvLZIkpwVXTXJ5+w/uOPp/DJbau9KLzrM7Hh00/tkBjDWEs+PmDDqVtY399quB2t9Wefrh2o9eefrUMz4PGT9U/8x/CkJ+u11uufPBmwTuvv9Sl/nX5y6rNtgaMX6HUDvl+GTj1ep8kf2b9gv9a6sICujT758OvGQz98vepzr97EMb92f9i02+Nxf9YeXbWLN/Tkhf8ucA/zw0rH3kwtupNdMHh1bqSuHBlq7Jw+53S5ELv7VeLWoovzbhzcsnD06DU7Ry9InBoxYUP/0cWxC7duOTCuOPXfd629g36Zs+je/Gjf3yzD+hn/cem2/dfu43/X/C9T7Yr1TQUbZHMgG1tPde/vmn8kql2xGN1dMk0tRphb6Gr25Z5sTmxST89gspkQBSo0AJKQ754wZxqQWVWc+veL1k+ZwBaOTBIRVWQGHflRpqjD6zKT7hyUBajDcmmE7gwKC0FoShJZT2rRQNYLixoyTQgbBzbLr04iT5aF5BiJx0IyJFlMJ7pSwGP8Gb6A+zSHySRZict0XJLESeAd2z0KlOhNh8n2PAVccsTIk6OkN/jaX8KlPXmKxBnJL3cp0o5JtDxOmQwLCU7jeEskba85dKU9HelIJ/oQJ1mPdnTfq3elB4vpyKIRX5qcMbbYSUxmLJPpE3vC24gODs5VcAXFXHsdOvv8b3ccppDAxcGwbwJF8qRwWazpHUi5rCD3s0s4tCw3Mm/dCcosoj2L6wU7aKazlOhAaM/6VsP+XPx/jt3sAAAAAA==") format("woff2");
+    }
+  </style>
+  <rect width="32" height="32" rx="7" fill="#fff"/>
   <text
     x="16"
     y="16"
     fill="#00adfe"
     dominant-baseline="central"
-    font-family="Inter, sans-serif"
+    font-family="Favicon Inter, sans-serif"
     font-size="22"
     font-weight="400"
-    letter-spacing="-1"
+    letter-spacing="-0.07em"
     text-anchor="middle"
   >AB</text>
 </svg>

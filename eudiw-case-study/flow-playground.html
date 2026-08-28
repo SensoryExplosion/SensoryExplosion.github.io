@@ -1,0 +1,1307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#fbfcfd" />
+
+    <title>EUDI Wallet flow playground</title>
+
+    <link rel="icon" href="data:," />
+    <script src="./assets/vendor/mermaid.min.js" defer></script>
+
+    <style>
+      :root {
+        --color-ink: #29334f;
+        --color-copy: oklch(45% 0.014 257);
+        --color-muted: oklch(38% 0.015 257);
+        --color-surface: #fbfcfd;
+        --color-soft: oklch(96% 0.006 257);
+        --color-panel: #ffffff;
+        --color-border-soft: oklch(88% 0.01 257 / 0.7);
+        --color-accent: #00adfe;
+        --color-accent-soft: color-mix(in srgb, var(--color-accent) 8%, transparent);
+        --color-focus: oklch(35% 0.07 272);
+        --radius-medium: 1rem;
+        --radius-large: 1.5rem;
+        --radius-pill: 999px;
+        --duration-short: 150ms;
+        --font-sans:
+          Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-width: 20rem;
+        background: var(--color-surface);
+        color: var(--color-ink);
+        text-size-adjust: 100%;
+      }
+
+      body {
+        min-width: 20rem;
+        margin: 0;
+        background: var(--color-surface);
+        color: var(--color-copy);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        font-synthesis: none;
+        line-height: 1.5;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      :focus-visible {
+        outline: 0.125rem solid var(--color-focus);
+        outline-offset: 0.1875rem;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .playground-shell {
+        width: min(76rem, calc(100% - 2rem));
+        margin-inline: auto;
+        padding-block: clamp(1rem, 4vw, 3rem);
+      }
+
+      .flow-viewer {
+        margin: 0;
+        padding: 1.25rem;
+        border: 1px solid var(--color-border-soft);
+        border-radius: var(--radius-large);
+        background: var(--color-panel);
+      }
+
+      .flow-viewer-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+      }
+
+      .flow-viewer-eyebrow {
+        display: block;
+        color: var(--color-accent);
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1.25;
+        text-transform: uppercase;
+      }
+
+      .flow-viewer-title {
+        max-width: 39rem;
+        margin: 0.375rem 0 0;
+        color: var(--color-ink);
+        font-size: 1.125rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.35;
+        text-wrap: balance;
+      }
+
+      .flow-viewer-count {
+        flex: none;
+        padding: 0.375rem 0.625rem;
+        border: 1px solid var(--color-border-soft);
+        border-radius: var(--radius-pill);
+        background: var(--color-surface);
+        color: var(--color-muted);
+        font-size: 0.75rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        line-height: 1;
+      }
+
+      .flow-viewer-tabs {
+        display: flex;
+        gap: 0.375rem;
+        margin-top: 1rem;
+        padding: 0.125rem 0.125rem 0.375rem;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scrollbar-color: color-mix(in srgb, var(--color-ink) 18%, transparent) transparent;
+        scrollbar-width: thin;
+      }
+
+      .flow-viewer-tabs::-webkit-scrollbar {
+        height: 0.25rem;
+      }
+
+      .flow-viewer-tabs::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .flow-viewer-tabs::-webkit-scrollbar-thumb {
+        border-radius: var(--radius-pill);
+        background: color-mix(in srgb, var(--color-ink) 18%, transparent);
+      }
+
+      .flow-viewer-tab {
+        display: inline-flex;
+        min-height: 2.75rem;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 0.75rem;
+        border: 1px solid transparent;
+        border-radius: 0.75rem;
+        background: transparent;
+        color: var(--color-muted);
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+        transition:
+          color var(--duration-short) ease,
+          border-color var(--duration-short) ease,
+          background-color var(--duration-short) ease,
+          transform var(--duration-short) ease;
+      }
+
+      .flow-viewer-tab:hover {
+        background: var(--color-soft);
+        color: var(--color-ink);
+      }
+
+      .flow-viewer-tab:active {
+        transform: scale(0.96);
+      }
+
+      .flow-viewer-tab[aria-selected="true"] {
+        border-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent);
+      }
+
+      .flow-viewer-stage {
+        position: relative;
+        width: 100%;
+        height: clamp(21rem, 54vw, 36rem);
+        margin-top: 0.75rem;
+        overflow: auto hidden;
+        overscroll-behavior-inline: contain;
+        border-radius: var(--radius-medium);
+        background: var(--color-surface);
+        scrollbar-color: color-mix(in srgb, var(--color-ink) 25%, transparent) transparent;
+        scrollbar-width: thin;
+      }
+
+      .flow-viewer-stage:focus-visible {
+        outline-offset: 0.1875rem;
+      }
+
+      .flow-viewer-stage::-webkit-scrollbar {
+        height: 0.5rem;
+      }
+
+      .flow-viewer-stage::-webkit-scrollbar-track {
+        background: var(--color-soft);
+      }
+
+      .flow-viewer-stage::-webkit-scrollbar-thumb {
+        border: 0.125rem solid var(--color-soft);
+        border-radius: var(--radius-pill);
+        background: color-mix(in srgb, var(--color-ink) 25%, transparent);
+      }
+
+      .flow-viewer-status {
+        display: grid;
+        min-height: 100%;
+        place-items: center;
+        margin: 0;
+        padding: 1.5rem;
+        color: var(--color-muted);
+        font-size: 0.875rem;
+        text-align: center;
+      }
+
+      .flow-viewer-status-error {
+        color: var(--color-copy);
+      }
+
+      .flow-viewer-diagram {
+        display: flex;
+        width: max-content;
+        min-width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      .flow-viewer-mermaid {
+        display: block;
+        max-height: 100%;
+        flex: none;
+      }
+
+      .flow-viewer-mermaid > svg {
+        display: block;
+        width: 100% !important;
+        max-width: none !important;
+        height: 100% !important;
+        overflow: visible;
+        font-family: var(--font-sans) !important;
+      }
+
+      .flow-viewer-mermaid .node rect {
+        rx: 18px;
+        ry: 18px;
+      }
+
+      .flow-viewer-mermaid .cluster rect {
+        rx: 20px;
+        ry: 20px;
+      }
+
+      .flow-viewer-mermaid .cluster-label span,
+      .flow-viewer-mermaid .cluster-label p {
+        color: var(--color-muted) !important;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .flow-viewer-mermaid .phase-frame rect {
+        fill: #fbfcfd;
+        stroke: #d5dbe0;
+        stroke-width: 1px;
+      }
+
+      .flow-viewer-mermaid .phase-frame text {
+        fill: var(--color-muted);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .flow-viewer-mermaid .phase-connector {
+        fill: none;
+        stroke: #8a96a6;
+        stroke-width: 2px;
+      }
+
+      .flow-viewer-mermaid .node .label foreignObject > div {
+        display: inline-flex !important;
+        width: auto !important;
+        height: 100% !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: visible !important;
+        text-align: center !important;
+      }
+
+      .flow-viewer-mermaid .node .label foreignObject {
+        overflow: visible !important;
+      }
+
+      .flow-viewer-mermaid .nodeLabel {
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        color: var(--color-ink) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 15px;
+        line-height: 1.35;
+        text-align: center !important;
+      }
+
+      .flow-viewer-mermaid .nodeLabel p {
+        display: block !important;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible !important;
+        text-align: center !important;
+        white-space: nowrap;
+      }
+
+      .flow-viewer-mermaid .node.start .nodeLabel,
+      .flow-viewer-mermaid .node.start .nodeLabel p {
+        color: #ffffff !important;
+      }
+
+      .flow-viewer-mermaid g.edgeLabel {
+        color: var(--color-ink) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 13px;
+        font-weight: 550;
+        line-height: 1.1;
+      }
+
+      .flow-viewer-mermaid g.edgeLabel foreignObject {
+        overflow: visible;
+      }
+
+      .flow-viewer-mermaid g.edgeLabel span.edgeLabel {
+        display: inline-block;
+        background: var(--color-surface) !important;
+        box-shadow: 0 0 0 5px var(--color-surface);
+        color: inherit !important;
+      }
+
+      .flow-viewer-mermaid g.edgeLabel p {
+        margin: 0;
+        color: inherit !important;
+      }
+
+      .flow-viewer-mermaid g.edgeLabel .labelBkg {
+        fill: var(--color-surface) !important;
+        stroke: var(--color-surface) !important;
+        stroke-width: 10px !important;
+      }
+
+      .flow-viewer-mermaid .flowchart-link {
+        stroke: color-mix(in srgb, var(--color-ink) 45%, transparent) !important;
+        stroke-width: 2px !important;
+      }
+
+      .flow-viewer-mermaid marker path {
+        fill: var(--color-accent) !important;
+        stroke: var(--color-accent) !important;
+      }
+
+      .flow-viewer figcaption {
+        display: grid;
+        gap: 0.25rem;
+        margin-top: 0.75rem;
+        color: var(--color-muted);
+        font-size: 0.875rem;
+        letter-spacing: -0.01em;
+        line-height: 1.45;
+      }
+
+      .flow-viewer-hint {
+        color: var(--color-copy);
+        font-weight: 600;
+      }
+
+      @media (min-width: 72rem) {
+        .flow-viewer-tabs {
+          display: grid;
+          grid-template-columns: 1.05fr 0.9fr 0.9fr 1.25fr 1.35fr 1fr;
+          overflow: visible;
+        }
+
+        .flow-viewer-tab {
+          width: 100%;
+          padding-inline: 0.5rem;
+          font-size: 0.8125rem;
+          white-space: nowrap;
+        }
+      }
+
+      @media (max-width: 48rem) {
+        .playground-shell {
+          width: min(100% - 1rem, 76rem);
+          padding-block: 0.5rem;
+        }
+
+        .flow-viewer {
+          padding: 1rem;
+          border-radius: 1.25rem;
+        }
+
+        .flow-viewer-header {
+          gap: 1rem;
+        }
+
+        .flow-viewer-title {
+          font-size: 1.0625rem;
+        }
+
+        .flow-viewer-diagram {
+          padding: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .flow-viewer-tab {
+          transition: none;
+        }
+
+        .flow-viewer-tab:active {
+          transform: none;
+        }
+      }
+
+      @media (forced-colors: active) {
+        .flow-viewer-tab[aria-selected="true"] {
+          border-color: currentColor;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="playground-shell">
+      <figure class="flow-viewer" data-flow-viewer>
+        <div class="flow-viewer-header">
+          <div>
+            <span class="flow-viewer-eyebrow">Revised user flow</span>
+            <h1 class="flow-viewer-title" id="flow-viewer-title" data-flow-title>
+              Activate wallet and obtain Person Identification Data (PID)
+            </h1>
+          </div>
+          <span class="flow-viewer-count" data-flow-count aria-hidden="true">01 / 06</span>
+        </div>
+
+        <div
+          class="flow-viewer-tabs"
+          role="tablist"
+          aria-label="Choose a revised EUDI Wallet user flow"
+          data-flow-tabs
+        >
+          <button
+            class="flow-viewer-tab"
+            id="flow-tab-activation"
+            type="button"
+            role="tab"
+            aria-controls="flow-viewer-stage"
+            aria-label="Activate wallet and obtain Person Identification Data (PID)"
+            aria-selected="true"
+            data-flow-index="0"
+          >
+            Activation &amp; PID
+          </button>
+          <button
+            class="flow-viewer-tab"
+            id="flow-tab-same-device"
+            type="button"
+            role="tab"
+            aria-controls="flow-viewer-stage"
+            aria-label="Remote same-device presentation"
+            aria-selected="false"
+            tabindex="-1"
+            data-flow-index="1"
+          >
+            Same device
+          </button>
+          <button
+            class="flow-viewer-tab"
+            id="flow-tab-cross-device"
+            type="button"
+            role="tab"
+            aria-controls="flow-viewer-stage"
+            aria-label="Remote cross-device presentation"
+            aria-selected="false"
+            tabindex="-1"
+            data-flow-index="2"
+          >
+            Cross device
+          </button>
+          <button
+            class="flow-viewer-tab"
+            id="flow-tab-proximity-supervised"
+            type="button"
+            role="tab"
+            aria-controls="flow-viewer-stage"
+            aria-label="Supervised proximity presentation"
+            aria-selected="false"
+            tabindex="-1"
+            data-flow-index="3"
+          >
+            Proximity - supervised
+          </button>
+          <button
+            class="flow-viewer-tab"
+            id="flow-tab-proximity-unsupervised"
+            type="button"
+            role="tab"
+            aria-controls="flow-viewer-stage"
+            aria-label="Unsupervised proximity presentation"
+            aria-selected="false"
+            tabindex="-1"
+            data-flow-index="4"
+          >
+            Proximity - unsupervised
+          </button>
+          <button
+            class="flow-viewer-tab"
+            id="flow-tab-activity"
+            type="button"
+            role="tab"
+            aria-controls="flow-viewer-stage"
+            aria-label="Review activity and exercise a right"
+            aria-selected="false"
+            tabindex="-1"
+            data-flow-index="5"
+          >
+            Activity &amp; rights
+          </button>
+        </div>
+
+        <div
+          class="flow-viewer-stage"
+          id="flow-viewer-stage"
+          role="tabpanel"
+          aria-labelledby="flow-tab-activation"
+          aria-describedby="flow-viewer-caption flow-steps-activation"
+          aria-busy="true"
+          tabindex="0"
+          data-state="loading"
+          data-flow-stage
+        >
+          <div class="flow-viewer-diagram" data-state="loading">
+            <p class="flow-viewer-status" role="status">Rendering flow diagram…</p>
+          </div>
+        </div>
+
+        <figcaption id="flow-viewer-caption">
+          <span class="flow-viewer-hint">
+            Scroll horizontally when needed to follow the complete flow.
+          </span>
+          <span data-flow-summary>
+            Wallet Unit activation is completed before the user optionally obtains a PID from a
+            PID Provider.
+          </span>
+        </figcaption>
+      </figure>
+    </main>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const flowTheme = `
+          classDef start fill:#00adfe,color:#ffffff,stroke:#00adfe,stroke-width:2px
+          classDef secondary fill:#ffffff,color:#29334f,stroke:#d5dbe0,stroke-width:1px
+          classDef decision fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:2px
+          classDef action fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+          classDef warning fill:#f7f6f6,color:#29334f,stroke:#9aa4ad,stroke-width:1.5px
+          classDef success fill:#00adfe14,color:#29334f,stroke:#00adfe,stroke-width:1.5px
+        `;
+
+        const flows = [
+          {
+            id: "activation",
+            title: "Activate wallet and obtain Person Identification Data (PID)",
+            summary:
+              "Wallet Unit activation is completed before the user optionally obtains a PID from a PID Provider.",
+            steps: [
+              "Open the wallet for the first time and review the voluntary-use explanation.",
+              "Review the Wallet Provider identity, certification, trust information, and data purposes.",
+              "Give consent, set up device and wallet authentication, and activate the Wallet Unit.",
+              "Choose whether to add a PID now; the user can continue to the wallet home without one.",
+              "Choose a PID Provider, request a PID, and complete the provider identity check.",
+              "If verification succeeds, review the issuer and PID data before the PID is issued and stored.",
+              "If verification fails, explain the failure and provide a safe next step.",
+            ],
+            source: `
+              flowchart LR
+                A[Open wallet for<br/>first time] --> B[Welcome and voluntary-use<br/>explanation]
+                B --> C[Review Wallet Provider identity,<br/>certification and data purposes]
+                C --> D[Give consent and set up device<br/>and wallet authentication]
+                D --> E[Activate Wallet Unit]
+                E ~~~~ F{Add a PID now?}
+                F -- No --> G[Wallet home;<br/>add PID later]
+                F -- Yes --> H[Choose PID Provider<br/>and request PID]
+                H --> I[Complete provider<br/>identity check]
+                I --> J{Identity verified?}
+                J -- No --> K[Explain failure and<br/>safe next step]
+                J -- Yes --> L[Review PID issuer<br/>and data to be issued]
+                L --> M[PID issued and stored]
+                M --> N[Confirmation and<br/>wallet home]
+                class A start
+                class B,C,D,H,I,L secondary
+                class F,J decision
+                class K warning
+                class E,G,M,N success
+            `,
+          },
+          {
+            id: "same-device",
+            title: "Remote same-device presentation",
+            summary:
+              "A deep link opens the wallet, which verifies the relying party and registered request before authenticated approval and presentation.",
+            steps: [
+              "Select Continue with EUDI Wallet in the service and open the wallet through a same-device link.",
+              "The wallet authenticates the relying party and validates its registration and request.",
+              "If validation fails, the wallet blocks the request or presents a high-severity warning according to policy.",
+              "Review relying-party identity, purpose, privacy policy, retention intent, and mandatory and optional attributes.",
+              "If requested attributes exceed the registration, apply the wallet policy: allow all, narrow the request, or reject it.",
+              "Choose whether to share and authenticate to confirm approval.",
+              "Present the approved attributes and show the outcome with an activity record.",
+            ],
+            source: `
+              flowchart LR
+                A[Tap Continue with<br/>EUDI Wallet] --> B[Wallet opens through<br/>same-device link]
+                B --> C[Wallet authenticates relying party<br/>and validates registration and request]
+                C --> D{Requester and<br/>request valid?}
+                D -- No --> E{Wallet policy}
+                E -- Block --> F[Blocked;<br/>no attributes shared]
+                E -- Warn and continue --> G[Show high-severity<br/>warning]
+                D -- Yes --> H[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+                G --> H
+                H --> I{Only registered<br/>attributes requested?}
+                I -- Yes --> J[Review final request]
+                I -- No --> K{Apply wallet policy}
+                K -- Reject all --> L[Request rejected;<br/>no attributes shared]
+                K -- Registered only --> M[Limit to registered attributes]
+                K -- Allow all --> N[Show exception warning]
+                M --> J
+                N --> J
+                J --> O{Choose to share?}
+                O -- No --> P[Decline request;<br/>no attributes shared]
+                O -- Yes --> Q[Authenticate to<br/>confirm approval]
+                Q --> R[Present approved attributes]
+                R --> S[Show wallet and service outcome<br/>with activity record]
+                class A start
+                class B,C,G,H,J,M,N,Q,R secondary
+                class D,E,I,K,O decision
+                class F,L,P warning
+                class S success
+            `,
+          },
+          {
+            id: "cross-device",
+            title: "Remote cross-device presentation",
+            summary:
+              "The wallet scans a QR code on another device, validates the relying party and request, then returns a clear result to both devices.",
+            steps: [
+              "Open the wallet scanner and scan the service QR code displayed on another device.",
+              "Check that the QR code is readable and current.",
+              "Authenticate the relying party and validate its registration and request.",
+              "Block or warn according to wallet policy when validation fails.",
+              "Review purpose, privacy policy, retention intent, and mandatory and optional attributes.",
+              "Apply the registered-attribute policy where necessary, then choose whether to share.",
+              "Authenticate to confirm approval, present the attributes, and show separate wallet and service outcomes.",
+            ],
+            source: `
+              flowchart LR
+                A[Open wallet scanner] --> B[Scan service QR on<br/>the other device]
+                B --> C{QR readable<br/>and current?}
+                C -- No --> D[Explain scan problem<br/>and retry]
+                C -- Yes --> E[Wallet authenticates relying party<br/>and validates registration and request]
+                E --> F{Requester and<br/>request valid?}
+                F -- No --> G{Wallet policy}
+                G -- Block --> H[Blocked; other device receives<br/>no attributes]
+                G -- Warn and continue --> I[Show high-severity<br/>warning]
+                F -- Yes --> J[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+                I --> J
+                J --> K{Request exceeds<br/>registered attributes?}
+                K -- No --> L[Review final request]
+                K -- Yes --> M{Apply wallet policy}
+                M -- Reject all --> N[Request rejected; other device<br/>receives no attributes]
+                M -- Registered only --> O[Limit to registered attributes]
+                M -- Allow all --> P[Show exception warning]
+                O --> L
+                P --> L
+                L --> Q{Choose to share?}
+                Q -- No --> R[Decline request; other device<br/>receives no attributes]
+                Q -- Yes --> S[Authenticate to<br/>confirm approval]
+                S --> T[Present approved attributes]
+                T --> U[Show wallet presentation outcome<br/>and service result on both devices]
+                class A start
+                class B,E,I,J,L,O,P,S,T secondary
+                class C,F,G,K,M,Q decision
+                class D,H,N,R warning
+                class U success
+            `,
+          },
+          {
+            id: "proximity-supervised",
+            title: "Supervised proximity presentation",
+            summary:
+              "A person-operated verifier presents an engagement method; the wallet validates it online or offline before authenticated sharing.",
+            steps: [
+              "A person-operated verifier presents a QR, NFC, or BLE engagement method.",
+              "Open and unlock the wallet, then scan or tap to establish the connection.",
+              "The wallet authenticates the relying party and validates its registration and request, including in supported offline scenarios.",
+              "Block or warn according to wallet policy when validation fails.",
+              "Review requester identity, purpose, privacy policy, retention intent, and mandatory and optional attributes.",
+              "Choose whether to share and authenticate to confirm approval.",
+              "Transfer the approved attributes; the verifier validates them and both sides show a clear outcome.",
+              "If the outcome is uncertain, explain whether data may already have left the wallet.",
+            ],
+            source: `
+              flowchart LR
+                A[Person-operated verifier presents<br/>QR, NFC or BLE engagement] --> B[Open and unlock wallet;<br/>scan or tap]
+                B --> C[Wallet authenticates relying party<br/>and validates request online or offline]
+                C --> D{Requester and<br/>request valid?}
+                D -- No --> E{Wallet policy}
+                E -- Block --> F[Blocked;<br/>no presentation]
+                E -- Warn and continue --> G[Show high-severity<br/>warning]
+                D -- Yes --> H[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+                G --> H
+                H --> I{Choose to share?}
+                I -- No --> J[Decline request;<br/>no presentation]
+                I -- Yes --> K[Authenticate to<br/>confirm approval]
+                K --> L[Transfer approved attributes]
+                L --> M[Verifier validates presentation]
+                M --> N{Transfer outcome clear?}
+                N -- Yes --> O[Show wallet and verifier outcome]
+                N -- No --> P[Show uncertain or failed state;<br/>say whether data may have left]
+                class A start
+                class B,C,G,H,K,L,M secondary
+                class D,E,I,N decision
+                class F,J,P warning
+                class O success
+            `,
+          },
+          {
+            id: "proximity-unsupervised",
+            title: "Unsupervised proximity presentation",
+            summary:
+              "A self-service terminal connects to the wallet, which validates the terminal and request online or offline before authenticated sharing.",
+            steps: [
+              "A self-service terminal prompts the user to present identity information.",
+              "Open and unlock the wallet, then show a wallet QR code or initiate NFC or BLE engagement.",
+              "The terminal establishes the connection and the wallet authenticates the relying party and validates the request.",
+              "Block or warn according to wallet policy when validation fails.",
+              "Review requester identity, purpose, privacy policy, retention intent, and mandatory and optional attributes.",
+              "Choose whether to share and authenticate to confirm approval.",
+              "Transfer the approved attributes; the terminal validates them and both sides show a clear outcome.",
+              "If the outcome is uncertain, explain whether data may already have left the wallet.",
+            ],
+            source: `
+              flowchart LR
+                A[Self-service terminal prompts<br/>for identity information] --> B[Open and unlock wallet]
+                B --> C[Show wallet QR or initiate<br/>NFC or BLE engagement]
+                C --> D[Terminal establishes connection]
+                D --> E[Wallet authenticates relying party<br/>and validates request online or offline]
+                E --> F{Requester and<br/>request valid?}
+                F -- No --> G{Wallet policy}
+                G -- Block --> H[Blocked;<br/>no presentation]
+                G -- Warn and continue --> I[Show high-severity<br/>warning]
+                F -- Yes --> J[Review identity, purpose and privacy,<br/>retention intent and<br/>mandatory or optional attributes]
+                I --> J
+                J --> K{Choose to share?}
+                K -- No --> L[Decline request;<br/>no presentation]
+                K -- Yes --> M[Authenticate to<br/>confirm approval]
+                M --> N[Transfer approved attributes]
+                N --> O[Terminal validates presentation]
+                O --> P{Transfer outcome clear?}
+                P -- Yes --> Q[Show wallet and terminal outcome]
+                P -- No --> R[Show uncertain or failed state;<br/>say whether data may have left]
+                class A start
+                class B,C,D,E,I,J,M,N,O secondary
+                class F,G,K,P decision
+                class H,L,R warning
+                class Q success
+            `,
+          },
+          {
+            id: "activity",
+            title: "Review activity and exercise a right",
+            summary:
+              "Transaction records expose identifiers and contact routes without retaining attribute values, then support erasure, reporting, export, or local deletion.",
+            steps: [
+              "Open Activity, filter the history, and select a transaction.",
+              "Review the date and time, relying-party identity, intended use, contact channels, and requested and presented attribute identifiers.",
+              "Choose to request erasure, report the transaction, export records, or delete the local log entry.",
+              "For erasure, choose an available web, email, or phone channel and record that the request was initiated, not completed.",
+              "For reporting, choose a DPA channel and supporting machine-readable log excerpt and record that reporting was initiated.",
+              "For export, choose records and an external or remote destination, then confirm the export.",
+              "For local deletion, review the consequence for data-protection rights before confirming deletion of the selected record.",
+            ],
+            source: `
+              flowchart LR
+                A[Open Activity] --> B[Filter and select transaction]
+                B --> C[Review date and requester,<br/>intended use, contact routes and<br/>attribute identifiers]
+                C --> D{User goal}
+                D -- Request erasure --> E[Choose available web, email<br/>or phone channel]
+                D -- Report transaction --> F[Choose DPA channel and<br/>machine-readable log excerpt]
+                D -- Export --> G[Choose records and external<br/>or remote destination]
+                D -- Delete local log --> H[Review consequence for<br/>data-protection rights]
+                E --> I[Erasure request initiated;<br/>log the initiation]
+                F --> J[Report initiated;<br/>log the initiation]
+                G --> K[Confirm export]
+                H --> L{Delete selected<br/>local record?}
+                L -- No --> M[Keep transaction record]
+                L -- Yes --> N[Delete local transaction record]
+                class A start
+                class B,C,E,F,G secondary
+                class D,L decision
+                class H,M warning
+                class I,J,K,N success
+            `,
+          },
+        ];
+
+        const viewer = document.querySelector("[data-flow-viewer]");
+        const tabs = Array.from(viewer.querySelectorAll("[data-flow-index]"));
+        const title = viewer.querySelector("[data-flow-title]");
+        const count = viewer.querySelector("[data-flow-count]");
+        const summary = viewer.querySelector("[data-flow-summary]");
+        const stage = viewer.querySelector("[data-flow-stage]");
+        const tablist = viewer.querySelector("[data-flow-tabs]");
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const minimumScale = 0.64;
+        const maximumScale = 0.82;
+        const targetViewportWidths = 2.65;
+        let activeIndex = 0;
+        let maximumDiagramWidth = 0;
+
+        const setStageState = (state) => {
+          stage.dataset.state = state;
+          stage.setAttribute("aria-busy", String(state === "loading"));
+        };
+
+        const createStatus = (message, isError = false) => {
+          const status = document.createElement("p");
+
+          status.className = `flow-viewer-status${isError ? " flow-viewer-status-error" : ""}`;
+          status.setAttribute("role", "status");
+          status.textContent = message;
+
+          return status;
+        };
+
+        const panels = flows.map((flow) => {
+          const panel = document.createElement("div");
+          const accessibleSteps = document.createElement("ol");
+
+          panel.className = "flow-viewer-diagram";
+          panel.dataset.state = "loading";
+          accessibleSteps.className = "sr-only";
+          accessibleSteps.id = `flow-steps-${flow.id}`;
+
+          flow.steps.forEach((step) => {
+            const item = document.createElement("li");
+            item.textContent = step;
+            accessibleSteps.append(item);
+          });
+
+          panel.append(createStatus("Rendering flow diagram…"), accessibleSteps);
+
+          return panel;
+        });
+
+        const updateDiagramScale = () => {
+          if (!maximumDiagramWidth) {
+            return;
+          }
+
+          const responsiveScale = (stage.clientWidth * targetViewportWidths) / maximumDiagramWidth;
+          const scale = Math.min(maximumScale, Math.max(minimumScale, responsiveScale));
+
+          flows.forEach((flow, index) => {
+            const mount = panels[index].querySelector("[data-mermaid-mount]");
+
+            if (!mount || !flow.renderWidth || !flow.renderHeight) {
+              return;
+            }
+
+            mount.style.width = `${flow.renderWidth * scale}px`;
+            mount.style.height = `${flow.renderHeight * scale}px`;
+          });
+        };
+
+        const addActivationPhaseFrames = (svg) => {
+          const sourceViewBox = svg.viewBox.baseVal;
+          const viewBox = {
+            x: sourceViewBox.x,
+            y: sourceViewBox.y,
+            width: sourceViewBox.width,
+            height: sourceViewBox.height,
+          };
+          const root = svg.querySelector("g.root");
+
+          if (!root) {
+            return viewBox;
+          }
+
+          const svgNamespace = "http://www.w3.org/2000/svg";
+          const frameLayer = document.createElementNS(svgNamespace, "g");
+          const phaseDefinitions = [
+            {
+              label: "Phase 1 - Activate Wallet Unit",
+              nodeIds: ["A", "B", "C", "D", "E"],
+            },
+            {
+              label: "Phase 2 - Obtain PID",
+              nodeIds: ["F", "G", "H", "I", "J", "K", "L", "M", "N"],
+            },
+          ];
+          const horizontalInset = 20;
+          const titleInset = 58;
+          const bottomInset = 28;
+          const frameBounds = [];
+
+          const getTranslation = (element) => {
+            const transform = element?.getAttribute("transform")?.match(
+              /translate\(\s*(-?[\d.]+)(?:\s*,\s*|\s+)(-?[\d.]+)\s*\)/,
+            );
+
+            return transform ? { x: Number(transform[1]), y: Number(transform[2]) } : { x: 0, y: 0 };
+          };
+
+          const getNodeBounds = (nodeId) => {
+            const node = Array.from(svg.querySelectorAll("g.node")).find((candidate) =>
+              candidate.id.includes(`-flowchart-${nodeId}-`),
+            );
+            const shape = node?.querySelector("rect, polygon");
+
+            if (!shape || !node) {
+              return null;
+            }
+
+            const nodeTranslation = getTranslation(node);
+            const shapeTranslation = getTranslation(shape);
+            const translateX = nodeTranslation.x + shapeTranslation.x;
+            const translateY = nodeTranslation.y + shapeTranslation.y;
+
+            if (shape.tagName.toLowerCase() === "rect") {
+              const x = translateX + Number(shape.getAttribute("x"));
+              const y = translateY + Number(shape.getAttribute("y"));
+              const width = Number(shape.getAttribute("width"));
+              const height = Number(shape.getAttribute("height"));
+
+              return { left: x, top: y, right: x + width, bottom: y + height };
+            }
+
+            const points = shape
+              .getAttribute("points")
+              .trim()
+              .split(/\s+/)
+              .map((point) => point.split(",").map(Number));
+            const xValues = points.map(([x]) => translateX + x);
+            const yValues = points.map(([, y]) => translateY + y);
+
+            return {
+              left: Math.min(...xValues),
+              top: Math.min(...yValues),
+              right: Math.max(...xValues),
+              bottom: Math.max(...yValues),
+            };
+          };
+
+          phaseDefinitions.forEach(({ label, nodeIds }) => {
+            const nodeBounds = nodeIds.map(getNodeBounds).filter(Boolean);
+
+            if (!nodeBounds.length) {
+              return;
+            }
+
+            const left = Math.min(...nodeBounds.map((bounds) => bounds.left)) - horizontalInset;
+            const top = Math.min(...nodeBounds.map((bounds) => bounds.top)) - titleInset;
+            const right = Math.max(...nodeBounds.map((bounds) => bounds.right)) + horizontalInset;
+            const bottom = Math.max(...nodeBounds.map((bounds) => bounds.bottom)) + bottomInset;
+            const frame = document.createElementNS(svgNamespace, "g");
+            const rect = document.createElementNS(svgNamespace, "rect");
+            const title = document.createElementNS(svgNamespace, "text");
+
+            frame.classList.add("phase-frame");
+            rect.setAttribute("x", String(left));
+            rect.setAttribute("y", String(top));
+            rect.setAttribute("width", String(right - left));
+            rect.setAttribute("height", String(bottom - top));
+            rect.setAttribute("rx", "20");
+            rect.setAttribute("ry", "20");
+            title.setAttribute("x", String((left + right) / 2));
+            title.setAttribute("y", String(top + 25));
+            title.setAttribute("text-anchor", "middle");
+            title.setAttribute("dominant-baseline", "middle");
+            title.textContent = label;
+            frame.append(rect, title);
+            frameLayer.append(frame);
+            frameBounds.push({ left, top, right, bottom });
+          });
+
+          if (frameBounds.length === 2) {
+            const phaseOneEnd = getNodeBounds("E");
+            const phaseTwoStart = getNodeBounds("F");
+            const marker = svg.querySelector('marker[id$="pointEnd"]');
+            const connector = document.createElementNS(svgNamespace, "line");
+            const markerTipOffset = 5;
+
+            connector.classList.add("phase-connector");
+            connector.setAttribute("x1", String(frameBounds[0].right));
+            connector.setAttribute("x2", String(frameBounds[1].left - markerTipOffset));
+            connector.setAttribute(
+              "y1",
+              String((phaseOneEnd.top + phaseOneEnd.bottom) / 2),
+            );
+            connector.setAttribute(
+              "y2",
+              String((phaseTwoStart.top + phaseTwoStart.bottom) / 2),
+            );
+
+            if (marker?.id) {
+              connector.setAttribute("marker-end", `url(#${marker.id})`);
+            }
+
+            frameLayer.append(connector);
+          }
+
+          root.insertBefore(frameLayer, root.firstChild);
+
+          const expandedLeft = Math.min(viewBox.x, ...frameBounds.map((bounds) => bounds.left));
+          const expandedTop = Math.min(viewBox.y, ...frameBounds.map((bounds) => bounds.top));
+          const expandedRight = Math.max(
+            viewBox.x + viewBox.width,
+            ...frameBounds.map((bounds) => bounds.right),
+          );
+          const expandedBottom = Math.max(
+            viewBox.y + viewBox.height,
+            ...frameBounds.map((bounds) => bounds.bottom),
+          );
+          const expandedViewBox = {
+            x: expandedLeft,
+            y: expandedTop,
+            width: expandedRight - expandedLeft,
+            height: expandedBottom - expandedTop,
+          };
+
+          svg.setAttribute(
+            "viewBox",
+            `${expandedViewBox.x} ${expandedViewBox.y} ${expandedViewBox.width} ${expandedViewBox.height}`,
+          );
+
+          return expandedViewBox;
+        };
+
+        const setPanelError = (index) => {
+          const flow = flows[index];
+          const panel = panels[index];
+          const accessibleSteps = panel.querySelector(`#flow-steps-${flow.id}`);
+
+          panel.replaceChildren(
+            createStatus("This flow diagram could not be rendered. Try reloading the page.", true),
+            accessibleSteps,
+          );
+          panel.dataset.state = "error";
+
+          if (activeIndex === index) {
+            setStageState("error");
+          }
+        };
+
+        const renderFlow = async (index) => {
+          const flow = flows[index];
+          const panel = panels[index];
+
+          if (!window.mermaid || !flow.source) {
+            setPanelError(index);
+            return;
+          }
+
+          try {
+            const result = await window.mermaid.render(
+              `eudi-playground-flow-${flow.id}`,
+              `${flow.source}\n${flowTheme}`,
+            );
+            const mount = document.createElement("div");
+            const accessibleSteps = panel.querySelector(`#flow-steps-${flow.id}`);
+
+            mount.className = "flow-viewer-mermaid";
+            mount.dataset.mermaidMount = "";
+            mount.setAttribute("aria-hidden", "true");
+            mount.innerHTML = result.svg;
+
+            const svg = mount.querySelector("svg");
+
+            if (!svg) {
+              throw new Error(`Mermaid did not return an SVG for ${flow.id}`);
+            }
+
+            const sourceViewBox = svg.viewBox.baseVal;
+            const viewBox =
+              flow.id === "activation"
+                ? addActivationPhaseFrames(svg)
+                : {
+                    x: sourceViewBox.x,
+                    y: sourceViewBox.y,
+                    width: sourceViewBox.width,
+                    height: sourceViewBox.height,
+                  };
+            flow.renderWidth = viewBox.width;
+            flow.renderHeight = viewBox.height;
+            maximumDiagramWidth = Math.max(maximumDiagramWidth, viewBox.width);
+
+            svg.removeAttribute("width");
+            svg.removeAttribute("height");
+            svg.style.maxWidth = "none";
+            svg.setAttribute("preserveAspectRatio", "xMinYMid meet");
+            svg.setAttribute("aria-hidden", "true");
+            svg.setAttribute("focusable", "false");
+
+            panel.replaceChildren(mount, accessibleSteps);
+            panel.dataset.state = "ready";
+
+            if (typeof result.bindFunctions === "function") {
+              result.bindFunctions(mount);
+            }
+
+            updateDiagramScale();
+
+            if (activeIndex === index) {
+              setStageState("ready");
+            }
+          } catch (error) {
+            console.error(`Failed to render ${flow.id}`, error);
+            setPanelError(index);
+          }
+        };
+
+        const showDiagram = (index) => {
+          const flow = flows[index];
+          const panel = panels[index];
+
+          stage.replaceChildren(panel);
+          stage.scrollLeft = 0;
+          stage.scrollTop = 0;
+          stage.setAttribute(
+            "aria-describedby",
+            `flow-viewer-caption flow-steps-${flow.id}`,
+          );
+          setStageState(panel.dataset.state);
+        };
+
+        const revealTab = (tab) => {
+          const tablistBounds = tablist.getBoundingClientRect();
+          const tabBounds = tab.getBoundingClientRect();
+          const visibleLeft = tablist.scrollLeft;
+          const visibleRight = visibleLeft + tablist.clientWidth;
+          const tabLeft = visibleLeft + tabBounds.left - tablistBounds.left;
+          const tabRight = tabLeft + tabBounds.width;
+          let targetLeft = visibleLeft;
+
+          if (tabLeft < visibleLeft) {
+            targetLeft = tabLeft;
+          } else if (tabRight > visibleRight) {
+            targetLeft = tabRight - tablist.clientWidth;
+          } else {
+            return;
+          }
+
+          tablist.scrollTo({
+            left: targetLeft,
+            behavior: reducedMotion.matches ? "auto" : "smooth",
+          });
+        };
+
+        const selectFlow = (index, focusTab = false) => {
+          if (index < 0 || index >= flows.length) {
+            return;
+          }
+
+          const flow = flows[index];
+          activeIndex = index;
+          viewer.dataset.activeFlow = flow.id;
+          title.textContent = flow.title;
+          count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(
+            flows.length,
+          ).padStart(2, "0")}`;
+          summary.textContent = flow.summary;
+
+          tabs.forEach((tab, tabIndex) => {
+            const isSelected = tabIndex === index;
+            tab.setAttribute("aria-selected", String(isSelected));
+            tab.tabIndex = isSelected ? 0 : -1;
+          });
+
+          const selectedTab = tabs[index];
+          stage.setAttribute("aria-labelledby", selectedTab.id);
+
+          if (focusTab) {
+            selectedTab.focus();
+          }
+
+          revealTab(selectedTab);
+          showDiagram(index);
+        };
+
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            selectFlow(Number(tab.dataset.flowIndex));
+          });
+        });
+
+        tablist.addEventListener("keydown", (event) => {
+          let nextIndex = activeIndex;
+
+          if (event.key === "ArrowRight") {
+            nextIndex = (activeIndex + 1) % flows.length;
+          } else if (event.key === "ArrowLeft") {
+            nextIndex = (activeIndex - 1 + flows.length) % flows.length;
+          } else if (event.key === "Home") {
+            nextIndex = 0;
+          } else if (event.key === "End") {
+            nextIndex = flows.length - 1;
+          } else {
+            return;
+          }
+
+          event.preventDefault();
+          selectFlow(nextIndex, true);
+        });
+
+        window.mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+          securityLevel: "loose",
+          themeVariables: {
+            fontFamily:
+              'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            fontSize: "15px",
+            primaryColor: "#ffffff",
+            primaryTextColor: "#29334f",
+            primaryBorderColor: "#00adfe",
+            lineColor: "#8a96a6",
+            secondaryColor: "#00adfe14",
+            tertiaryColor: "#00adfe14",
+            edgeLabelBackground: "#fbfcfd",
+          },
+          flowchart: {
+            curve: "basis",
+            htmlLabels: true,
+            nodeSpacing: 42,
+            rankSpacing: 56,
+            padding: 18,
+            wrappingWidth: 300,
+            subGraphTitleMargin: {
+              top: 14,
+              bottom: 24,
+            },
+            useMaxWidth: false,
+          },
+        });
+
+        if ("ResizeObserver" in window) {
+          const resizeObserver = new ResizeObserver(updateDiagramScale);
+          resizeObserver.observe(stage);
+        } else {
+          window.addEventListener("resize", updateDiagramScale);
+        }
+
+        selectFlow(0);
+
+        const renderAllFlows = async () => {
+          for (let index = 0; index < flows.length; index += 1) {
+            await renderFlow(index);
+          }
+        };
+
+        renderAllFlows();
+      });
+    </script>
+  </body>
+</html>
