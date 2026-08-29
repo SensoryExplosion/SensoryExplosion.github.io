@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260827-overlay-preload-1">
+    <link rel="stylesheet" href="styles.css?v=20260829-about-split-overlay-ready-1">
     <noscript>
       <style>
         .hero-title--animation-pending,
@@ -33,7 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/MorphSVGPlugin.min.js" defer></script>
-    <script src="script.js?v=20260827-overlay-preload-1" defer></script>
+    <script src="script.js?v=20260829-about-split-overlay-ready-1" defer></script>
   </head>
   <body>
     <nav class="topbar" aria-label="Portfolio navigation">
@@ -73,7 +73,7 @@
             <span class="hero-title__accent hero-title__accent--highlight-pending"><span class="hero-title__accent-text">business case.</span></span>
           </h1>
           <p class="hero-subtitle--animation-pending" id="hero-subtitle">
-            I design in the uncomfortable middle where user needs, business goals and technical constraints all stare awkwardly at each other. That’s usually where the interesting work begins.
+            I design in the uncomfortable middle where user needs, business goals and technical constraints stare at each other awkwardly.
           </p>
         </div>
       </section>
@@ -92,7 +92,7 @@
             aria-label="Open Designing a digital identity app with AI in the loop case study"
             data-project-overlay
             data-project-overlay-background="#fbfcfd"
-            data-project-url="eudiw-case-study/index.html?v=20260826-final-swiftui-tip-order"
+            data-project-url="eudiw-case-study/index.html?v=20260829-overlay-shell-ready-1"
           >
             <div class="thumbnail">
               <img
@@ -120,7 +120,7 @@
             type="button"
             aria-label="Open Pet Insurance Reimagined case study"
             data-project-overlay
-            data-project-url="pet-insurance-case-study/index.html?v=20260818-remove-closing-copy-1"
+            data-project-url="pet-insurance-case-study/index.html?v=20260829-overlay-shell-ready-1"
           >
             <div class="thumbnail">
               <img
@@ -159,7 +159,7 @@
           ></path>
         </svg>
         <div class="section-heading compact">
-          <h2 id="about-title">Everything the job description didn't ask about</h2>
+          <h2 id="about-title">Things the job description didn't ask about</h2>
         </div>
 
         <div class="bento-grid">
@@ -306,15 +306,48 @@
 
           </div>
 
-          <article class="bento-card reading-card">
-            <span class="bento-kicker">Books</span>
-            <p>Current reads, favorites, or the books that shaped how you think.</p>
+          <article
+            class="bento-card work-preferences-split-card work-preferences-split-card--work"
+            aria-labelledby="work-preferences-split-title"
+          >
+            <h3 class="bento-kicker" id="work-preferences-split-title">Where I do my best work</h3>
+            <div class="work-preferences-split-list">
+              <p>
+                <strong>Early-stage products.</strong> I enjoy improving existing products, but
+                love shaping something from the start.
+              </p>
+              <p>
+                <strong>Real-world constraints.</strong> I enjoy designing around business,
+                technical and user realities.
+              </p>
+              <p>
+                <strong>Finance &amp; consumer products.</strong> Familiar territory, from
+                regulated services to everyday digital products.
+              </p>
+            </div>
           </article>
 
-          <article class="bento-card detail-card">
-            <span class="bento-kicker">Tiny obsessions</span>
-            <p>Films, languages, type, maps, systems, rituals, or whatever feels like you.</p>
+          <article
+            class="bento-card work-preferences-split-card work-preferences-split-card--not"
+            aria-labelledby="work-preferences-split-not-title"
+          >
+            <h3 class="bento-kicker" id="work-preferences-split-not-title">WHERE I’M LESS OF A FIT</h3>
+            <div class="work-preferences-split-list">
+              <p>
+                <strong>Endless loops.</strong> Iteration is good. Constantly changing direction
+                without shipping is not.
+              </p>
+              <p>
+                <strong>3D and motion-heavy work.</strong> I can support it, but it’s a
+                specialist craft of its own.
+              </p>
+              <p>
+                <strong>Full-time office work.</strong> I prefer remote or hybrid setups with
+                balanced focused work and intentional collaboration.
+              </p>
+            </div>
           </article>
+
         </div>
       </section>
 

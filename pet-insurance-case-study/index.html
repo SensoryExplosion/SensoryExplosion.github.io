@@ -105,7 +105,8 @@
                   customer journeys to understand where and why customers were dropping off.
                   <span class="copy-keep">In this</span> project, I step into the role of a designer
                   to translate those research
-                  findings into a <span class="case-for-change-no-break">native experience.</span>
+                  findings into a <span class="case-for-change-no-break">native experience,</span>
+                  working with the George Design System.
                 </p>
               </article>
 
@@ -142,16 +143,6 @@
           </h2>
 
           <div class="friction-list">
-            <article>
-              <h3>Inconsistent forms of address and personalisation</h3>
-              <p>
-                Using forms of address can make the app experience more personal and familiar,
-                however, their use is neither strong enough nor consistent.
-                <span class="copy-keep">The formality</span> and style
-                of the language also vary (between direct, friendly and formal, transactional)
-              </p>
-            </article>
-
             <article>
               <h3>Over-emphasising function at the expense of other values</h3>
               <p>
@@ -355,10 +346,18 @@
         window.self !== window.top &&
         new URLSearchParams(window.location.search).get("display") === "overlay"
       ) {
+        window.parent.postMessage(
+          { type: "project-overlay-shell-ready" },
+          window.location.origin
+        );
+
         window.addEventListener("keydown", (event) => {
           if (event.key === "Escape") {
             event.preventDefault();
-            window.parent.postMessage({ type: "close-project-overlay" }, "*");
+            window.parent.postMessage(
+              { type: "close-project-overlay" },
+              window.location.origin
+            );
           }
         });
       }

@@ -1179,15 +1179,47 @@ function revealSoftBlurTitleImmediately({
     document.querySelectorAll("[data-project-overlay]")
   );
 
-  function revealWhenReady(frame) {
-    frame.addEventListener(
+  function markOverlayReady(state) {
+    if (state.isReady) {
+      return;
+    }
+
+    state.isReady = true;
+    state.frame.classList.add("is-loaded");
+    state.overlay.classList.add("is-content-ready");
+    state.overlay.setAttribute("aria-busy", "false");
+
+    if (overlayState === state && !state.isClosing) {
+      state.status.textContent = "Case study loaded.";
+
+      if (
+        state.overlay.classList.contains("is-open") &&
+        document.activeElement === state.closeButton
+      ) {
+        state.frame.focus({ preventScroll: true });
+      }
+    }
+  }
+
+  function revealWhenReady(state) {
+    state.frame.addEventListener(
       "load",
       () => {
         window.requestAnimationFrame(() => {
-          frame.classList.add("is-loaded");
+          markOverlayReady(state);
         });
       },
       { once: true }
+    );
+  }
+
+  function findOverlayBySource(source) {
+    if (overlayState?.frame.contentWindow === source) {
+      return overlayState;
+    }
+
+    return Array.from(preparedOverlays.values()).find(
+      (state) => state.frame.contentWindow === source
     );
   }
 
@@ -1220,6 +1252,11 @@ function revealSoftBlurTitleImmediately({
     const frame = document.createElement("iframe");
     const backdrop = document.createElement("div");
     const closeButton = document.createElement("button");
+    const loading = document.createElement("div");
+    const loadingSurface = document.createElement("div");
+    const loadingSpinner = document.createElement("span");
+    const loadingLabel = document.createElement("span");
+    const status = document.createElement("span");
 
     frameUrl.searchParams.set("display", "overlay");
     overlay.className = "project-overlay";
@@ -1233,21 +1270,45 @@ function revealSoftBlurTitleImmediately({
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
     overlay.setAttribute("aria-label", "Project case study");
+    overlay.setAttribute("aria-busy", "true");
     frame.className = "project-overlay-frame";
-    frame.src = frameUrl.href;
     frame.tabIndex = -1;
     frame.title = "Project case study";
-    revealWhenReady(frame);
     backdrop.className = "project-overlay-backdrop";
     backdrop.setAttribute("aria-hidden", "true");
+    loading.className = "project-overlay-loading";
+    loading.setAttribute("aria-hidden", "true");
+    loadingSurface.className = "project-overlay-loading__surface";
+    loadingSpinner.className = "project-overlay-loading__spinner";
+    loadingLabel.className = "project-overlay-loading__label";
+    loadingLabel.textContent = "Loading case study…";
+    loadingSurface.append(loadingSpinner, loadingLabel);
+    loading.append(loadingSurface);
+    status.className = "project-overlay-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.setAttribute("aria-atomic", "true");
     closeButton.className = "project-overlay-close";
     closeButton.type = "button";
     closeButton.setAttribute("aria-label", "Close case study");
     closeButton.textContent = "×";
     closeButton.addEventListener("click", closeOverlay);
-    overlay.append(frame, closeButton);
+    overlay.append(frame, loading, status, closeButton);
 
-    return { overlay, frame, backdrop, trigger };
+    const state = {
+      overlay,
+      frame,
+      backdrop,
+      closeButton,
+      status,
+      trigger,
+      isReady: false,
+    };
+
+    revealWhenReady(state);
+    frame.src = frameUrl.href;
+
+    return state;
   }
 
   function prepareOverlay(trigger) {
@@ -1257,11 +1318,11 @@ function revealSoftBlurTitleImmediately({
 
     const preparedOverlay = createOverlay(trigger);
     preparedOverlay.overlay.classList.add("is-preloading");
-    document.body.append(preparedOverlay.backdrop, preparedOverlay.overlay);
     preparedOverlays.set(trigger, preparedOverlay);
+    document.body.append(preparedOverlay.backdrop, preparedOverlay.overlay);
   }
 
-  function prepareOverlaysAfterLoad() {
+  function prepareOverlaysAfterDomReady() {
     const prepare = () => {
       overlayTriggers.forEach(prepareOverlay);
     };
@@ -1281,16 +1342,28 @@ function revealSoftBlurTitleImmediately({
 
     overlayState.isClosing = true;
     isTransitioning = true;
-    const { overlay, backdrop, trigger } = overlayState;
+    const closingState = overlayState;
+    const { overlay, backdrop, status, trigger } = closingState;
 
     finishAfterTransition(overlay, () => {
-      overlay.remove();
-      backdrop.remove();
       document.body.classList.remove("project-overlay-open");
       overlayState = undefined;
       isTransitioning = false;
+      status.textContent = "";
+      overlay.setAttribute("aria-hidden", "true");
+      closingState.isClosing = false;
+
+      if (closingState.wasReadyOnOpen) {
+        overlay.remove();
+        backdrop.remove();
+        prepareOverlay(trigger);
+      } else {
+        closingState.wasReadyOnOpen = undefined;
+        overlay.classList.add("is-preloading");
+        preparedOverlays.set(trigger, closingState);
+      }
+
       trigger.focus({ preventScroll: true });
-      prepareOverlay(trigger);
     });
 
     overlay.classList.remove("is-open", "is-active");
@@ -1298,10 +1371,23 @@ function revealSoftBlurTitleImmediately({
   }
 
   window.addEventListener("message", (event) => {
+    if (event.origin !== window.location.origin) {
+      return;
+    }
+
+    const sourceOverlay = findOverlayBySource(event.source);
+    if (!sourceOverlay) {
+      return;
+    }
+
+    if (event.data?.type === "project-overlay-shell-ready") {
+      markOverlayReady(sourceOverlay);
+      return;
+    }
+
     if (
-      event.origin === window.location.origin &&
-      event.source === overlayState?.frame.contentWindow &&
-      event.data?.type === "close-project-overlay"
+      event.data?.type === "close-project-overlay" &&
+      sourceOverlay === overlayState
     ) {
       closeOverlay();
     }
@@ -1335,7 +1421,11 @@ function revealSoftBlurTitleImmediately({
         document.body.append(overlayState.backdrop, overlayState.overlay);
       }
 
-      const { overlay, frame, backdrop } = overlayState;
+      overlayState.isClosing = false;
+      overlayState.wasReadyOnOpen = overlayState.isReady;
+      const { overlay, frame, backdrop, closeButton, status } = overlayState;
+      overlay.setAttribute("aria-hidden", "false");
+      status.textContent = overlayState.isReady ? "" : "Loading case study.";
       document.body.classList.add("project-overlay-open");
 
       finishAfterTransition(overlay, () => {
@@ -1345,7 +1435,12 @@ function revealSoftBlurTitleImmediately({
 
         overlay.classList.add("is-open");
         isTransitioning = false;
-        frame.focus();
+
+        if (overlayState.isReady) {
+          frame.focus({ preventScroll: true });
+        } else {
+          closeButton.focus({ preventScroll: true });
+        }
       });
 
       window.requestAnimationFrame(() => {
@@ -1357,9 +1452,5 @@ function revealSoftBlurTitleImmediately({
     });
   });
 
-  if (document.readyState === "complete") {
-    prepareOverlaysAfterLoad();
-  } else {
-    window.addEventListener("load", prepareOverlaysAfterLoad, { once: true });
-  }
+  prepareOverlaysAfterDomReady();
 })();

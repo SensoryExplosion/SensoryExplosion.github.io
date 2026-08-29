@@ -11,6 +11,10 @@
   }
 
   document.documentElement.dataset.display = "overlay";
+  window.parent.postMessage(
+    { type: "project-overlay-shell-ready" },
+    window.location.origin
+  );
 
   window.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") {
