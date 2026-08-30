@@ -981,7 +981,7 @@ function revealSoftBlurTitleImmediately({
           </section>
           <section class="fishing-modal__section">
             <h3>Feel-think your way through</h3>
-            <p>Lynch calls this “feeling-thinking”: emotion and intellect working together.</p>
+            <p>Lynch calls this “feel-thinking”: emotion and intellect working together.</p>
             <p>
               You create something. You look at it. Something isn’t quite right. You change it.
               You remove it. Some seemingly insignificant detail suddenly becomes the foundation
