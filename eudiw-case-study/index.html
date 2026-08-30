@@ -207,7 +207,7 @@
             </p>
 
             <aside class="principle-card" aria-label="Design principle">
-              <span class="principle-label">Design principle</span>
+              <span class="principle-label">Article 5a(14) eIDAS</span>
               <p>
               Users shall have full control of the use of and of the data in their European Digital Identity Wallet.
               </p>
@@ -748,10 +748,10 @@
 
             <h3>Accessibility pushed the app toward native iOS</h3>
             <p>
-              The pilots treated accessibility as a baseline requirement, not a nice-to-have.
+              The pilots treated accessibility as a baseline requirement.
               System-level accessibility settings should carry through into the app. That makes
               native components the sensible default, since they inherit much of this behaviour
-              automatically. That’s why I decided to go for a native Swift iOS app.
+              automatically. That’s why I decided to go for a native SwiftUI iOS app.
             </p>
 
             <h3>Digital credentials shouldn’t resemble digital cards</h3>
@@ -759,7 +759,7 @@
               Most digital identity documents contain the same data and pictograms as their
               physical counterparts, but they should not function like digital ID cards. In all
               cases, they must be validated by a reader, it is not sufficient simply to display
-              them on a screen. So I deliberately avoided card-like UI and physical ID
+              them on a screen. I deliberately avoided card-like UI and physical ID
               conventions, making that distinction clear in the design.
             </p>
 
@@ -773,7 +773,7 @@
           </section>
 
           <section aria-labelledby="core-user-flows">
-            <h2 id="core-user-flows" tabindex="-1" data-toc>Mapping the core user flows</h2>
+            <h2 id="core-user-flows" tabindex="-1" data-toc>From use cases to user flows</h2>
 
             <p>
               Based on the use cases analysed during the research, I tasked Codex with mapping out
@@ -923,8 +923,8 @@
             </figure>
           </section>
 
-          <section aria-labelledby="wireframes">
-            <h2 id="wireframes" tabindex="-1" data-toc>Wireframes</h2>
+          <section aria-labelledby="Exploring reusable UI patterns">
+            <h2 id="Exploring reusable UI patterns" tabindex="-1" data-toc>Exploring reusable UI patterns</h2>
 
             <p>
               With the flows in place, I used the
@@ -981,7 +981,7 @@
             </h2>
 
             <p>
-              The final high-fidelity design was created using Swift and iOS 27 components based
+              I created the final high-fidelity design using SwiftUI and iOS 27 components based
               on the wireframes. I relied on the Figma MCP, a UI to JSON plugin and screenshots to
               provide context for Codex.
             </p>
@@ -995,7 +995,7 @@
             </p>
 
             <p>
-              I created the app icon by hand in Figma and Icon Composer. For in-app icons, I used
+              I created the app icon in Figma and Icon Composer. For in-app icons, I used
               the Lucide open-source icon library and SF Symbols when animation and a native look
               were needed.
             </p>
@@ -1039,7 +1039,7 @@
 
             <p>
               Writing followed the same pattern. I love the saying “Every first draft is perfect,
-              because all a first draft has to do is exist,” and in that sense it’s useful because
+              because all a first draft has to do is exist,” and in that sense AI is useful because
               I don’t have to stare at a blank page, but without careful review and editing, it
               still feels off.
             </p>
@@ -1049,7 +1049,7 @@
               quickly. Choosing the right model and effort is a valuable skill in this regard. At
               the time of writing, I use GPT-5.6 Sol High to plan and reason through more complex
               tasks, then hand most of the execution over to GPT-5.6 Luna Extra High. At the moment,
-              this is perhaps the best intelligence-to-usage ratio that has worked for me.
+              this is the best intelligence-to-usage ratio that has worked for me.
             </p>
 
             <h3>About the European Digital Identity Framework</h3>

@@ -291,7 +291,7 @@ function revealSoftBlurTitleImmediately({
 
 // ── About card directional spring ──
 (function () {
-  const cards = document.querySelectorAll(".about-section .bento-card");
+  const cards = document.querySelectorAll(".about-section .bento-card, .about-section .christmas-cat");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const settings = {
     distance: 5,
@@ -739,6 +739,82 @@ function revealSoftBlurTitleImmediately({
   observer.observe(aboutSection);
 })();
 
+// ── Christmas cat tooltip and playback ──
+(function () {
+  const cat = document.getElementById("christmas-cat");
+  const trigger = cat?.querySelector(".christmas-cat__trigger");
+  const tooltip = document.getElementById("christmas-tooltip");
+  const animation = document.getElementById("christmas-animation");
+
+  if (!cat || !trigger || !tooltip || !animation) {
+    return;
+  }
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let inView = false;
+
+  function updatePlayback() {
+    const player = animation.dotLottie;
+
+    if (!player) {
+      return;
+    }
+
+    if (inView && !reducedMotion.matches && !document.hidden) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }
+
+  function showTooltip() {
+    tooltip.hidden = false;
+  }
+
+  function hideTooltip() {
+    tooltip.hidden = true;
+  }
+
+  cat.addEventListener("pointerenter", showTooltip);
+  cat.addEventListener("pointerleave", () => {
+    if (document.activeElement !== trigger) {
+      hideTooltip();
+    }
+  });
+  trigger.addEventListener("focus", showTooltip);
+  trigger.addEventListener("blur", hideTooltip);
+  trigger.addEventListener("click", showTooltip);
+  document.addEventListener("pointerdown", (event) => {
+    if (!cat.contains(event.target)) {
+      hideTooltip();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !tooltip.hidden) {
+      hideTooltip();
+    }
+  });
+
+  customElements.whenDefined("dotlottie-wc").then(() => {
+    animation.dotLottie?.addEventListener("load", updatePlayback);
+    updatePlayback();
+  });
+  reducedMotion.addEventListener("change", updatePlayback);
+  document.addEventListener("visibilitychange", updatePlayback);
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      updatePlayback();
+    });
+    observer.observe(cat);
+  } else {
+    inView = true;
+  }
+
+  updatePlayback();
+})();
+
 // ── Fishing philosophy modal ──
 (function () {
   const triggers = document.querySelectorAll("[data-fishing-modal-trigger]");
@@ -757,96 +833,186 @@ function revealSoftBlurTitleImmediately({
   modal.setAttribute("role", "dialog");
   modal.setAttribute("aria-modal", "true");
   modal.setAttribute("aria-labelledby", "fishing-modal-title");
-  modal.setAttribute("aria-describedby", "fishing-modal-intro");
   modal.setAttribute("aria-hidden", "true");
   modal.hidden = true;
   modal.innerHTML = `
     <div class="fishing-modal__panel" role="document" tabindex="-1">
       <div class="fishing-modal__controls">
-        <button class="fishing-modal__close" type="button" aria-label="Close Fishing With Lynch">×</button>
+        <button class="fishing-modal__close" type="button" aria-label="Close Fishing with David Lynch">×</button>
       </div>
       <div class="fishing-modal__content">
         <header class="fishing-modal__header">
-          <p class="fishing-modal__eyebrow">Design philosophy</p>
-          <h2 class="fishing-modal__title" id="fishing-modal-title">Fishing With Lynch</h2>
-          <p class="fishing-modal__intro" id="fishing-modal-intro">
-            A small design philosophy borrowed from David Lynch’s idea of catching fish: go deeper,
-            follow what bites, and know when to let the thing go.
-          </p>
+          <h2 class="fishing-modal__title" id="fishing-modal-title">Fishing with David Lynch</h2>
         </header>
+        <img
+          class="fishing-modal__hero"
+          src="assets/david-lynch-hero.jpg"
+          alt="A man holding a cigarette, surrounded by blue-lit smoke."
+          width="2160"
+          height="1060"
+          loading="lazy"
+          decoding="async"
+        >
         <div class="fishing-modal__essay">
-        <section class="fishing-modal__section">
-          <blockquote class="fishing-modal__quote">
-            “Ideas are like fish. If you want to catch little fish, you can stay in the shallow
-            water. But if you want to catch the big fish, you’ve got to go deeper. Down deep, the
-            fish are more powerful and more pure. They’re huge and abstract. And they’re
-            beautiful.”
-          </blockquote>
-          <p>
-            The best ideas rarely appear when I’m skimming the surface. I like to collect the whole
-            world around a problem: user needs, business goals, legal frameworks, technical
-            constraints, architecture, competitors, existing solutions, edge cases, and the tiny
-            details that seem unimportant until they suddenly become the key.
-          </p>
-        </section>
-        <section class="fishing-modal__section">
-          <blockquote class="fishing-modal__quote">
-            “If you can expand the container you’re fishing in—your consciousness—you can catch
-            bigger fish.”
-          </blockquote>
-          <p>
-            For design, the container is context. The more I understand, the more connections I can
-            make. Research is not just validation. It is fuel.
-          </p>
-        </section>
-        <section class="fishing-modal__section">
-          <blockquote class="fishing-modal__quote">
-            “The beautiful thing is that when you catch one fish that you love, even if it’s a
-            little fish—a fragment of an idea—that fish will draw in another fish, and they’ll hook
-            onto it. Then you’re on your way. Soon there are more and more and more fragments, and
-            the whole thing emerges.”
-          </blockquote>
-          <p>
-            A good idea does not always arrive as a finished concept. Sometimes it starts as a small
-            fragment: a user flow, a piece of copy, a layout rhythm, a visual direction, or one
-            weird little “wait, that’s interesting” moment. I try to notice the thing that feels
-            alive and follow it.
-          </p>
-        </section>
-        <section class="fishing-modal__section">
-          <blockquote class="fishing-modal__quote">
-            “The idea is the whole thing. If you stay true to the idea, it tells you everything you
-            need to know, really. You just keep working to make it look like that idea looked, feel
-            like it felt, sound like it sounded, and be the way it was.”
-          </blockquote>
-          <p>
-            A product is organized ideas. Sometimes the idea leads to high-fidelity screens,
-            sometimes to motion, sometimes to prototyping, sometimes to documentation or cleaning up
-            a design system. Not every design day looks shiny, but every part matters when it helps
-            the idea become clearer, stronger, and easier to use.
-          </p>
-        </section>
-        <section class="fishing-modal__section">
-          <blockquote class="fishing-modal__quote">
-            “Intuition is seeing the solution.....its emotion and intellect going together.”
-          </blockquote>
-          <p>
-            Good design is rarely pure logic or pure feeling. It is both. The rational part checks
-            whether the product works. The emotional part checks whether it feels clear, human,
-            useful, and memorable. You feel-think your way through until the thing starts to make
-            sense.
-          </p>
-        </section>
-        <section class="fishing-modal__section">
-          <blockquote class="fishing-modal__quote">
-            “At some point, it feels correct to you.”
-          </blockquote>
-          <p>
-            Design can be improved forever, which is exactly why finishing matters. At some point,
-            the work is clear enough, strong enough, and honest enough to leave your hands. You make
-            the thing, sharpen it, and then let it live.
-          </p>
-        </section>
+          <section class="fishing-modal__section">
+            <h3>You can’t schedule a fish</h3>
+            <p>
+              We have this annoying model of creativity, according to which ideas are things we
+              create. Sit down. Concentrate. Think harder. Come up with something brilliant.
+            </p>
+            <p>
+              But thoughts don’t actually work like that. You cannot put “Have a good idea” in
+              your calendar for Thursday at 9:30.
+            </p>
+            <p>
+              Sam Harris often points out a strange characteristic of our own minds. You don’t
+              know what your next thought will be until it appears. You can try this out right
+              now. Think of a random city. Whatever popped into your head – Tokyo, Budapest, Oslo,
+              for whatever reason – you only became aware of it once it appeared. You didn’t
+              consciously scan through all the cities stored in your brain, nor did you carefully
+              select the winner.
+            </p>
+            <p>
+              We know a great deal about attention, memory, perception and the brain activity
+              associated with conscious experience. But consciousness itself remains an unsolved
+              scientific mystery. There is no single accepted theory that accurately explains how
+              the brain’s physical processes become the personal experience of a thought. A recent
+              review puts the fundamental problem very simply: “Consciousness is personal”.
+            </p>
+          </section>
+          <section class="fishing-modal__section">
+            <h3>Ideas are like fish</h3>
+            <p>David Lynch uses fish to explain this.</p>
+            <blockquote class="fishing-modal__quote">“Ideas are like fish.”</blockquote>
+            <p>And, more importantly:</p>
+            <blockquote class="fishing-modal__quote">
+              “We don’t make the fish, we catch the fish.”
+            </blockquote>
+            <p>The emergence of an idea and turning it into something are two different things.</p>
+            <p>
+              A chef doesn’t make the fish either. She gets the fish, and then has to cook it. She
+              might create something brilliant. But she might poison the whole dinner.
+            </p>
+          </section>
+          <section class="fishing-modal__section">
+            <h3>Go where the bigger fish are</h3>
+            <p>
+              Lynch says: “If you want to catch a big fish, you have to dive deeper.” He means
+              this in relation to meditation and expanding consciousness, but there’s other useful
+              readings.
+            </p>
+            <p>
+              Your mind can only connect with what has entered the sea. Books, conversations,
+              films, childhood memories, jobs you hated, things you saw through the train window,
+              screenshots you saved years ago.
+            </p>
+            <p>So diving deeper can also mean:</p>
+            <p>
+              Learning something unrelated to your work. Visiting places. Talking to people who
+              know things you don’t. Taking an interest in something that has absolutely no
+              obvious professional value. Feeding your mind with stranger materials.
+            </p>
+            <p>
+              And don’t overlook the small fish either. Lynch talks about picking up fragments of
+              ideas and using them as bait for something bigger. Gradually, the seemingly
+              unrelated fragments begin to recognise one another. Eventually there’s a big fish.
+            </p>
+          </section>
+          <section class="fishing-modal__section">
+            <h3>Leave the line in the water</h3>
+            <p>
+              This is also why Lynch talks so much about daydreaming. You need enough space for
+              ideas to arise, which is inconvenient from a professional perspective, because
+              daydreaming looks almost exactly as if you’re doing absolutely nothing. But if every
+              spare moment is filled with feeds, podcasts, messages, tasks and productivity, there
+              isn’t much room left to notice what your mind is tossing up.
+            </p>
+            <p>
+              You can also catch Lynch’s “flying fish”. Ideas that you don’t have to go looking
+              for at all. Sometimes they simply fly towards you. Your job is to notice them.
+            </p>
+          </section>
+          <section class="fishing-modal__section">
+            <h3>Don’t outsource the sea</h3>
+            <p>
+              If we introduce AI into the story, it gets interesting because AI is exceptionally
+              good at fishing.
+            </p>
+            <p>
+              There is an important distinction here. We still don’t fully understand
+              consciousness itself. Neuroscience can explore what happens in the brain when we
+              perceive, remember, imagine something, or become aware of a thought, but there is no
+              accepted theory that explains how these physical processes become subjective
+              experiences.
+            </p>
+            <p>
+              This doesn’t prove AI could never be conscious, and we don’t need to hide behind
+              that claim anyway.
+            </p>
+            <p>
+              This means that whatever strange mixture of memory, experience, emotion and
+              association caused that particular thought to surface in you is not something to
+              which artificial intelligence has direct access to. It knows what you tell it. It
+              recognises patterns in things created by humans. It can generate an absurd number of
+              plausible new combinations. But it isn’t immersed in your personal stream of
+              experience when a forgotten memory suddenly collides with something you saw on the
+              tram yesterday.
+            </p>
+            <p>
+              Research has shown that people using generative AI can produce content that is
+              perceived as more creative than what they would create without assistance. However,
+              these AI-assisted ideas are becoming increasingly similar to one another.
+              Individually, they catch better fish. Collectively, however, everyone starts fishing
+              in the same pond.
+            </p>
+            <p>
+              It seems that this is the real creative risk. Gradually replacing our own unique
+              contributions with this infinitely convenient source of suggestions.
+            </p>
+            <p>
+              If artificial intelligence provides the references, the associations, the initial
+              ideas, the variations, and ultimately even tells us which is the best, then the sea
+              starts getting very well stocked but also very familiar.
+            </p>
+            <p>
+              Creativity means projecting our own story, our curiosity and our attention onto
+              things, and then finding something that matters to us.
+            </p>
+          </section>
+          <section class="fishing-modal__section">
+            <h3>Feel-think your way through</h3>
+            <p>Lynch calls this “feeling-thinking”: emotion and intellect working together.</p>
+            <p>
+              You create something. You look at it. Something isn’t quite right. You change it.
+              You remove it. Some seemingly insignificant detail suddenly becomes the foundation
+              of the whole thing.
+            </p>
+            <p>Your job is to follow the idea and to stay true to the idea.</p>
+            <p>
+              Before AI, whenever you started something new, you had to spend quite a lot of time
+              on it before you could actually create anything. During that time, your taste
+              developed. In most cases, your taste was ahead of your skill. With your skill alone,
+              you were not yet able to produce something that reflected your taste. Those who
+              stuck with it and pushed through this difficult period went on to become
+              professionals or artists.
+            </p>
+            <p>
+              This may be the most useful creative skill in a world driven by AI: Spending enough
+              time on your ideas and your craft to allow your taste and judgement to develop.
+              Building a mind worth fishing in.
+            </p>
+          </section>
+          <section class="fishing-modal__section">
+            <h3>Set it free</h3>
+            <p>
+              Eventually, the idea will feel right to you. Then you have to cook the fish and set
+              it free into the world.
+            </p>
+            <p>
+              (Which is admittedly a terrible thing to do after cooking it, but the metaphor has
+              suffered enough.)
+            </p>
+          </section>
         </div>
       </div>
     </div>

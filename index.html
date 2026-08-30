@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260829-about-split-overlay-ready-1">
+    <link rel="stylesheet" href="styles.css?v=20260830-lynch-cat-tooltip-2">
     <noscript>
       <style>
         .hero-title--animation-pending,
@@ -33,7 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollToPlugin.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/MorphSVGPlugin.min.js" defer></script>
-    <script src="script.js?v=20260829-about-split-overlay-ready-1" defer></script>
+    <script src="script.js?v=20260830-lynch-cat-tooltip-2" defer></script>
   </head>
   <body>
     <nav class="topbar" aria-label="Portfolio navigation">
@@ -290,19 +290,45 @@
 
             </article>
 
-            <button
-              class="bento-card fishing-card"
-              type="button"
-              aria-haspopup="dialog"
-              aria-controls="fishing-modal"
-              data-fishing-modal-trigger
-            >
-              <span class="bento-kicker">FISHING WITH LYNCH</span>
-              <p>
-                A David Lynch-inspired note on going deeper, catching ideas, and knowing when to
-                let the work swim off.
-              </p>
-            </button>
+            <div class="fishing-row">
+              <button
+                class="bento-card fishing-card"
+                id="fishing-card"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls="fishing-modal"
+                data-fishing-modal-trigger
+              >
+                <span class="bento-kicker fishing-card__heading">
+                  Fishing with David Lynch
+                  <span class="project-arrow" aria-hidden="true">→</span>
+                </span>
+                <p>
+                  A note on David Lynch, Sam Harris, creative ideas, and why the best ones tend to
+                  arrive when you stop trying to manufacture them.
+                </p>
+              </button>
+
+              <div class="christmas-cat" id="christmas-cat">
+                <button
+                  class="christmas-cat__trigger"
+                  type="button"
+                  aria-label="Merry Christmas!"
+                  aria-describedby="christmas-tooltip"
+                >
+                  <dotlottie-wc
+                    id="christmas-animation"
+                    src="assets/animations/christmas-cat.lottie"
+                    aria-hidden="true"
+                    loop
+                  ></dotlottie-wc>
+                </button>
+                <div class="christmas-cat__tooltip" id="christmas-tooltip" role="tooltip" hidden>
+                  My English teacher had a Christmas tree up all year round. He said it was
+                  always Christmas in his class. It's always Christmas in this portfolio too.
+                </div>
+              </div>
+            </div>
 
           </div>
 
@@ -362,14 +388,14 @@
             class="rolling-email connect-email--animation-pending"
             id="connect-email"
             href="mailto:beres.alfred@icloud.com"
-            aria-label="Send me an email at beres.alfred@icloud.com"
+            aria-label="Let's work together! Email me at beres.alfred@icloud.com"
           >
             <span
               class="rolling-email__label"
-              data-label="Send me an email"
+              data-label="Let's work together!"
               aria-hidden="true"
             >
-              <span>Send me an email</span>
+              <span>Let's work together!</span>
               <span>beres.alfred@icloud.com</span>
             </span>
           </a>
