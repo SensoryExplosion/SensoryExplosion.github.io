@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 
 USERNAME = "Beresalfred"
@@ -45,6 +45,16 @@ def build_heatmap(xp_gains):
     for g in xp_gains:
         day = datetime.fromtimestamp(g["time"], tz=timezone.utc).strftime("%Y-%m-%d")
         daily_xp[day] += g["xp"]
+    if not daily_xp:
+        return {}
+
+    # Include inactive days so the heatmap keeps its calendar order.
+    day = datetime.strptime(min(daily_xp), "%Y-%m-%d").date()
+    last_day = datetime.strptime(max(daily_xp), "%Y-%m-%d").date()
+    while day <= last_day:
+        daily_xp.setdefault(day.isoformat(), 0)
+        day += timedelta(days=1)
+
     return dict(sorted(daily_xp.items()))
 
 def fetch_stats():
