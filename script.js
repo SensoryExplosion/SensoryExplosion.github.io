@@ -161,7 +161,7 @@ function playFadeUp(element) {
   });
 }
 
-function revealSoftBlurTitle({
+async function revealSoftBlurTitle({
   title,
   subtitle = null,
   accent = null,
@@ -171,10 +171,21 @@ function revealSoftBlurTitle({
   accentHighlightClass,
   onHighlightStart = null,
   initialDelay = 0,
-  cleanupAfterAnimation = false
+  cleanupAfterAnimation = false,
+  prepareBeforeAnimation = false
 }) {
   const titleUnits = prepareSoftBlurTitle(title);
   const subtitleUnits = subtitle ? prepareSoftBlurWords(subtitle, 6) : [];
+  if (prepareBeforeAnimation) {
+    // Paint the split, transparent glyphs before starting their filter/transform
+    // animations. Waiting before splitting does not prepare these layers.
+    title.classList.remove(titlePendingClass);
+    subtitle?.classList.remove(subtitlePendingClass);
+    await new Promise((resolve) => {
+      window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+    });
+  }
+
   const highlightLead = 160;
   const subtitleLead = 220;
   const lastAccentIndex = titleUnits.reduce(
@@ -194,8 +205,8 @@ function revealSoftBlurTitle({
       : titleEnd;
   const subtitleDelay = Math.max(0, highlightDelay - subtitleLead);
 
-  playSoftBlurIn(titleUnits, { initialDelay, cleanupAfterAnimation });
-  playSoftBlurIn(subtitleUnits, {
+  const titleAnimation = playSoftBlurIn(titleUnits, { initialDelay, cleanupAfterAnimation });
+  const subtitleAnimation = playSoftBlurIn(subtitleUnits, {
     initialDelay: subtitleDelay,
     stagger: 15,
     blur: 6,
@@ -213,6 +224,8 @@ function revealSoftBlurTitle({
       onHighlightStart?.();
     }, highlightDelay);
   }
+
+  await Promise.all([titleAnimation, subtitleAnimation]);
 }
 
 function revealSoftBlurTitleImmediately({
@@ -232,7 +245,7 @@ function revealSoftBlurTitleImmediately({
 
 // ── Hero soft-blur-in reveal ──
 // Run independently of the optional animation libraries used elsewhere on the page.
-(async function () {
+const heroRevealFinished = (async function () {
   const title = document.getElementById("hero-title");
   const subtitle = document.getElementById("hero-subtitle");
   const accent = title?.querySelector(".hero-title__accent");
@@ -285,17 +298,12 @@ function revealSoftBlurTitleImmediately({
     }
   }
 
-  // Let the font's layout and the first paint settle before starting the timeline.
-  await new Promise((resolve) => {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
-  });
-
   if (reducedMotion.matches) {
     revealImmediately();
     return;
   }
 
-  revealSoftBlurTitle({
+  await revealSoftBlurTitle({
     title,
     subtitle,
     accent,
@@ -303,7 +311,8 @@ function revealSoftBlurTitleImmediately({
     subtitlePendingClass: pendingClasses.subtitle,
     accentPendingClass: pendingClasses.accent,
     accentHighlightClass: pendingClasses.highlightedAccent,
-    cleanupAfterAnimation: true
+    cleanupAfterAnimation: true,
+    prepareBeforeAnimation: true
   });
 })();
 
@@ -1340,9 +1349,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const wraps  = card.querySelectorAll('.poster-wrap');
     const videos = card.querySelectorAll('.bg-video');
 
-    // Prime all videos on load so the first hover has no blank-frame delay
-    videos.forEach(v => {
-      v.play().then(() => v.pause()).catch(() => {});
+    // Warm offscreen videos only after the hero finishes and the card is near
+    // the viewport, so decoding four first frames cannot compete with the entrance.
+    const primeVideos = () => {
+      videos.forEach(v => {
+        v.preload = "auto";
+        v.play().then(() => {
+          if (!v.classList.contains('active')) v.pause();
+        }).catch(() => {});
+      });
+    };
+
+    heroRevealFinished.then(() => {
+      if (!("IntersectionObserver" in window)) {
+        primeVideos();
+        return;
+      }
+      const observer = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        primeVideos();
+      }, { rootMargin: "300px" });
+      observer.observe(card);
     });
 
     // Activate on poster hover
@@ -1666,6 +1694,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    prepareOverlaysAfterDomReady();
+    // Hidden case studies parse and render substantial content; keep that work
+    // outside the hero animation. Clicking a project still opens it immediately.
+    heroRevealFinished.then(prepareOverlaysAfterDomReady);
   })();
 }, { once: true });

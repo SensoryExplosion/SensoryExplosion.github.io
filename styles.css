@@ -345,12 +345,13 @@ main,
   will-change: transform, opacity, filter;
 }
 
-/* Give animated hero glyphs paint room without changing line spacing or wrapping.
-   Safari otherwise clips descenders in the per-character compositing surfaces. */
+/* Give Safari paint room on every side of each animated glyph. Negative
+   letter-spacing can put the right edge outside its compositing surface.
+   Matching negative margins preserve the original positions and line breaks. */
 .hero .soft-blur__unit {
   backface-visibility: visible;
-  padding-block: 0.15em;
-  margin-block: -0.15em;
+  padding: 0.15em;
+  margin: -0.15em;
 }
 
 .hero-title__accent {
