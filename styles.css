@@ -345,6 +345,14 @@ main,
   will-change: transform, opacity, filter;
 }
 
+/* Give animated hero glyphs paint room without changing line spacing or wrapping.
+   Safari otherwise clips descenders in the per-character compositing surfaces. */
+.hero .soft-blur__unit {
+  backface-visibility: visible;
+  padding-block: 0.15em;
+  margin-block: -0.15em;
+}
+
 .hero-title__accent {
   color: #00adfe;
   display: block;
