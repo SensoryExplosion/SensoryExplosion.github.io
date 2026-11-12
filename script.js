@@ -121,7 +121,7 @@ function playSoftBlurIn(
   return Promise.all(animations.map((animation) => animation.finished)).then(() => {
     units.forEach((unit) => {
       if (cleanupAfterAnimation) {
-        // Return hero glyphs to normal text rendering after the final frame.
+        // Return finished glyphs to normal text rendering after the final frame.
         unit.style.removeProperty("opacity");
         unit.style.removeProperty("filter");
         unit.style.removeProperty("transform");
@@ -615,6 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
         titlePendingClass: pendingClasses.title,
         accentPendingClass: pendingClasses.accent,
         accentHighlightClass: pendingClasses.highlightedAccent,
+        cleanupAfterAnimation: true,
         onHighlightStart: () => {
           if (!emailButton) {
             return;

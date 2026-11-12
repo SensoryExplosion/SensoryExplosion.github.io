@@ -348,7 +348,8 @@ main,
 /* Give Safari paint room on every side of each animated glyph. Negative
    letter-spacing can put the right edge outside its compositing surface.
    Matching negative margins preserve the original positions and line breaks. */
-.hero .soft-blur__unit {
+.hero .soft-blur__unit,
+.connect-section .soft-blur__unit {
   backface-visibility: visible;
   padding: 0.15em;
   margin: -0.15em;
