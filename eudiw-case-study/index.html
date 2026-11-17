@@ -19,11 +19,11 @@
       fetchpriority="high"
     />
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=20260826-toc-curved-indicator-aligned" />
-    <script src="./script.js?v=20260829-overlay-shell-ready-1" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20261117-type-spacing-1" />
+    <script src="./script.js?v=20261117-project-links-1" defer></script>
     <script src="./assets/vendor/mermaid.min.js" defer></script>
     <script src="./flow-definitions.js" defer></script>
-    <script src="./flows.js" defer></script>
+    <script src="./flows.js?v=20261117-clean-flow-2" defer></script>
   </head>
 
   <body>
@@ -41,7 +41,7 @@
             id="project-introduction"
             tabindex="-1"
             data-toc
-            data-toc-title="Project introduction"
+            data-toc-title="Overview"
           >
             Designing a digital identity app with AI in the loop
           </h1>
@@ -192,7 +192,7 @@
           </section>
 
           <section aria-labelledby="trust-model">
-            <h2 id="trust-model" tabindex="-1" data-toc>
+            <h2 id="trust-model" tabindex="-1" data-toc data-toc-title="Context">
               About the European Digital Identity Framework
             </h2>
 
@@ -742,7 +742,7 @@
           </section>
 
           <section aria-labelledby="findings-that-shaped-the-app">
-            <h2 id="findings-that-shaped-the-app" tabindex="-1" data-toc>
+            <h2 id="findings-that-shaped-the-app" tabindex="-1" data-toc data-toc-title="Design decisions">
               Findings that shaped the app
             </h2>
 
@@ -773,7 +773,7 @@
           </section>
 
           <section aria-labelledby="core-user-flows">
-            <h2 id="core-user-flows" tabindex="-1" data-toc>From use cases to user flows</h2>
+            <h2 id="core-user-flows" tabindex="-1" data-toc data-toc-title="User flows">From use cases to user flows</h2>
 
             <p>
               Based on the use cases analysed during the research, I tasked Codex with mapping out
@@ -802,12 +802,13 @@
             <figure class="flow-viewer" data-flow-viewer>
               <div class="flow-viewer-header">
                 <div>
-                  <span class="flow-viewer-eyebrow">Core user flow</span>
                   <h3 class="flow-viewer-title" id="flow-viewer-title" data-flow-title>
-                    Activate wallet and obtain Person Identification Data (PID)
+                    Wallet activation and identity setup
                   </h3>
+                  <p class="flow-viewer-summary" id="flow-viewer-caption" data-flow-summary>
+                    Activate the wallet, then optionally obtain Person Identification Data (PID) from a provider.
+                  </p>
                 </div>
-                <span class="flow-viewer-count" data-flow-count aria-hidden="true"> 01 / 06 </span>
               </div>
 
               <div
@@ -822,7 +823,7 @@
                   type="button"
                   role="tab"
                   aria-controls="flow-viewer-stage"
-                  aria-label="Activate wallet and obtain Person Identification Data (PID)"
+                  aria-label="Wallet activation and identity setup"
                   aria-selected="true"
                   data-flow-index="0"
                 >
@@ -910,21 +911,11 @@
                   <p class="flow-viewer-status" role="status">Rendering flow diagram…</p>
                 </div>
               </div>
-
-              <figcaption id="flow-viewer-caption">
-                <span class="flow-viewer-hint">
-                  Scroll horizontally when needed to follow the complete flow.
-                </span>
-                <span data-flow-summary>
-                  Wallet Unit activation is completed before the user optionally obtains a PID
-                  from a PID Provider.
-                </span>
-              </figcaption>
             </figure>
           </section>
 
           <section aria-labelledby="Exploring reusable UI patterns">
-            <h2 id="Exploring reusable UI patterns" tabindex="-1" data-toc>Exploring reusable UI patterns</h2>
+            <h2 id="Exploring reusable UI patterns" tabindex="-1" data-toc data-toc-title="UI exploration">Exploring reusable UI patterns</h2>
 
             <p>
               With the flows in place, I used the
@@ -976,7 +967,7 @@
           </section>
 
           <section aria-labelledby="final-swiftui-solution">
-            <h2 id="final-swiftui-solution" tabindex="-1" data-toc>
+            <h2 id="final-swiftui-solution" tabindex="-1" data-toc data-toc-title="Final design">
               The final experience in SwiftUI
             </h2>
 
@@ -1022,7 +1013,7 @@
           </section>
 
           <section aria-labelledby="a-couple-of-lessons">
-            <h2 id="a-couple-of-lessons" tabindex="-1" data-toc>A couple of lessons</h2>
+            <h2 id="a-couple-of-lessons" tabindex="-1" data-toc data-toc-title="Reflections">A couple of lessons</h2>
 
             <h3>About AI</h3>
 

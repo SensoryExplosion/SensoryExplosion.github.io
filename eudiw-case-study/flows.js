@@ -3,9 +3,9 @@ const definitions = window.EUDI_FLOW_DEFINITIONS ?? {};
 const flows = [
   {
     id: "activation",
-    title: "Activate wallet and obtain Person Identification Data (PID)",
+    title: "Wallet activation and identity setup",
     summary:
-      "Wallet Unit activation is completed before the user optionally obtains a PID from a PID Provider.",
+      "Activate the wallet, then optionally obtain Person Identification Data (PID) from a provider.",
     source: definitions.activation,
   },
   {
@@ -50,7 +50,6 @@ const viewer = document.querySelector("[data-flow-viewer]");
 if (viewer) {
   const tabs = Array.from(viewer.querySelectorAll("[data-flow-index]"));
   const title = viewer.querySelector("[data-flow-title]");
-  const count = viewer.querySelector("[data-flow-count]");
   const summary = viewer.querySelector("[data-flow-summary]");
   const stage = viewer.querySelector("[data-flow-stage]");
   const tablist = viewer.querySelector("[data-flow-tabs]");
@@ -384,10 +383,6 @@ if (viewer) {
     activeIndex = index;
     viewer.dataset.activeFlow = flow.id;
     title.textContent = flow.title;
-    count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(flows.length).padStart(
-      2,
-      "0",
-    )}`;
     summary.textContent = flow.summary;
 
     tabs.forEach((tab, tabIndex) => {

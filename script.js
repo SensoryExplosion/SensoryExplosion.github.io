@@ -1417,10 +1417,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let isTransitioning = false;
     let overlayState;
+    let isHistoryClosing = false;
+    const portfolioTitle = document.title;
     const preparedOverlays = new Map();
     const overlayTriggers = Array.from(
       document.querySelectorAll("[data-project-overlay]")
     );
+
+    const triggersByProject = new Map(
+      overlayTriggers.map((trigger) => [trigger.dataset.projectOverlay, trigger])
+    );
+    const backgroundElements = Array.from(
+      document.querySelectorAll("body > nav, body > header, body > main, body > footer")
+    ).filter((element) => !element.inert);
+
+    function getRequestedTrigger() {
+      return triggersByProject.get(new URL(window.location.href).searchParams.get("project"));
+    }
+
+    // The URL is the source of truth. Reconcile again after transitions so fast
+    // Back/Forward navigation never leaves the address bar and overlay out of sync.
+    function syncOverlayWithLocation() {
+      const trigger = getRequestedTrigger();
+      document.title = trigger
+        ? `${trigger.querySelector("h3").textContent.replace("→", "").trim()} — ${portfolioTitle}`
+        : portfolioTitle;
+
+      if (isTransitioning) {
+        return;
+      }
+
+      if (overlayState && overlayState.trigger !== trigger) {
+        closeOverlay();
+      } else if (!overlayState && trigger) {
+        openOverlay(trigger);
+      }
+    }
+
+    function requestCloseOverlay() {
+      if (!overlayState || overlayState.isClosing || isHistoryClosing || !getRequestedTrigger()) {
+        return;
+      }
+
+      if (window.history.state?.portfolioOverlay?.returnUrl) {
+        // Only go Back for an entry created by opening a card in this document.
+        isHistoryClosing = true;
+        window.history.back();
+      } else {
+        // A shared link has no portfolio entry behind it. Close in place instead
+        // of sending the visitor back to another website.
+        const url = new URL(window.location.href);
+        url.searchParams.delete("project");
+        url.hash = "work";
+        window.history.replaceState(window.history.state, "", url);
+        syncOverlayWithLocation();
+      }
+    }
 
     function markOverlayReady(state) {
       if (state.isReady) {
@@ -1535,7 +1587,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeButton.type = "button";
       closeButton.setAttribute("aria-label", "Close case study");
       closeButton.textContent = "×";
-      closeButton.addEventListener("click", closeOverlay);
+      closeButton.addEventListener("click", requestCloseOverlay);
       overlay.append(frame, loading, status, closeButton);
 
       const state = {
@@ -1606,7 +1658,11 @@ document.addEventListener("DOMContentLoaded", () => {
           preparedOverlays.set(trigger, closingState);
         }
 
-        trigger.focus({ preventScroll: true });
+        backgroundElements.forEach((element) => { element.inert = false; });
+        if (!getRequestedTrigger()) {
+          trigger.focus({ preventScroll: true });
+        }
+        syncOverlayWithLocation();
       });
 
       overlay.classList.remove("is-open", "is-active");
@@ -1632,68 +1688,104 @@ document.addEventListener("DOMContentLoaded", () => {
         event.data?.type === "close-project-overlay" &&
         sourceOverlay === overlayState
       ) {
-        closeOverlay();
+        requestCloseOverlay();
       }
     });
 
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && overlayState) {
-        closeOverlay();
+        event.preventDefault();
+        requestCloseOverlay();
       }
     });
+
+    function openOverlay(trigger) {
+      isTransitioning = true;
+
+      const preparedOverlay = preparedOverlays.get(trigger);
+      if (preparedOverlay) {
+        preparedOverlays.delete(trigger);
+        preparedOverlay.overlay.classList.remove("is-preloading");
+        overlayState = preparedOverlay;
+      } else {
+        overlayState = createOverlay(trigger);
+        document.body.append(overlayState.backdrop, overlayState.overlay);
+      }
+
+      overlayState.isClosing = false;
+      overlayState.wasReadyOnOpen = overlayState.isReady;
+      const { overlay, frame, backdrop, closeButton, status } = overlayState;
+      overlay.setAttribute("aria-hidden", "false");
+      status.textContent = overlayState.isReady ? "" : "Loading case study.";
+      document.body.classList.add("project-overlay-open");
+      backgroundElements.forEach((element) => { element.inert = true; });
+      closeButton.focus({ preventScroll: true });
+
+      finishAfterTransition(overlay, () => {
+        if (overlayState?.overlay !== overlay || overlayState.isClosing) {
+          return;
+        }
+
+        overlay.classList.add("is-open");
+        isTransitioning = false;
+        syncOverlayWithLocation();
+        if (overlayState.isClosing) {
+          return;
+        }
+
+        if (overlayState.isReady) {
+          frame.focus({ preventScroll: true });
+        } else {
+          closeButton.focus({ preventScroll: true });
+        }
+      });
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          backdrop.classList.add("is-active");
+          overlay.classList.add("is-active");
+        });
+      });
+    }
 
     overlayTriggers.forEach((trigger) => {
       trigger.addEventListener("click", (event) => {
         if (
-          event.defaultPrevented ||
-          isTransitioning
+          event.defaultPrevented || event.button !== 0 ||
+          event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
+          trigger.hasAttribute("download") || (trigger.target && trigger.target !== "_self")
         ) {
           return;
         }
 
         event.preventDefault();
-        isTransitioning = true;
-
-        const preparedOverlay = preparedOverlays.get(trigger);
-        if (preparedOverlay) {
-          preparedOverlays.delete(trigger);
-          preparedOverlay.overlay.classList.remove("is-preloading");
-          overlayState = preparedOverlay;
-        } else {
-          overlayState = createOverlay(trigger);
-          document.body.append(overlayState.backdrop, overlayState.overlay);
+        if (isTransitioning || isHistoryClosing || overlayState) {
+          return;
         }
 
-        overlayState.isClosing = false;
-        overlayState.wasReadyOnOpen = overlayState.isReady;
-        const { overlay, frame, backdrop, closeButton, status } = overlayState;
-        overlay.setAttribute("aria-hidden", "false");
-        status.textContent = overlayState.isReady ? "" : "Loading case study.";
-        document.body.classList.add("project-overlay-open");
-
-        finishAfterTransition(overlay, () => {
-          if (overlayState?.overlay !== overlay || overlayState.isClosing) {
-            return;
-          }
-
-          overlay.classList.add("is-open");
-          isTransitioning = false;
-
-          if (overlayState.isReady) {
-            frame.focus({ preventScroll: true });
-          } else {
-            closeButton.focus({ preventScroll: true });
-          }
-        });
-
-        window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => {
-            backdrop.classList.add("is-active");
-            overlay.classList.add("is-active");
-          });
-        });
+        const url = new URL(window.location.href);
+        url.searchParams.set("project", trigger.dataset.projectOverlay);
+        window.history.pushState(
+          { ...window.history.state, portfolioOverlay: { returnUrl: window.location.href } },
+          "",
+          url
+        );
+        syncOverlayWithLocation();
       });
     });
+
+    window.addEventListener("popstate", () => {
+      isHistoryClosing = false;
+      syncOverlayWithLocation();
+    });
+
+    if (getRequestedTrigger()) {
+      // On a fresh load (including refresh), closing stays in this document.
+      const { portfolioOverlay, ...state } = window.history.state || {};
+      window.history.replaceState(state, "", window.location.href);
+      document.getElementById("work")?.scrollIntoView({ behavior: "instant" });
+      syncOverlayWithLocation();
+    }
 
     // Hidden case studies parse and render substantial content; keep that work
     // outside the hero animation. Clicking a project still opens it immediately.

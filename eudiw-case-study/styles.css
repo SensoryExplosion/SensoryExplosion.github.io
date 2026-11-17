@@ -18,7 +18,12 @@
   --color-illustration-surface: #f3f5f7;
 
   --shell-max: 68rem;
-  --toc-width: 15rem;
+  --toc-width: 12.5rem;
+  --article-section-space: 3rem;
+  --article-subsection-space: 2rem;
+  --article-paragraph-space: 1.125rem;
+  --article-heading-gap: 0.875rem;
+  --article-subheading-gap: 0.5rem;
   --toc-column-gap: clamp(2.5rem, 4.5vw, 4rem);
   --toc-sticky-top: 2rem;
 
@@ -246,9 +251,9 @@ h1 {
   position: sticky;
   top: var(--toc-sticky-top);
   min-width: 0;
-  padding: 1.5rem;
+  padding: 1.125rem;
   border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-large);
+  border-radius: var(--radius-medium);
   background: var(--color-panel);
 }
 
@@ -349,7 +354,7 @@ h1 {
 }
 
 .article p {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--article-paragraph-space);
 }
 
 .product-design-reference,
@@ -410,7 +415,7 @@ h1 {
 }
 
 .article h2 {
-  margin: 3rem 0 1.5rem;
+  margin: var(--article-section-space) 0 var(--article-heading-gap);
   font-size: 1.5rem;
   font-weight: 500;
   letter-spacing: -0.03em;
@@ -419,12 +424,17 @@ h1 {
 }
 
 .article h3 {
-  margin: 2.5rem 0 1rem;
+  margin: var(--article-subsection-space) 0 var(--article-subheading-gap);
   font-size: 1.25rem;
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.35;
   scroll-margin-top: 3rem;
+}
+
+/* A section heading and its first subheading belong to one group. */
+.article h2 + h3 {
+  margin-top: 1.25rem;
 }
 
 .article h2:focus,
@@ -980,14 +990,6 @@ h1 {
   gap: 1.5rem;
 }
 
-.flow-viewer-eyebrow {
-  display: block;
-  color: var(--color-accent);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.25;
-}
 
 .article .flow-viewer-title {
   max-width: 31rem;
@@ -998,19 +1000,6 @@ h1 {
   line-height: 1.35;
 }
 
-.flow-viewer-count {
-  flex: none;
-  padding: 0.375rem 0.625rem;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-muted);
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  line-height: 1;
-}
 
 .flow-viewer-tabs {
   display: flex;
@@ -1066,9 +1055,10 @@ h1 {
 }
 
 .flow-viewer-tab[aria-selected="true"] {
-  border-color: color-mix(in srgb, var(--color-about) 18%, transparent);
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  color: var(--color-ink);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
 }
 
 .flow-viewer-stage {
@@ -1249,20 +1239,14 @@ h1 {
   stroke: var(--color-accent) !important;
 }
 
-.flow-viewer figcaption {
-  display: grid;
-  gap: 0.25rem;
-  margin-top: 0.75rem;
-  color: var(--color-muted);
+.article .flow-viewer-summary {
+  max-width: 65ch;
+  margin: 0.5rem 0 0;
   font-size: 0.875rem;
-  letter-spacing: -0.01em;
-  line-height: 1.45;
+  line-height: 1.5;
+  color: var(--color-copy);
 }
 
-.flow-viewer-hint {
-  color: var(--color-copy);
-  font-weight: 600;
-}
 
 @media (max-width: 67.625rem) {
   .shell {
@@ -1289,13 +1273,11 @@ h1 {
 
 @media (min-width: 48rem) {
   .flow-viewer-tabs {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    overflow: visible;
+    display: flex;
+    overflow-x: auto;
   }
 
   .flow-viewer-tab {
-    width: 100%;
     justify-content: center;
   }
 }
@@ -1324,12 +1306,9 @@ h1 {
     padding-bottom: 4.5rem;
   }
 
-  .article h2 {
-    margin-top: 2.5rem;
-  }
-
-  .article h3 {
-    margin-top: 2rem;
+  :root {
+    --article-section-space: 2.5rem;
+    --article-subsection-space: 1.75rem;
   }
 
   .how-it-works {
@@ -1428,8 +1407,11 @@ h1 {
 
 @media (forced-colors: active) {
   .flow-viewer-tab[aria-selected="true"] {
-    border-color: currentColor;
-  }
+  background: var(--color-accent-soft);
+  border-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  color: var(--color-ink);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
 
   .sticky-toc {
     border-color: CanvasText;

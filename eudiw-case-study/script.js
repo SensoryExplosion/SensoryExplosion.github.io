@@ -16,6 +16,29 @@
     window.location.origin
   );
 
+  // Unhandled in-page links (such as the skip link) must not add iframe
+  // history entries either. The table of contents handles its own scrolling.
+  document.addEventListener("click", (event) => {
+    if (event.defaultPrevented || event.button !== 0 ||
+        event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    const link = event.target.closest("a[href^='#']");
+    const target = link && document.getElementById(decodeURIComponent(link.hash.slice(1)));
+    if (!target) {
+      return;
+    }
+
+    event.preventDefault();
+    window.history.replaceState(null, "", link.hash);
+    target.scrollIntoView();
+    if (!target.hasAttribute("tabindex")) {
+      target.setAttribute("tabindex", "-1");
+    }
+    target.focus({ preventScroll: true });
+  });
+
   window.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") {
       return;
@@ -350,7 +373,8 @@
     activate(sectionIndex);
 
     if (updateHistory) {
-      if (window.location.hash === hash) {
+      // Keep section navigation out of the parent portfolio's Back/Forward history.
+      if (document.documentElement.dataset.display === "overlay" || window.location.hash === hash) {
         window.history.replaceState(null, "", hash);
       } else {
         window.history.pushState(null, "", hash);
