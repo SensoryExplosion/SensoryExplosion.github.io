@@ -1444,11 +1444,11 @@ body.fishing-modal-open {
   width: 100%;
 }
 
-.lb-posters:has(.poster-wrap:hover) .poster-wrap:not(:hover) {
+.lb-card.playing .poster-wrap:not(.active) {
   opacity: 0;
 }
 
-.poster-wrap:hover {
+.poster-wrap.active {
   transform: scale(1.03);
 }
 

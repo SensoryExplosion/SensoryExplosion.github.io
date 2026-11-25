@@ -67,38 +67,6 @@ function prepareSoftBlurTitle(title) {
   return units;
 }
 
-function prepareSoftBlurWords(element, blur) {
-  const text = element.textContent.replace(/\s+/g, " ").trim();
-  const fragment = document.createDocumentFragment();
-  const units = [];
-
-  element.setAttribute("aria-label", text);
-
-  text.match(/\S+|\s+/g).forEach((part) => {
-    if (/^\s+$/.test(part)) {
-      fragment.append(document.createTextNode(part));
-      return;
-    }
-
-    const unit = document.createElement("span");
-    unit.className = "soft-blur__unit";
-    unit.setAttribute("aria-hidden", "true");
-    unit.textContent = part;
-    units.push(unit);
-    fragment.append(unit);
-  });
-
-  element.replaceChildren(fragment);
-
-  units.forEach((unit) => {
-    unit.style.opacity = "0";
-    unit.style.filter = `blur(${blur}px)`;
-    unit.style.transform = SOFT_BLUR_INITIAL_TRANSFORM;
-  });
-
-  return units;
-}
-
 function playSoftBlurIn(
   units,
   { initialDelay = 0, stagger = SOFT_BLUR_STAGGER, blur = 12, cleanupAfterAnimation = false } = {}
@@ -163,31 +131,26 @@ function playFadeUp(element) {
 
 async function revealSoftBlurTitle({
   title,
-  subtitle = null,
+  fadeUpElement = null,
   accent = null,
   titlePendingClass,
-  subtitlePendingClass = null,
-  accentPendingClass,
+  fadeUpPendingClass = null,
   accentHighlightClass,
-  onHighlightStart = null,
   initialDelay = 0,
   cleanupAfterAnimation = false,
   prepareBeforeAnimation = false
 }) {
   const titleUnits = prepareSoftBlurTitle(title);
-  const subtitleUnits = subtitle ? prepareSoftBlurWords(subtitle, 6) : [];
   if (prepareBeforeAnimation) {
     // Paint the split, transparent glyphs before starting their filter/transform
     // animations. Waiting before splitting does not prepare these layers.
     title.classList.remove(titlePendingClass);
-    subtitle?.classList.remove(subtitlePendingClass);
     await new Promise((resolve) => {
       window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
     });
   }
 
   const highlightLead = 160;
-  const subtitleLead = 220;
   const lastAccentIndex = titleUnits.reduce(
     (lastIndex, unit, index) => accent?.contains(unit) ? index : lastIndex,
     -1
@@ -203,43 +166,33 @@ async function revealSoftBlurTitle({
         SOFT_BLUR_DURATION -
         highlightLead
       : titleEnd;
-  const subtitleDelay = Math.max(0, highlightDelay - subtitleLead);
-
   const titleAnimation = playSoftBlurIn(titleUnits, { initialDelay, cleanupAfterAnimation });
-  const subtitleAnimation = playSoftBlurIn(subtitleUnits, {
-    initialDelay: subtitleDelay,
-    stagger: 15,
-    blur: 6,
-    cleanupAfterAnimation
+  title.classList.remove(titlePendingClass);
+
+  const highlightStart = new Promise((resolve) => window.setTimeout(resolve, highlightDelay));
+  const fadeUpAnimation = highlightStart.then(() => {
+    if (lastAccentIndex >= 0) {
+      accent.classList.add(accentHighlightClass);
+    }
+    if (fadeUpElement) {
+      fadeUpElement.classList.remove(fadeUpPendingClass);
+      return playFadeUp(fadeUpElement);
+    }
   });
 
-  title.classList.remove(titlePendingClass);
-  if (subtitle && subtitlePendingClass) {
-    subtitle.classList.remove(subtitlePendingClass);
-  }
-
-  if (lastAccentIndex >= 0) {
-    window.setTimeout(() => {
-      accent?.classList.add(accentHighlightClass);
-      onHighlightStart?.();
-    }, highlightDelay);
-  }
-
-  await Promise.all([titleAnimation, subtitleAnimation]);
+  await Promise.all([titleAnimation, fadeUpAnimation]);
 }
 
 function revealSoftBlurTitleImmediately({
   title,
-  subtitle = null,
+  fadeUpElement = null,
   accent = null,
   titlePendingClass,
-  subtitlePendingClass = null,
+  fadeUpPendingClass = null,
   accentPendingClass
 }) {
   title?.classList.remove(titlePendingClass);
-  if (subtitle && subtitlePendingClass) {
-    subtitle.classList.remove(subtitlePendingClass);
-  }
+  fadeUpElement?.classList.remove(fadeUpPendingClass);
   accent?.classList.remove(accentPendingClass);
 }
 
@@ -260,10 +213,10 @@ const heroRevealFinished = (async function () {
   const revealImmediately = () => {
     revealSoftBlurTitleImmediately({
       title,
-      subtitle,
+      fadeUpElement: subtitle,
       accent,
       titlePendingClass: pendingClasses.title,
-      subtitlePendingClass: pendingClasses.subtitle,
+      fadeUpPendingClass: pendingClasses.subtitle,
       accentPendingClass: pendingClasses.accent
     });
   };
@@ -305,11 +258,10 @@ const heroRevealFinished = (async function () {
 
   await revealSoftBlurTitle({
     title,
-    subtitle,
+    fadeUpElement: subtitle,
     accent,
     titlePendingClass: pendingClasses.title,
-    subtitlePendingClass: pendingClasses.subtitle,
-    accentPendingClass: pendingClasses.accent,
+    fadeUpPendingClass: pendingClasses.subtitle,
     accentHighlightClass: pendingClasses.highlightedAccent,
     cleanupAfterAnimation: true,
     prepareBeforeAnimation: true
@@ -591,9 +543,10 @@ document.addEventListener("DOMContentLoaded", () => {
         title,
         accent,
         titlePendingClass: pendingClasses.title,
-        accentPendingClass: pendingClasses.accent
+        accentPendingClass: pendingClasses.accent,
+        fadeUpElement: emailButton,
+        fadeUpPendingClass: "connect-email--animation-pending"
       });
-      emailButton?.classList.remove("connect-email--animation-pending");
     };
 
     if (reducedMotion.matches || !Element.prototype.animate || !("IntersectionObserver" in window)) {
@@ -613,17 +566,10 @@ document.addEventListener("DOMContentLoaded", () => {
         title,
         accent,
         titlePendingClass: pendingClasses.title,
-        accentPendingClass: pendingClasses.accent,
         accentHighlightClass: pendingClasses.highlightedAccent,
-        cleanupAfterAnimation: true,
-        onHighlightStart: () => {
-          if (!emailButton) {
-            return;
-          }
-
-          playFadeUp(emailButton);
-          emailButton.classList.remove("connect-email--animation-pending");
-        }
+        fadeUpElement: emailButton,
+        fadeUpPendingClass: "connect-email--animation-pending",
+        cleanupAfterAnimation: true
       });
     }, { threshold: 1 });
 
@@ -1389,6 +1335,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (target) {
+          wraps.forEach(poster => poster.classList.toggle('active', poster === wrap));
           // Only restart if this video wasn't already playing
           if (!target.classList.contains('active')) {
             target.currentTime = 0;
@@ -1402,6 +1349,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Only reset when cursor leaves the card entirely
     card.addEventListener('mouseleave', () => {
+      wraps.forEach(poster => poster.classList.remove('active'));
       videos.forEach(v => {
         v.classList.remove('active');
         v.pause();
